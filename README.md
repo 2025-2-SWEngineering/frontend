@@ -1,31 +1,29 @@
-# 우리회계 프론트엔드
-
-소규모 조직 회계 관리 서비스의 React 웹 애플리케이션입니다. Android WebView로 패키징 가능하도록 구성되어 있습니다.
+# 우리회계 프론트엔드 (Korean)
 
 ## 기술 스택
 
-- React 18, TypeScript
-- Vite, Styled-components 6, React Router 6, Axios 1
+- React 18, TypeScript, Vite
+- Styled-components 6, React Router 6, Axios 1
+
+## 주요 특징
+
+- 공통 API DTO(`src/types/api.ts`)와 API 클라이언트(`src/api/client.ts`)로 타입 일원화
+- Axios 인터셉터: 401 시 자동 리프레시(`/api/auth/refresh`) 후 원 요청 재시도
+- 업로드 전략: 백엔드 `/uploads/mode`로 S3/로컬 자동 판별, 실패 시 폴백 처리
+- 페이지 모듈화: `DashboardPage` 구성요소 분리(거래/회비/리포트/초대 등)
 
 ## 실행 방법
 
-1. 의존성 설치
+1) 설치 & 개발 서버
 
 ```bash
 npm install
-```
-
-2. 개발 서버 실행(Vite)
-
-```bash
 npm run dev
 ```
 
 앱: http://localhost:3000
 
-백엔드 API 프록시: `/api` → `http://localhost:3001` (vite.config.ts에 설정)
-
-3. 프로덕션 빌드/미리보기
+2) 빌드/미리보기
 
 ```bash
 npm run build
@@ -34,52 +32,75 @@ npm run preview
 
 ## 환경 변수
 
-- 기본적으로 Axios는 `/api`를 베이스로 요청합니다.
-- 배포 환경에서 백엔드 주소를 고정하려면 `VITE_API_URL`을 설정하세요.
+- 개발은 기본 `/api` 프록시를 사용합니다.
+- 배포에서 백엔드 주소를 고정하려면 `VITE_API_URL`을 사용하세요.
 
-예)
-
-```bash
-VITE_API_URL=https://api.example.com
-```
-
-## 라우팅 개요
+## 라우팅
 
 - `/` 로그인
 - `/register` 회원가입
-- `/dashboard` 대시보드(프라이빗 라우트, 토큰 없으면 `/`로 리다이렉트)
+- `/groups` 그룹 선택/생성/초대코드 참여
+- `/dashboard` 대시보드(토큰 필요)
 
-## API 사용 방식
+## 인증 흐름
 
-- Axios 인스턴스(`src/services/api.ts`)가 JWT를 `Authorization: Bearer <token>`로 자동 첨부합니다.
-- 401 응답 시 토큰을 제거하고 `/`로 리다이렉트합니다.
+- 로그인/회원가입 응답: `{ token, refreshToken, user }` 저장
+- 요청 시 `Authorization: Bearer <token>` 자동 첨부
+- 401 발생 시 `refreshToken`으로 재발급 → 성공 시 원 요청 재시도, 실패 시 로그아웃
 
-## 주요 기능(요약)
+## 업로드 흐름
 
-- 그룹 선택 및 초대코드 생성/참여
-- 거래 등록/목록/통계/월별 추이, 영수증 업로드(Presigned URL)
-- 회비 상태 확인/관리, 사용자 알림 수신 설정
-- 기간별 요약 리포트(PDF/Excel) 다운로드
+- 모드 조회: `GET /api/uploads/mode` → `s3`/`local`
+- `s3`면 Presigned PUT 후 키 저장, 실패(CORS 등) 시 로컬 업로드로 폴백
+- `local`이면 `POST /api/uploads/direct`로 업로드
 
-## 개발 편의
+## 폴더 개요
 
-- Vite 프록시 설정(`frontend/vite.config.ts`):
-
-```ts
-// 발췌
-server: {
-    port: 3000,
-    proxy: {
-        "/api": { target: "http://localhost:3001", changeOrigin: true },
-    },
-},
-```
+- `src/api/client.ts`: 그룹/거래/회비/리포트/업로드 등 API 래퍼
+- `src/types/api.ts`: 공통 DTO 모음
+- `src/services/api.ts`: Axios 인스턴스 + 인터셉터(자동 재발급)
+- `src/pages/*`, `src/components/*`: UI 구성요소
 
 ## 트러블슈팅
 
-- API 호출 실패 시: 백엔드(3001) 가동 여부, 프록시 설정, `VITE_API_URL` 확인
-- 401 반복: 로컬스토리지 토큰 삭제 후 재로그인
+- 401 반복: `localStorage`의 `token`/`refreshToken` 삭제 후 재로그인
+- 업로드 403: S3 CORS 정책 확인, 백엔드 `AWS_REGION`/버킷 확인
+- API 실패: `VITE_API_URL` 또는 Vite 프록시 타깃 확인
 
-## 라이선스/팀
+# Woori Accounting Frontend (English)
 
-MIT / 개발만하고싶어 팀 (강재민, 안재관, 김훈민, Ntwali Herve, 전성민)
+React + TypeScript web app for small organizations.
+
+## Highlights
+
+- Shared API DTOs (`src/types/api.ts`) and client (`src/api/client.ts`)
+- Axios interceptor with auto refresh (`/api/auth/refresh`) and retry
+- Upload strategy: detect S3/local via `/uploads/mode`, fallback on failures
+- Modular dashboard components (transactions, dues, reports, invites)
+
+## Run
+
+```bash
+npm install
+npm run dev
+# build
+npm run build && npm run preview
+```
+
+## Env
+
+- Use `VITE_API_URL` in deployments to bypass proxy.
+
+
+## Routes
+
+- `/` login, `/register`, `/groups`, `/dashboard`
+
+## Auth
+
+- Store `{ token, refreshToken }` and `user` after auth.
+- Interceptor refreshes on 401; logout clears both tokens.
+
+## Uploads
+
+- `GET /api/uploads/mode` → `s3` or `local`; then presign/direct accordingly.
