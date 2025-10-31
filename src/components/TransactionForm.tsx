@@ -184,11 +184,13 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     >
       <h2 style={{ marginBottom: 16, color: "#333" }}>거래 등록</h2>
       <form onSubmit={submit}>
+        {/* 1행: 수입/지출, 금액, 설명, 날짜 */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "120px 1fr 1fr 1fr 1fr 1fr 120px",
+            gridTemplateColumns: "120px 1fr 2fr 1fr",
             gap: 12,
+            marginBottom: 12,
           }}
         >
           <select
@@ -216,16 +218,26 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
           <input
+            type="date"
+            value={form.date}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
+          />
+        </div>
+
+        {/* 2행: 카테고리, 파일첨부, 등록 버튼 */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr 2fr 140px",
+            gap: 12,
+          }}
+        >
+          <input
             type="text"
             placeholder="항목(카테고리)"
             value={form.category || ""}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
-          />
-          <input
-            type="date"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
             style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
           <input

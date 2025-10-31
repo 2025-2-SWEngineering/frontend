@@ -27,6 +27,7 @@ import type {
   MonthlyResponse,
   DuesListResponse,
 } from "../../types/api";
+import api from "../../services/api";
 
 type GroupWithRole = {
   id: number;
@@ -232,24 +233,26 @@ const OverviewTab: React.FC = () => {
 
   async function downloadReport(kind: "pdf" | "xlsx") {
     if (!groupId) return;
-    const token = localStorage.getItem("token");
-    const endpoint =
-      kind === "pdf" ? "/api/reports/summary.pdf" : "/api/reports/summary.xlsx";
-    const url = `${endpoint}?groupId=${groupId}&from=${reportRange.from}&to=${reportRange.to}`;
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) {
+    const path = kind === "pdf" ? "/reports/summary.pdf" : "/reports/summary.xlsx";
+    try {
+      const { data } = await api.get(path, {
+        params: { groupId, from: reportRange.from, to: reportRange.to },
+        responseType: "blob",
+      });
+      const blob = new Blob([data], {
+        type: kind === "pdf"
+          ? "application/pdf"
+          : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `report_${groupId}_${reportRange.from}_${reportRange.to}.${kind}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (e) {
       alert("보고서 생성에 실패했습니다.");
-      return;
     }
-    const blob = await res.blob();
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `report_${groupId}_${reportRange.from}_${reportRange.to}.${kind}`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
   }
 
   return (
