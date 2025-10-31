@@ -12,6 +12,7 @@ import type {
     DirectUploadResponse,
     InvitationAcceptResponse,
     InvitationCreateResponse,
+    CategoryAggResponse,
 } from "../types/api";
 
 // Groups
@@ -40,6 +41,14 @@ export async function acceptInvitation(code: string) {
     return data;
 }
 
+export async function deleteGroupApi(groupId: number) {
+    await api.delete(`/groups/${groupId}`);
+}
+
+export async function leaveGroupApi(groupId: number) {
+    await api.post(`/groups/${groupId}/leave`, {});
+}
+
 // Transactions
 export async function fetchTxStats(groupId: number) {
     const { data } = await api.get<TransactionsStatsResponse>("/transactions/stats", { params: { groupId } });
@@ -56,12 +65,20 @@ export async function fetchMonthly(groupId: number, months = 6) {
     return data.data || [];
 }
 
+export async function fetchByCategory(groupId: number, opts?: { from?: string; to?: string }) {
+    const { data } = await api.get<CategoryAggResponse>("/transactions/by-category", {
+        params: { groupId, from: opts?.from, to: opts?.to },
+    });
+    return data.data || [];
+}
+
 export async function createTransactionApi(payload: {
     groupId: number;
     type: "income" | "expense";
     amount: number;
     description: string;
     date: string;
+    category?: string;
     receiptUrl?: string;
 }) {
     await api.post("/transactions", payload);

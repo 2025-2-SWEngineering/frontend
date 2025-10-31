@@ -18,6 +18,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     amount: string;
     description: string;
     date: string;
+    category?: string;
     file?: File | null;
   }>({
     type: "income",
@@ -151,6 +152,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         amount: amountNum,
         description: form.description,
         date: form.date,
+        category: form.category?.trim() || undefined,
         receiptUrl,
       });
       await onSubmitted();
@@ -185,7 +187,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "120px 1fr 1fr 1fr 1fr 120px",
+            gridTemplateColumns: "120px 1fr 1fr 1fr 1fr 1fr 120px",
             gap: 12,
           }}
         >
@@ -211,6 +213,13 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             placeholder="설명"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
+            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
+          />
+          <input
+            type="text"
+            placeholder="항목(카테고리)"
+            value={form.category || ""}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
             style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
           <input

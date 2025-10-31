@@ -37,6 +37,10 @@ export type TransactionsStatsResponse = { stats: TransactionsStatsDTO };
 export type MonthlyRowDTO = { month: string; income: number | string; expense: number | string };
 export type MonthlyResponse = { data: MonthlyRowDTO[] };
 
+// 카테고리 집계
+export type CategoryAggRowDTO = { category: string; income: number | string; expense: number | string; total: number | string };
+export type CategoryAggResponse = { data: CategoryAggRowDTO[] };
+
 // 회비
 export type DuesRowDTO = { user_id: number; user_name: string; is_paid: boolean | null; paid_at?: string | null };
 export type DuesListResponse = { items: DuesRowDTO[] };

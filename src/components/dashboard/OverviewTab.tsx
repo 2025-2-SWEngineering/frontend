@@ -4,22 +4,24 @@ import {
   fetchTxStats,
   fetchTransactions as apiFetchTransactions,
   fetchMonthly as apiFetchMonthly,
+  fetchByCategory as apiFetchByCategory,
   fetchDues as apiFetchDues,
   fetchPreferences as apiFetchPreferences,
   updatePreferences as apiUpdatePreferences,
   setDues as apiSetDues,
 } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
-import InviteAcceptor from "../../components/InviteAcceptor";
-import MonthlyBars from "../../components/MonthlyBars";
-import GroupSelector from "../../components/GroupSelector";
-import PreferencesToggle from "../../components/PreferencesToggle";
-import StatsCards from "../../components/StatsCards";
-import ReportDownload from "../../components/ReportDownload";
-import TransactionsList from "../../components/TransactionsList";
-import LoadMore from "../../components/LoadMore";
-import DuesTable from "../../components/DuesTable";
-import TransactionForm from "../../components/TransactionForm";
+import InviteAcceptor from "../InviteAcceptor";
+import MonthlyBars from "../MonthlyBars";
+import CategoryChart from "../CategoryChart";
+import GroupSelector from "../GroupSelector";
+import PreferencesToggle from "../PreferencesToggle";
+import StatsCards from "../StatsCards";
+import ReportDownload from "../ReportDownload";
+import TransactionsList from "../TransactionsList";
+import LoadMore from "../LoadMore";
+import DuesTable from "../DuesTable";
+import TransactionForm from "../TransactionForm";
 import type {
   TransactionsListResponse,
   MonthlyResponse,
@@ -74,6 +76,9 @@ const OverviewTab: React.FC = () => {
   );
   const [monthly, setMonthly] = useState<
     Array<{ month: string; income: number; expense: number }>
+  >([]);
+  const [byCategory, setByCategory] = useState<
+    Array<{ category: string; income: number; expense: number; total: number }>
   >([]);
   const [prefs, setPrefs] = useState<{
     receive_dues_reminders: boolean;
@@ -146,6 +151,16 @@ const OverviewTab: React.FC = () => {
           expense: Number(r.expense),
         }));
         setMonthly(m);
+        try {
+          const catRes = await apiFetchByCategory(groupId, { from: reportRange.from, to: reportRange.to });
+          const c = (catRes as Array<any>).map((r) => ({
+            category: r.category,
+            income: Number(r.income),
+            expense: Number(r.expense),
+            total: Number(r.total),
+          }));
+          setByCategory(c);
+        } catch {}
         try {
           const prefRes = await apiFetchPreferences();
           setPrefs({
@@ -292,6 +307,23 @@ const OverviewTab: React.FC = () => {
           <p style={{ color: "#999" }}>데이터가 없습니다.</p>
         ) : (
           <MonthlyBars data={monthly} />
+        )}
+      </div>
+
+      <div
+        style={{
+          background: "white",
+          padding: 24,
+          borderRadius: 12,
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+          marginBottom: 20,
+        }}
+      >
+        <h2 style={{ marginBottom: 16, color: "#333" }}>항목별 집계</h2>
+        {byCategory.length === 0 ? (
+          <p style={{ color: "#999" }}>데이터가 없습니다.</p>
+        ) : (
+          <CategoryChart data={byCategory} />
         )}
       </div>
 

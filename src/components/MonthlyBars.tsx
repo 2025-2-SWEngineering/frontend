@@ -1,4 +1,14 @@
 import React from "react";
+import {
+  ResponsiveContainer,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Bar,
+} from "recharts";
 
 type Datum = { month: string; income: number; expense: number };
 
@@ -7,56 +17,19 @@ type Props = {
 };
 
 const MonthlyBars: React.FC<Props> = ({ data }) => {
-  const max = Math.max(1, ...data.map((d) => Math.max(d.income, d.expense)));
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "100px 1fr",
-        rowGap: 10,
-        columnGap: 12,
-      }}
-    >
-      {data.map((d) => (
-        <React.Fragment key={d.month}>
-          <div style={{ color: "#666" }}>{d.month}</div>
-          <div>
-            <div
-              style={{
-                height: 10,
-                background: "#e5e7eb",
-                borderRadius: 6,
-                overflow: "hidden",
-                marginBottom: 6,
-              }}
-            >
-              <div
-                style={{
-                  width: `${(d.income / max) * 100}%`,
-                  background: "#16a34a",
-                  height: "100%",
-                }}
-              />
-            </div>
-            <div
-              style={{
-                height: 10,
-                background: "#e5e7eb",
-                borderRadius: 6,
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  width: `${(d.expense / max) * 100}%`,
-                  background: "#dc2626",
-                  height: "100%",
-                }}
-              />
-            </div>
-          </div>
-        </React.Fragment>
-      ))}
+    <div style={{ width: "100%", height: 260 }}>
+      <ResponsiveContainer>
+        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip formatter={(v: number) => new Intl.NumberFormat("ko-KR").format(Number(v)) + "원"} />
+          <Legend />
+          <Bar dataKey="income" name="수입" fill="#16a34a" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="expense" name="지출" fill="#dc2626" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 };

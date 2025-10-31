@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import DashboardHeader from "../components/DashboardHeader";
-import OverviewTab from "./dashboard/OverviewTab";
-import GroupTab from "./dashboard/GroupTab";
+import DashboardHeader from "../components/dashboard/DashboardHeader";
+import OverviewTab from "../components/dashboard/OverviewTab";
+import GroupTab from "../components/dashboard/GroupTab";
 import LogoutButton from "../components/LogoutButton";
 
 const DashboardContainer = styled.div`
