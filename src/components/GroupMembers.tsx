@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
-import { fetchGroupMembers } from "../api/client";
+import { fetchGroupMembers, kickMemberApi } from "../api/client";
 
 type Member = { user_id: number; user_name: string; role: "admin" | "member" };
 
@@ -52,6 +52,9 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
             <tr>
               <th style={{ textAlign: "left", padding: 8, color: "#666", borderBottom: "1px solid #eee" }}>이름</th>
               <th style={{ textAlign: "right", padding: 8, color: "#666", borderBottom: "1px solid #eee" }}>역할</th>
+              {isAdmin && (
+                <th style={{ textAlign: "right", padding: 8, color: "#666", borderBottom: "1px solid #eee", width: 100 }}>관리</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -73,6 +76,38 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                     <span style={{ color: "#333" }}>{m.role}</span>
                   )}
                 </td>
+                {isAdmin && (
+                  <td style={{ padding: 8, borderBottom: "1px solid #f6f6f6", textAlign: "right" }}>
+                    <button
+                      onClick={async () => {
+                        if (!groupId) return;
+                        const ok = confirm(`정말 ${m.user_name} 님을 추방하시겠습니까?`);
+                        if (!ok) return;
+                        try {
+                          setSaving(m.user_id);
+                          await kickMemberApi(groupId, m.user_id);
+                          await load();
+                        } catch (err: unknown) {
+                          const axiosLike = err as { response?: { data?: { message?: string } } };
+                          alert(axiosLike.response?.data?.message || "추방에 실패했습니다.");
+                        } finally {
+                          setSaving(null);
+                        }
+                      }}
+                      disabled={saving === m.user_id}
+                      style={{
+                        padding: "6px 10px",
+                        borderRadius: 8,
+                        border: "1px solid #ef4444",
+                        color: "#ef4444",
+                        background: "#fff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      추방
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

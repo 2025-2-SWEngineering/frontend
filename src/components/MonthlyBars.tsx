@@ -17,7 +17,8 @@ type Props = {
 };
 
 const MonthlyBars: React.FC<Props> = ({ data }) => {
-  const currency = (v: number) => new Intl.NumberFormat("ko-KR").format(Number(v)) + "원";
+  const currency = (v: number) =>
+    new Intl.NumberFormat("ko-KR").format(Number(v)) + "원";
   return (
     <div style={{ width: "100%", height: 300 }}>
       <ResponsiveContainer>
@@ -39,12 +40,20 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="month" tickMargin={8} />
-          <YAxis tickFormatter={(v) => new Intl.NumberFormat("ko-KR").format(Number(v))} />
+          <YAxis
+            tickFormatter={(v) =>
+              new Intl.NumberFormat("ko-KR").format(Number(v))
+            }
+          />
           <Tooltip
             formatter={(v: number) => currency(v)}
             contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
           />
-          <Legend verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: 8 }} />
+          <Legend
+            verticalAlign="bottom"
+            align="center"
+            wrapperStyle={{ paddingTop: 8 }}
+          />
           <Bar
             dataKey="income"
             name="수입"

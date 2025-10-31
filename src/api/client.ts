@@ -49,6 +49,10 @@ export async function leaveGroupApi(groupId: number) {
     await api.post(`/groups/${groupId}/leave`, {});
 }
 
+export async function kickMemberApi(groupId: number, userId: number) {
+    await api.delete(`/groups/${groupId}/members/${userId}`);
+}
+
 // Transactions
 export async function fetchTxStats(groupId: number) {
     const { data } = await api.get<TransactionsStatsResponse>("/transactions/stats", { params: { groupId } });

@@ -153,7 +153,10 @@ const OverviewTab: React.FC = () => {
         }));
         setMonthly(m);
         try {
-          const catRes = await apiFetchByCategory(groupId, { from: reportRange.from, to: reportRange.to });
+          const catRes = await apiFetchByCategory(groupId, {
+            from: reportRange.from,
+            to: reportRange.to,
+          });
           const c = (catRes as Array<any>).map((r) => ({
             category: r.category,
             income: Number(r.income),
@@ -231,18 +234,45 @@ const OverviewTab: React.FC = () => {
     setTxHasMore((listData.items || []).length === 20);
   }
 
+  async function refreshAll() {
+    if (!groupId) return;
+    await refreshTransactionsAndStats();
+    const [monthlyData, catRes] = await Promise.all([
+      apiFetchMonthly(groupId, 6),
+      apiFetchByCategory(groupId, {
+        from: reportRange.from,
+        to: reportRange.to,
+      }),
+    ]);
+    const m = ((monthlyData || []) as MonthlyResponse["data"]).map((r) => ({
+      month: r.month,
+      income: Number(r.income),
+      expense: Number(r.expense),
+    }));
+    setMonthly(m);
+    const c = (catRes as Array<any>).map((r) => ({
+      category: r.category,
+      income: Number(r.income),
+      expense: Number(r.expense),
+      total: Number(r.total),
+    }));
+    setByCategory(c);
+  }
+
   async function downloadReport(kind: "pdf" | "xlsx") {
     if (!groupId) return;
-    const path = kind === "pdf" ? "/reports/summary.pdf" : "/reports/summary.xlsx";
+    const path =
+      kind === "pdf" ? "/reports/summary.pdf" : "/reports/summary.xlsx";
     try {
       const { data } = await api.get(path, {
         params: { groupId, from: reportRange.from, to: reportRange.to },
         responseType: "blob",
       });
       const blob = new Blob([data], {
-        type: kind === "pdf"
-          ? "application/pdf"
-          : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        type:
+          kind === "pdf"
+            ? "application/pdf"
+            : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -350,7 +380,7 @@ const OverviewTab: React.FC = () => {
           groupId={groupId || 0}
           isAdmin={isAdminFor(groups, groupId)}
           currentUserId={currentUser?.id}
-          onAfterChange={refreshTransactionsAndStats}
+          onAfterChange={refreshAll}
         />
       </div>
 
@@ -405,10 +435,7 @@ const OverviewTab: React.FC = () => {
         />
       </div>
 
-      <TransactionForm
-        groupId={groupId || 0}
-        onSubmitted={refreshTransactionsAndStats}
-      />
+      <TransactionForm groupId={groupId || 0} onSubmitted={refreshAll} />
     </>
   );
 };
