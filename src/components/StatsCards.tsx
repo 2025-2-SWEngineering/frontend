@@ -26,7 +26,7 @@ const StatsCards: React.FC<Props> = ({
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
         gap: 24,
-        marginBottom: 40,
+        marginBottom: 20,
       }}
     >
       <div style={cardStyle}>

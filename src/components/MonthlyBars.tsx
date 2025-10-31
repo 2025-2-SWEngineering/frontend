@@ -6,8 +6,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   Bar,
+  Cell,
 } from "recharts";
 
 type Datum = { month: string; income: number; expense: number };
@@ -19,11 +19,48 @@ type Props = {
 const MonthlyBars: React.FC<Props> = ({ data }) => {
   const currency = (v: number) =>
     new Intl.NumberFormat("ko-KR").format(Number(v)) + "원";
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const p = payload[0]?.payload || {};
+      const isIncome = !!p.isIncomeDominant;
+      return (
+        <div
+          style={{
+            background: "#fff",
+            border: "1px solid #e5e7eb",
+            borderRadius: 8,
+            padding: 10,
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: 6 }}>{label}</div>
+          <div>수입: {currency(Number(p.income || 0))}</div>
+          <div>지출: {currency(Number(p.expense || 0))}</div>
+          <div
+            style={{ marginTop: 6, color: isIncome ? "#16a34a" : "#dc2626" }}
+          >
+            {isIncome ? "순수익" : "순지출"}: {currency(Number(p.net || 0))}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+  const mapped = React.useMemo(
+    () =>
+      (data || []).map((d) => {
+        const income = Number(d.income || 0);
+        const expense = Number(d.expense || 0);
+        const isIncomeDominant = income >= expense;
+        const net = Math.abs(income - expense);
+        return { month: d.month, net, isIncomeDominant, income, expense };
+      }),
+    [data]
+  );
   return (
     <div style={{ width: "100%", height: 300 }}>
       <ResponsiveContainer>
         <BarChart
-          data={data}
+          data={mapped}
           margin={{ top: 12, right: 24, left: 8, bottom: 12 }}
           barGap={6}
           barCategoryGap={20}
@@ -45,29 +82,24 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
               new Intl.NumberFormat("ko-KR").format(Number(v))
             }
           />
-          <Tooltip
-            formatter={(v: number) => currency(v)}
-            contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
-          />
-          <Legend
-            verticalAlign="bottom"
-            align="center"
-            wrapperStyle={{ paddingTop: 8 }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Bar
-            dataKey="income"
-            name="수입"
-            fill="url(#incomeGradient)"
+            dataKey="net"
+            name="순변동"
             radius={[6, 6, 0, 0]}
             maxBarSize={42}
-          />
-          <Bar
-            dataKey="expense"
-            name="지출"
-            fill="url(#expenseGradient)"
-            radius={[6, 6, 0, 0]}
-            maxBarSize={42}
-          />
+          >
+            {mapped.map((d, idx) => (
+              <Cell
+                key={`${d.month}-${idx}`}
+                fill={
+                  d.isIncomeDominant
+                    ? "url(#incomeGradient)"
+                    : "url(#expenseGradient)"
+                }
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

@@ -8,6 +8,7 @@ type Props = {
   groupId: number | null;
   onChange: (groupId: number) => void;
   isAdmin: boolean;
+  compact?: boolean;
 };
 
 const GroupSelector: React.FC<Props> = ({
@@ -15,14 +16,15 @@ const GroupSelector: React.FC<Props> = ({
   groupId,
   onChange,
   isAdmin,
+  compact,
 }) => {
   return (
-    <div style={{ marginTop: 12 }}>
+    <div style={{ marginTop: compact ? 0 : 12, display: "inline-flex", alignItems: "center" }}>
       <label style={{ marginRight: 8, color: "#666" }}>그룹</label>
       <select
         value={groupId ?? ""}
         onChange={(e) => onChange(Number(e.target.value))}
-        style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+        style={{ padding: 10, borderRadius: 8, border: "1px solid #ddd" }}
       >
         {groups.map((g) => (
           <option key={g.id} value={g.id}>

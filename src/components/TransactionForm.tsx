@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import api from "../services/api";
+import { getGroupCategories } from "../utils/category";
 import {
   getUploadMode,
   presignPut,
   uploadDirect,
   createTransactionApi,
 } from "../api/client";
+import DateTimeModal from "./DateTimeModal";
 
 type Props = {
   groupId: number;
@@ -24,9 +26,12 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     type: "income",
     amount: "",
     description: "",
-    date: new Date().toISOString().slice(0, 10),
+    date: new Date().toISOString(),
   });
   const [storageMode, setStorageMode] = useState<"s3" | "local" | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showDtModal, setShowDtModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -46,6 +51,15 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!groupId) return;
+    try {
+      setSuggestions(getGroupCategories(groupId));
+    } catch {
+      setSuggestions([]);
+    }
+  }, [groupId]);
 
   async function fetchModeFresh(): Promise<"s3" | "local"> {
     const mode = await getUploadMode();
@@ -141,6 +155,14 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       alert("설명은 필수입니다.");
       return;
     }
+    if (!form.category || !form.category.trim()) {
+      alert("카테고리를 선택하세요.");
+      return;
+    }
+    if (form.type === "expense" && !form.file) {
+      alert("지출 등록 시 영수증 파일 첨부가 필수입니다.");
+      return;
+    }
     try {
       let receiptUrl: string | undefined;
       if (form.file) {
@@ -156,7 +178,14 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         receiptUrl,
       });
       await onSubmitted();
-      setForm((prev) => ({ ...prev, amount: "", description: "", file: null }));
+      setForm((prev) => ({
+        ...prev,
+        amount: "",
+        description: "",
+        file: null,
+        date: new Date().toISOString(),
+      }));
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err: unknown) {
       const axiosLike = err as {
         response?: { data?: { message?: string; details?: string[] } };
@@ -188,7 +217,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "120px 1fr 2fr 1fr",
+            gridTemplateColumns: "120px 1fr 2fr 1.5fr",
             gap: 12,
             marginBottom: 12,
           }}
@@ -217,12 +246,46 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
-          <input
-            type="date"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
-          />
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              type="text"
+              readOnly
+              value={(function fmt(v: string) {
+                try {
+                  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return `${v} 00:00`;
+                  const d = new Date(v);
+                  const y = d.getFullYear();
+                  const m = String(d.getMonth() + 1).padStart(2, "0");
+                  const day = String(d.getDate()).padStart(2, "0");
+                  const hh = String(d.getHours()).padStart(2, "0");
+                  const mm = String(d.getMinutes()).padStart(2, "0");
+                  return `${y}-${m}-${day} ${hh}:${mm}`;
+                } catch {
+                  return v;
+                }
+              })(form.date)}
+              style={{
+                padding: 10,
+                border: "1px solid #ddd",
+                borderRadius: 8,
+                flex: 1,
+                background: "#f9fafb",
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowDtModal(true)}
+              style={{
+                padding: 10,
+                borderRadius: 8,
+                border: "1px solid #ddd",
+                background: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              시간 설정
+            </button>
+          </div>
         </div>
 
         {/* 2행: 카테고리, 파일첨부, 등록 버튼 */}
@@ -233,16 +296,23 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             gap: 12,
           }}
         >
-          <input
-            type="text"
-            placeholder="항목(카테고리)"
+          <select
             value={form.category || ""}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
             style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
-          />
+          >
+            <option value="">카테고리 선택</option>
+            {suggestions.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+            <option value="기타">기타</option>
+          </select>
           <input
             type="file"
             accept="image/*,application/pdf"
+            ref={fileInputRef}
             onChange={(e) =>
               setForm({ ...form, file: e.target.files?.[0] || null })
             }
@@ -264,6 +334,12 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
           </button>
         </div>
       </form>
+      <DateTimeModal
+        visible={showDtModal}
+        initialIso={form.date}
+        onClose={() => setShowDtModal(false)}
+        onSave={(iso) => setForm({ ...form, date: iso })}
+      />
     </div>
   );
 };

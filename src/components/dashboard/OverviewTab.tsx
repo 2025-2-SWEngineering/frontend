@@ -12,6 +12,8 @@ import {
 } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
 import InviteAcceptor from "../InviteAcceptor";
+import InviteCodeGenerator from "../InviteCodeGenerator";
+import CategorySettingsModal from "../CategorySettingsModal";
 import MonthlyBars from "../MonthlyBars";
 import CategoryChart from "../CategoryChart";
 import GroupSelector from "../GroupSelector";
@@ -28,6 +30,7 @@ import type {
   DuesListResponse,
 } from "../../types/api";
 import api from "../../services/api";
+import { toYmd } from "../../utils/format";
 
 type GroupWithRole = {
   id: number;
@@ -52,6 +55,7 @@ const OverviewTab: React.FC = () => {
       description: string;
       date: string;
       receiptUrl?: string;
+      category?: string;
       createdBy?: number;
     }>
   >([]);
@@ -81,9 +85,19 @@ const OverviewTab: React.FC = () => {
   const [byCategory, setByCategory] = useState<
     Array<{ category: string; income: number; expense: number; total: number }>
   >([]);
+  const [categoryRange, setCategoryRange] = useState<{
+    from: string;
+    to: string;
+  }>(() => {
+    const today = new Date();
+    const fromDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
+    return { from: toYmd(fromDate), to: toYmd(today) };
+  });
+
   const [prefs, setPrefs] = useState<{
     receive_dues_reminders: boolean;
   } | null>(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const currentUser = useMemo(() => {
     try {
       const raw = localStorage.getItem("user");
@@ -141,6 +155,9 @@ const OverviewTab: React.FC = () => {
           description: r.description,
           date: r.date,
           receiptUrl: r.receipt_url || undefined,
+          category:
+            ((r as any).category && String((r as any).category).trim()) ||
+            "기타",
           createdBy: r.created_by,
         }));
         setItems(mappedTx);
@@ -152,19 +169,7 @@ const OverviewTab: React.FC = () => {
           expense: Number(r.expense),
         }));
         setMonthly(m);
-        try {
-          const catRes = await apiFetchByCategory(groupId, {
-            from: reportRange.from,
-            to: reportRange.to,
-          });
-          const c = (catRes as Array<any>).map((r) => ({
-            category: r.category,
-            income: Number(r.income),
-            expense: Number(r.expense),
-            total: Number(r.total),
-          }));
-          setByCategory(c);
-        } catch {}
+        // byCategory는 별도 effect에서 categoryMonths 기준으로 로딩
         try {
           const prefRes = await apiFetchPreferences();
           setPrefs({
@@ -188,6 +193,30 @@ const OverviewTab: React.FC = () => {
       }
     })();
   }, [groupId]);
+
+  // 항목별 집계: 시작/종료일 범위 기반 로딩
+  useEffect(() => {
+    if (!groupId) return;
+    if (!categoryRange.from || !categoryRange.to) return;
+    if (categoryRange.from > categoryRange.to) return;
+    (async () => {
+      try {
+        const catRes = await apiFetchByCategory(groupId, {
+          from: categoryRange.from,
+          to: categoryRange.to,
+        });
+        const c = (catRes as Array<any>).map((r) => ({
+          category: r.category,
+          income: Number(r.income),
+          expense: Number(r.expense),
+          total: Number(r.total),
+        }));
+        setByCategory(c);
+      } catch {
+        // ignore
+      }
+    })();
+  }, [groupId, categoryRange.from, categoryRange.to]);
 
   async function toggleDues(userId: number, next: boolean) {
     if (!groupId) return;
@@ -227,6 +256,8 @@ const OverviewTab: React.FC = () => {
       description: r.description,
       date: r.date,
       receiptUrl: r.receipt_url || undefined,
+      category:
+        ((r as any).category && String((r as any).category).trim()) || "기타",
       createdBy: r.created_by,
     }));
     setItems(mappedTx);
@@ -240,8 +271,8 @@ const OverviewTab: React.FC = () => {
     const [monthlyData, catRes] = await Promise.all([
       apiFetchMonthly(groupId, 6),
       apiFetchByCategory(groupId, {
-        from: reportRange.from,
-        to: reportRange.to,
+        from: categoryRange.from,
+        to: categoryRange.to,
       }),
     ]);
     const m = ((monthlyData || []) as MonthlyResponse["data"]).map((r) => ({
@@ -287,37 +318,76 @@ const OverviewTab: React.FC = () => {
 
   return (
     <>
-      <GroupSelector
-        groups={groups}
-        groupId={groupId}
-        onChange={(gid) => setGroupId(gid)}
-        isAdmin={isAdminFor(groups, groupId)}
-      />
-
-      <div style={{ marginTop: 8 }}>
-        <InviteAcceptor
-          onAccepted={(gid) => {
-            setGroupId(gid);
-            (async () => {
-              const list = await fetchGroups();
-              setGroups(list || []);
-            })();
-          }}
-        />
-      </div>
-
-      <PreferencesToggle
-        checked={!!prefs?.receive_dues_reminders}
-        onToggle={async (next) => {
-          setPrefs({ receive_dues_reminders: next });
-          try {
-            await apiUpdatePreferences({ receive_dues_reminders: next });
-          } catch {
-            setPrefs({ receive_dues_reminders: !next });
-            alert("알림 설정 변경에 실패했습니다.");
-          }
+      <div
+        style={{
+          background: "white",
+          padding: 16,
+          borderRadius: 12,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          marginBottom: 20,
         }}
-      />
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <GroupSelector
+            groups={groups}
+            groupId={groupId}
+            onChange={(gid) => setGroupId(gid)}
+            isAdmin={isAdminFor(groups, groupId)}
+            compact
+          />
+          <InviteAcceptor
+            onAccepted={(gid) => {
+              setGroupId(gid);
+              (async () => {
+                const list = await fetchGroups();
+                setGroups(list || []);
+              })();
+            }}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <PreferencesToggle
+            checked={!!prefs?.receive_dues_reminders}
+            onToggle={async (next) => {
+              setPrefs({ receive_dues_reminders: next });
+              try {
+                await apiUpdatePreferences({ receive_dues_reminders: next });
+              } catch {
+                setPrefs({ receive_dues_reminders: !next });
+                alert("알림 설정 변경에 실패했습니다.");
+              }
+            }}
+            compact
+          />
+          {groupId && isAdminFor(groups, groupId) && (
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              style={{
+                padding: "8px 12px",
+                background: "#4f46e5",
+                color: "#fff",
+                border: "none",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              카테고리 설정
+            </button>
+          )}
+        </div>
+      </div>
 
       <StatsCards
         loading={loading}
@@ -352,7 +422,44 @@ const OverviewTab: React.FC = () => {
           marginBottom: 20,
         }}
       >
-        <h2 style={{ marginBottom: 16, color: "#333" }}>항목별 집계</h2>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 16,
+          }}
+        >
+          <h2 style={{ margin: 0, color: "#333" }}>항목별 집계</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* <label style={{ color: "#555" }}>기간</label> */}
+            <input
+              type="date"
+              value={categoryRange.from}
+              onChange={(e) =>
+                setCategoryRange((prev) => ({ ...prev, from: e.target.value }))
+              }
+              style={{
+                padding: "6px 10px",
+                borderRadius: 6,
+                border: "1px solid #ddd",
+              }}
+            />
+            <span style={{ color: "#777" }}>~</span>
+            <input
+              type="date"
+              value={categoryRange.to}
+              onChange={(e) =>
+                setCategoryRange((prev) => ({ ...prev, to: e.target.value }))
+              }
+              style={{
+                padding: "6px 10px",
+                borderRadius: 6,
+                border: "1px solid #ddd",
+              }}
+            />
+          </div>
+        </div>
         {byCategory.length === 0 ? (
           <p style={{ color: "#999" }}>데이터가 없습니다.</p>
         ) : (
@@ -402,6 +509,9 @@ const OverviewTab: React.FC = () => {
               description: r.description,
               date: r.date,
               receiptUrl: r.receipt_url || undefined,
+              category:
+                ((r as any).category && String((r as any).category).trim()) ||
+                "기타",
               createdBy: r.created_by,
             }));
             setItems((prev) => [...prev, ...mapped]);
@@ -436,6 +546,14 @@ const OverviewTab: React.FC = () => {
       </div>
 
       <TransactionForm groupId={groupId || 0} onSubmitted={refreshAll} />
+
+      {groupId && (
+        <CategorySettingsModal
+          groupId={groupId}
+          visible={showCategoryModal}
+          onClose={() => setShowCategoryModal(false)}
+        />
+      )}
     </>
   );
 };

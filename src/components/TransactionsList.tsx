@@ -9,6 +9,7 @@ type Item = {
   description: string;
   date: string;
   receiptUrl?: string;
+  category?: string;
   createdBy?: number;
 };
 
@@ -48,13 +49,23 @@ const TransactionsList: React.FC<Props> = ({
   const handleDelete = async (id: number) => {
     if (!groupId) return;
     if (!confirm("이 거래를 삭제할까요?")) return;
-        try {
-          await removeTransaction(id, groupId);
+    try {
+      await removeTransaction(id, groupId);
       await onAfterChange();
     } catch (err: unknown) {
       const axiosLike = err as { response?: { data?: { message?: string } } };
       alert(axiosLike.response?.data?.message || "삭제에 실패했습니다.");
     }
+  };
+
+  const fmtYmdHm = (s: string) => {
+    const d = new Date(s);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    return `${y}-${m}-${day} ${hh}:${mm}`;
   };
 
   if (items.length === 0) {
@@ -83,11 +94,35 @@ const TransactionsList: React.FC<Props> = ({
             {it.type === "income" ? "+ " : "- "}
             {new Intl.NumberFormat("ko-KR").format(it.amount)}원
           </span>
-          <span style={{ color: "#333", flex: 1, marginLeft: 12 }}>
-            {it.description}
+          <span
+            style={{
+              color: "#333",
+              flex: 1,
+              marginLeft: 12,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span
+              style={{
+                background: "#f3f4f6",
+                border: "1px solid #e5e7eb",
+                color: "#4b5563",
+                borderRadius: 999,
+                padding: "2px 8px",
+                fontSize: 13,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {(it.category && it.category.trim()) || "기타"}
+            </span>
+            <span>{it.description}</span>
           </span>
-          <span style={{ color: "#999", minWidth: 100, textAlign: "right" }}>
-            {it.date}
+          <span style={{ color: "#999", minWidth: 120, textAlign: "right" }}>
+            {/^[\d]{4}-\d{2}-\d{2}$/.test(it.date)
+              ? `${it.date} 00:00`
+              : fmtYmdHm(it.date)}
           </span>
           {it.receiptUrl && (
             <button

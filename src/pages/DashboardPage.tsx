@@ -40,8 +40,16 @@ const DashboardPage: React.FC = () => {
 
   return (
     <DashboardContainer>
-      <LogoutButton />
-      <DashboardHeader />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+        <DashboardHeader />
+        <LogoutButton />
+      </div>
 
       <Tabs>
         <Tab

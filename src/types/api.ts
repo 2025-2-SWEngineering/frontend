@@ -23,6 +23,7 @@ export type TransactionsListItemDTO = {
     description: string;
     date: string;
     receipt_url?: string;
+    category?: string | null;
     created_by: number;
 };
 export type TransactionsListResponse = ApiListResponse<TransactionsListItemDTO>;
