@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { fetchGroups, createNewGroup } from "../api/client";
 import InviteAcceptor from "../components/InviteAcceptor";
+import LogoutButton from "../components/LogoutButton";
 
 const Container = styled.div`
   max-width: 720px;
@@ -58,6 +59,7 @@ const GroupSelectPage: React.FC = () => {
 
   return (
     <Container>
+      <LogoutButton />
       <h1 style={{ color: "#333", marginBottom: 12 }}>그룹 선택</h1>
       <p style={{ color: "#666", marginBottom: 20 }}>
         들어갈 그룹을 선택하거나 새 그룹을 생성하세요.

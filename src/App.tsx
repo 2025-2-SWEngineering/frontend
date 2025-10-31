@@ -23,7 +23,16 @@ const App: React.FC = () => {
     <AppContainer>
       <Router>
         <Routes>
-          <Route path="/" element={<LoginPage />} />
+          <Route
+            path="/"
+            element={
+              localStorage.getItem("token") ? (
+                <Navigate to="/groups" replace />
+              ) : (
+                <LoginPage />
+              )
+            }
+          />
           <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/groups"

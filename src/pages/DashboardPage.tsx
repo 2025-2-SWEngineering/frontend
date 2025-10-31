@@ -3,6 +3,7 @@ import styled from "styled-components";
 import DashboardHeader from "../components/DashboardHeader";
 import OverviewTab from "./dashboard/OverviewTab";
 import GroupTab from "./dashboard/GroupTab";
+import LogoutButton from "../components/LogoutButton";
 
 const DashboardContainer = styled.div`
   max-width: 1200px;
@@ -15,14 +16,8 @@ const DashboardPage: React.FC = () => {
 
   return (
     <DashboardContainer>
-      <DashboardHeader
-        onLogout={() => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("refreshToken");
-          localStorage.removeItem("user");
-          window.location.href = "/";
-        }}
-      />
+      <LogoutButton />
+      <DashboardHeader />
 
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <button
