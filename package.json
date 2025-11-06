@@ -4,20 +4,20 @@
   "description": "우리회계 프론트엔드 - 소규모 조직 대상 회계관리 어플리케이션",
   "private": true,
   "dependencies": {
+    "axios": "^1.13.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.5",
-    "styled-components": "^6.1.19",
-    "axios": "^1.13.1",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "styled-components": "^6.1.19"
   },
   "devDependencies": {
+    "@types/node": "^24.9.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "@types/node": "^24.9.2",
     "@types/styled-components": "^5.1.35",
-    "typescript": "^5.9.3",
     "@vitejs/plugin-react": "^5.1.0",
+    "typescript": "^5.9.3",
     "vite": "^7.1.12"
   },
   "scripts": {

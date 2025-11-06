@@ -13,6 +13,7 @@ import type {
     InvitationAcceptResponse,
     InvitationCreateResponse,
     CategoryAggResponse,
+    OcrParseResponse,
 } from "../types/api";
 
 // Groups
@@ -133,4 +134,12 @@ export async function uploadDirect(fd: FormData) {
         headers: { "Content-Type": "multipart/form-data" },
     });
     return data;
+}
+
+// OCR
+export async function parseReceipt(fd: FormData) {
+    const { data } = await api.post<OcrParseResponse>("/ocr/parse", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data.result;
 }

@@ -59,3 +59,15 @@ export type DirectUploadResponse = { url?: string; key?: string; contentType?: s
 // 초대
 export type InvitationAcceptResponse = { message: string; groupId: number };
 export type InvitationCreateResponse = { invitation: { code: string } };
+
+// OCR
+export type OcrParseResponse = {
+    result: {
+        amount?: number;
+        date?: string;
+        merchant?: string;
+        description?: string;
+        categorySuggestion?: string;
+        currency?: string;
+    };
+};

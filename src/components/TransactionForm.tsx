@@ -6,6 +6,7 @@ import {
   presignPut,
   uploadDirect,
   createTransactionApi,
+  parseReceipt,
 } from "../api/client";
 import DateTimeModal from "./DateTimeModal";
 
@@ -31,7 +32,9 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
   const [storageMode, setStorageMode] = useState<"s3" | "local" | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDtModal, setShowDtModal] = useState(false);
+  const [ocrLoading, setOcrLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 
   useEffect(() => {
     (async () => {
@@ -163,6 +166,10 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       alert("지출 등록 시 영수증 파일 첨부가 필수입니다.");
       return;
     }
+    if (form.file && form.file.size > MAX_FILE_SIZE) {
+      alert("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
+      return;
+    }
     try {
       let receiptUrl: string | undefined;
       if (form.file) {
@@ -201,6 +208,61 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     }
   }
 
+  async function handleOcr() {
+    try {
+      if (!form.file) {
+        alert("먼저 영수증 이미지를 선택하세요.");
+        return;
+      }
+      if (form.file.size > MAX_FILE_SIZE) {
+        alert("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
+        return;
+      }
+      const ext = (form.file.name.split(".").pop() || "").toLowerCase();
+      const mime =
+        form.file.type ||
+        (ext === "png"
+          ? "image/png"
+          : ext === "jpg" || ext === "jpeg"
+          ? "image/jpeg"
+          : ext === "pdf"
+          ? "application/pdf"
+          : "");
+      if (
+        !/^image\//i.test(mime) &&
+        !/^application\/(pdf|x-pdf|acrobat)$/i.test(mime)
+      ) {
+        alert("OCR은 이미지 또는 PDF만 지원합니다.");
+        return;
+      }
+      setOcrLoading(true);
+      const fd = new FormData();
+      fd.append("file", form.file);
+      const result = await parseReceipt(fd);
+      const next: typeof form = { ...form };
+      if (typeof result.amount === "number" && isFinite(result.amount)) {
+        next.amount = String(result.amount);
+        if (Number(next.amount) > 0 && form.type !== "expense") {
+          next.type = "expense"; // 영수증은 보통 지출
+        }
+      }
+      if (result.description && !form.description)
+        next.description = result.description;
+      if (result.merchant && !form.description)
+        next.description = result.merchant;
+      if (result.date) next.date = result.date;
+      if (result.categorySuggestion) next.category = result.categorySuggestion;
+      setForm(next);
+    } catch (e: unknown) {
+      const axiosLike = e as { response?: { data?: { message?: string } } };
+      const msg =
+        axiosLike?.response?.data?.message || "OCR 분석에 실패했습니다.";
+      alert(msg);
+    } finally {
+      setOcrLoading(false);
+    }
+  }
+
   return (
     <div
       style={{
@@ -211,7 +273,36 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         marginTop: 20,
       }}
     >
-      <h2 style={{ marginBottom: 16, color: "#333" }}>거래 등록</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingBottom: 16,
+        }}
+      >
+        {" "}
+        <h2 style={{ marginBottom: 16, color: "#333" }}>거래 등록</h2>
+        {form.file ? (
+          <button
+            type="button"
+            onClick={handleOcr}
+            disabled={ocrLoading}
+            style={{
+              padding: 10,
+              borderRadius: 8,
+              borderColor: ocrLoading ? "#ddd" : "#667eea",
+              border: "1px solid #ddd",
+              background: "#fff",
+              cursor: ocrLoading ? "default" : "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {ocrLoading ? "분석중..." : "영수증 AI 분석"}
+          </button>
+        ) : null}
+      </div>
+
       <form onSubmit={submit}>
         {/* 1행: 수입/지출, 금액, 설명, 날짜 */}
         <div
@@ -292,7 +383,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "2fr 2fr 140px",
+            gridTemplateColumns: "2fr 2fr 240px",
             gap: 12,
           }}
         >
@@ -309,15 +400,29 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             ))}
             <option value="기타">기타</option>
           </select>
-          <input
-            type="file"
-            accept="image/*,application/pdf"
-            ref={fileInputRef}
-            onChange={(e) =>
-              setForm({ ...form, file: e.target.files?.[0] || null })
-            }
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
-          />
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              type="file"
+              accept="image/*,application/pdf"
+              ref={fileInputRef}
+              onChange={(e) => {
+                const f = e.target.files?.[0] || null;
+                if (f && f.size > MAX_FILE_SIZE) {
+                  alert("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
+                  e.target.value = "";
+                  setForm({ ...form, file: null });
+                  return;
+                }
+                setForm({ ...form, file: f });
+              }}
+              style={{
+                padding: 10,
+                border: "1px solid #ddd",
+                borderRadius: 8,
+                flex: 1,
+              }}
+            />
+          </div>
           <button
             type="submit"
             style={{
