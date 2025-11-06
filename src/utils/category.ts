@@ -14,5 +14,11 @@ export function getGroupCategories(groupId: number): string[] {
 export function setGroupCategories(groupId: number, categories: string[]): void {
   const uniq = Array.from(new Set(categories.map((c) => c.trim()).filter(Boolean)));
   localStorage.setItem(`group_categories_${groupId}`, JSON.stringify(uniq));
+  try {
+    const event = new CustomEvent("group-categories-updated", { detail: { groupId } });
+    window.dispatchEvent(event);
+  } catch {
+    // ignore
+  }
 }
 

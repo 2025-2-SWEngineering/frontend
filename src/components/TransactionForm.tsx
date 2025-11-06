@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import api from "../services/api";
-import { getGroupCategories } from "../utils/category";
+import { getGroupCategories, setGroupCategories } from "../utils/category";
 import {
   getUploadMode,
   presignPut,
@@ -62,6 +62,26 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     } catch {
       setSuggestions([]);
     }
+  }, [groupId]);
+
+  // 카테고리 설정 저장 시 실시간 반영
+  useEffect(() => {
+    const onUpdated = () => {
+      try {
+        setSuggestions(getGroupCategories(groupId));
+      } catch {
+        setSuggestions([]);
+      }
+    };
+    window.addEventListener(
+      "group-categories-updated",
+      onUpdated as EventListener
+    );
+    return () =>
+      window.removeEventListener(
+        "group-categories-updated",
+        onUpdated as EventListener
+      );
   }, [groupId]);
 
   async function fetchModeFresh(): Promise<"s3" | "local"> {
@@ -251,7 +271,15 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       if (result.merchant && !form.description)
         next.description = result.merchant;
       if (result.date) next.date = result.date;
-      if (result.categorySuggestion) next.category = result.categorySuggestion;
+      if (result.categorySuggestion) {
+        next.category = result.categorySuggestion;
+        const suggested = String(result.categorySuggestion).trim();
+        if (suggested && !suggestions.includes(suggested)) {
+          alert(
+            `OCR AI에서는 해당 카테고리를 "${suggested}"로 추천합니다. 카테고리를 신설하거나 기타로 설정해주세요`
+          );
+        }
+      }
       setForm(next);
     } catch (e: unknown) {
       const axiosLike = e as { response?: { data?: { message?: string } } };
