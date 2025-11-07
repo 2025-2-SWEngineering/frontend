@@ -12,31 +12,31 @@ import { fetchGroups, createNewGroup } from "../api/client";
 import InviteAcceptor from "../components/InviteAcceptor";
 import LogoutButton from "../components/LogoutButton";
 import LoadingOverlay from "../components/LoadingOverlay";
+import { useAsync } from "../hooks/useAsync";
+import { notifyError } from "../utils/notify";
 
 // 컨테이너는 프리미티브 PageContainer 사용
 
 const GroupSelectPage: React.FC = () => {
   const [groups, setGroups] = useState<Array<{ id: number; name: string }>>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingGroups, setLoadingGroups] = useState(true);
+  const {
+    data: groupsData,
+    loading: loadingGroups,
+    run: runGroups,
+  } = useAsync(
+    async () => {
+      const list = await fetchGroups();
+      return list || [];
+    },
+    [],
+    { immediate: true }
+  );
   const [name, setName] = useState("");
 
-  async function loadGroups() {
-    try {
-      setLoadingGroups(true);
-      const list = await fetchGroups();
-      setGroups(list || []);
-    } catch {
-      // ignore
-    } finally {
-      setLoadingGroups(false);
-    }
-  }
-
   useEffect(() => {
-    loadGroups();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setGroups((groupsData as any) || []);
+  }, [groupsData]);
 
   const enterGroup = (gid: number) => {
     localStorage.setItem("selectedGroupId", String(gid));
@@ -54,6 +54,8 @@ const GroupSelectPage: React.FC = () => {
         localStorage.setItem("selectedGroupId", String(groupId));
         window.location.href = "/dashboard";
       }
+    } catch (e) {
+      notifyError("그룹 생성에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -157,7 +159,7 @@ const GroupSelectPage: React.FC = () => {
         <SectionTitle>초대 코드로 참여</SectionTitle>
         <InviteAcceptor
           onAccepted={async (gid) => {
-            await loadGroups();
+            await runGroups();
             enterGroup(gid);
           }}
         />

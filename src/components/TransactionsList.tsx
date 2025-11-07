@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import api from "../services/api";
 import { removeTransaction } from "../api/client";
 import { Button, Badge, AmountText } from "../styles/primitives";
 import { formatDisplayDateTime, formatCurrencyKRW } from "../utils/format";
+import { notifyError } from "../utils/notify";
 
 type Item = {
   id: number;
@@ -57,7 +57,7 @@ const TransactionsList: React.FC<Props> = ({
       await onAfterChange();
     } catch (err: unknown) {
       const axiosLike = err as { response?: { data?: { message?: string } } };
-      alert(axiosLike.response?.data?.message || "삭제에 실패했습니다.");
+      notifyError(axiosLike.response?.data?.message || "삭제에 실패했습니다.");
     }
   };
 
@@ -121,10 +121,10 @@ const Row = styled.li`
   display: flex;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e5e7eb;
   transition: background 0.15s ease;
   &:hover {
-    background: #fafafa;
+    background: #f3f4f6;
   }
 `;
 

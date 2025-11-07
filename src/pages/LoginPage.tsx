@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import api from "../services/api";
 import { Input, Button } from "../styles/primitives";
+import { notifyError } from "../utils/notify";
 
 const LoginContainer = styled.div`
   display: flex;
@@ -50,7 +51,7 @@ const LoginPage: React.FC = () => {
       window.location.href = "/groups";
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "로그인에 실패했습니다.";
-      alert(msg);
+      notifyError(msg);
     } finally {
       setLoading(false);
     }

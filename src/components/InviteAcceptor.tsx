@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { acceptInvitation } from "../api/client";
 import { Input, Button } from "../styles/primitives";
+import { notifyError, notifySuccess } from "../utils/notify";
 
 type Props = {
   onAccepted: (groupId: number) => void;
@@ -18,10 +19,10 @@ const InviteAcceptor: React.FC<Props> = ({ onAccepted }) => {
       const data = await acceptInvitation(code);
       onAccepted(data.groupId);
       setCode("");
-      alert("그룹에 가입되었습니다.");
+      notifySuccess("그룹에 가입되었습니다.");
     } catch (err: unknown) {
       const axiosLike = err as { response?: { data?: { message?: string } } };
-      alert(axiosLike.response?.data?.message || "가입에 실패했습니다.");
+      notifyError(axiosLike.response?.data?.message || "가입에 실패했습니다.");
     } finally {
       setLoading(false);
     }

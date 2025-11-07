@@ -34,6 +34,8 @@ import type {
 } from "../../types/api";
 import api from "../../services/api";
 import { toYmd, formatCurrencyKRW } from "../../utils/format";
+import { useAsync } from "../../hooks/useAsync";
+import { notifyError } from "../../utils/notify";
 
 type GroupWithRole = {
   id: number;
@@ -88,7 +90,6 @@ const OverviewTab: React.FC = () => {
   const [byCategory, setByCategory] = useState<
     Array<{ category: string; income: number; expense: number; total: number }>
   >([]);
-  const [categoryLoading, setCategoryLoading] = useState(false);
   const [categoryRange, setCategoryRange] = useState<{
     from: string;
     to: string;
@@ -203,32 +204,27 @@ const OverviewTab: React.FC = () => {
     })();
   }, [groupId]);
 
-  // 항목별 집계: 시작/종료일 범위 기반 로딩
-  useEffect(() => {
-    if (!groupId) return;
-    if (!categoryRange.from || !categoryRange.to) return;
-    if (categoryRange.from > categoryRange.to) return;
-    (async () => {
-      try {
-        setCategoryLoading(true);
-        const catRes = await apiFetchByCategory(groupId, {
-          from: categoryRange.from,
-          to: categoryRange.to,
-        });
-        const c = (catRes as Array<any>).map((r) => ({
-          category: r.category,
-          income: Number(r.income),
-          expense: Number(r.expense),
-          total: Number(r.total),
-        }));
-        setByCategory(c);
-      } catch {
-        // ignore
-      } finally {
-        setCategoryLoading(false);
-      }
-    })();
-  }, [groupId, categoryRange.from, categoryRange.to]);
+  const { loading: categoryLoading } = useAsync(
+    async () => {
+      if (!groupId) return [] as Array<any>;
+      if (!categoryRange.from || !categoryRange.to) return [] as Array<any>;
+      if (categoryRange.from > categoryRange.to) return [] as Array<any>;
+      const catRes = await apiFetchByCategory(groupId, {
+        from: categoryRange.from,
+        to: categoryRange.to,
+      });
+      const c = (catRes as Array<any>).map((r) => ({
+        category: r.category,
+        income: Number(r.income),
+        expense: Number(r.expense),
+        total: Number(r.total),
+      }));
+      setByCategory(c);
+      return c;
+    },
+    [groupId, categoryRange.from, categoryRange.to],
+    { immediate: true }
+  );
 
   async function toggleDues(userId: number, next: boolean) {
     if (!groupId) return;
@@ -246,7 +242,7 @@ const OverviewTab: React.FC = () => {
       setDues(mapped);
     } catch (err: unknown) {
       const axiosLike = err as { response?: { data?: { message?: string } } };
-      alert(
+      notifyError(
         axiosLike.response?.data?.message || "회비 상태 변경에 실패했습니다."
       );
     }
@@ -280,26 +276,13 @@ const OverviewTab: React.FC = () => {
   async function refreshAll() {
     if (!groupId) return;
     await refreshTransactionsAndStats();
-    const [monthlyData, catRes] = await Promise.all([
-      apiFetchMonthly(groupId, 6),
-      apiFetchByCategory(groupId, {
-        from: categoryRange.from,
-        to: categoryRange.to,
-      }),
-    ]);
+    const [monthlyData] = await Promise.all([apiFetchMonthly(groupId, 6)]);
     const m = ((monthlyData || []) as MonthlyResponse["data"]).map((r) => ({
       month: r.month,
       income: Number(r.income),
       expense: Number(r.expense),
     }));
     setMonthly(m);
-    const c = (catRes as Array<any>).map((r) => ({
-      category: r.category,
-      income: Number(r.income),
-      expense: Number(r.expense),
-      total: Number(r.total),
-    }));
-    setByCategory(c);
   }
 
   async function downloadReport(kind: "pdf" | "xlsx") {
@@ -324,14 +307,22 @@ const OverviewTab: React.FC = () => {
       a.click();
       a.remove();
     } catch (e) {
-      alert("보고서 생성에 실패했습니다.");
+      notifyError("보고서 생성에 실패했습니다.");
     }
   }
 
   return (
     <>
       <LoadingOverlay visible={loading} label="데이터 불러오는 중..." />
-      <Card style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
+      <Card
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          marginBottom: 20,
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -366,7 +357,7 @@ const OverviewTab: React.FC = () => {
                 await apiUpdatePreferences({ receive_dues_reminders: next });
               } catch {
                 setPrefs({ receive_dues_reminders: !next });
-                alert("알림 설정 변경에 실패했습니다.");
+                notifyError("알림 설정 변경에 실패했습니다.");
               }
             }}
             compact
@@ -438,7 +429,9 @@ const OverviewTab: React.FC = () => {
           </div>
         </div>
         {loading || categoryLoading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+          >
             <Skeleton height={300} />
             <Skeleton height={300} />
           </div>
@@ -460,7 +453,16 @@ const OverviewTab: React.FC = () => {
         {loading ? (
           <div>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "10px 0",
+                  borderBottom: "1px solid #f0f0f0",
+                }}
+              >
                 <Skeleton width={120} height={22} />
                 <Skeleton width={80} height={22} />
                 <Skeleton height={22} />
@@ -514,13 +516,31 @@ const OverviewTab: React.FC = () => {
         <SectionTitle>회비 납부 현황</SectionTitle>
         {loading ? (
           <div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, paddingBottom: 12, borderBottom: "1px solid #eee", marginBottom: 8 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gap: 12,
+                paddingBottom: 12,
+                borderBottom: "1px solid #eee",
+                marginBottom: 8,
+              }}
+            >
               <Skeleton height={18} width={120} />
               <Skeleton height={18} width={80} />
               <Skeleton height={18} width={80} />
             </div>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, padding: "8px 0", borderBottom: "1px solid #f6f6f6" }}>
+              <div
+                key={i}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gap: 12,
+                  padding: "8px 0",
+                  borderBottom: "1px solid #f6f6f6",
+                }}
+              >
                 <Skeleton height={16} />
                 <Skeleton height={16} width={80} />
                 <Skeleton height={16} width={100} />

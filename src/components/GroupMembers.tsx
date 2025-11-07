@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { fetchGroupMembers, kickMemberApi } from "../api/client";
-import { Card, Table, Th, Td, Button } from "../styles/primitives";
+import { Card, Table, Th, Td, Button, Select } from "../styles/primitives";
+import { notifyError, confirmAsync } from "../utils/notify";
 
 type Member = { user_id: number; user_name: string; role: "admin" | "member" };
 
@@ -40,7 +41,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
       await load();
     } catch (err: unknown) {
       const axiosLike = err as { response?: { data?: { message?: string } } };
-      alert(axiosLike.response?.data?.message || "역할 변경에 실패했습니다.");
+      notifyError(axiosLike.response?.data?.message || "역할 변경에 실패했습니다.");
     } finally {
       setSaving(null);
     }
@@ -83,15 +84,14 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                 <Td>{m.user_name}</Td>
                 <Td style={{ textAlign: "right" }}>
                   {isAdmin ? (
-                    <select
+                    <Select
                       value={m.role}
                       onChange={(e) => changeRole(m, e.target.value as "admin" | "member")}
                       disabled={saving === m.user_id}
-                      style={{ padding: 8, border: "1px solid #ddd", borderRadius: 8 }}
                     >
                       <option value="member">member</option>
                       <option value="admin">admin</option>
-                    </select>
+                    </Select>
                   ) : (
                     <span style={{ color: "#333" }}>{m.role}</span>
                   )}
@@ -102,7 +102,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                       $variant="outline"
                       onClick={async () => {
                         if (!groupId) return;
-                        const ok = confirm(`정말 ${m.user_name} 님을 추방하시겠습니까?`);
+                        const ok = await confirmAsync(`정말 ${m.user_name} 님을 추방하시겠습니까?`);
                         if (!ok) return;
                         try {
                           setSaving(m.user_id);
@@ -110,7 +110,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                           await load();
                         } catch (err: unknown) {
                           const axiosLike = err as { response?: { data?: { message?: string } } };
-                          alert(axiosLike.response?.data?.message || "추방에 실패했습니다.");
+                          notifyError(axiosLike.response?.data?.message || "추방에 실패했습니다.");
                         } finally {
                           setSaving(null);
                         }

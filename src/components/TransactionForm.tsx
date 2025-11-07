@@ -11,6 +11,7 @@ import {
 import DateTimeModal from "./DateTimeModal";
 import { Input, Select, Button } from "../styles/primitives";
 import uploadClient from "../services/uploadClient";
+import { notifyError, notifyInfo, notifySuccess } from "../utils/notify";
 
 type Props = {
   groupId: number;
@@ -170,26 +171,15 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     e.preventDefault();
     if (!groupId) return;
     const amountNum = Number(form.amount);
-    if (!amountNum || amountNum <= 0) {
-      alert("금액을 올바르게 입력하세요.");
-      return;
-    }
-    if (!form.description.trim()) {
-      alert("설명은 필수입니다.");
-      return;
-    }
-    if (!form.category || !form.category.trim()) {
-      alert("카테고리를 선택하세요.");
-      return;
-    }
-    if (form.type === "expense" && !form.file) {
-      alert("지출 등록 시 영수증 파일 첨부가 필수입니다.");
-      return;
-    }
-    if (form.file && form.file.size > MAX_FILE_SIZE) {
-      alert("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
-      return;
-    }
+    if (!amountNum || amountNum <= 0)
+      return notifyError("금액을 올바르게 입력하세요.");
+    if (!form.description.trim()) return notifyError("설명은 필수입니다.");
+    if (!form.category || !form.category.trim())
+      return notifyError("카테고리를 선택하세요.");
+    if (form.type === "expense" && !form.file)
+      return notifyError("지출 등록 시 영수증 파일 첨부가 필수입니다.");
+    if (form.file && form.file.size > MAX_FILE_SIZE)
+      return notifyError("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
     try {
       let receiptUrl: string | undefined;
       if (form.file) {
@@ -205,6 +195,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         receiptUrl,
       });
       await onSubmitted();
+      notifySuccess("거래가 등록되었습니다.");
       setForm((prev) => ({
         ...prev,
         amount: "",
@@ -220,7 +211,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       const details = axiosLike.response?.data?.details;
       const message =
         axiosLike.response?.data?.message || "거래 등록에 실패했습니다.";
-      alert(
+      notifyError(
         details && Array.isArray(details)
           ? `${message}\n- ${details.join("\n- ")}`
           : message
@@ -230,14 +221,9 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
 
   async function handleOcr() {
     try {
-      if (!form.file) {
-        alert("먼저 영수증 이미지를 선택하세요.");
-        return;
-      }
-      if (form.file.size > MAX_FILE_SIZE) {
-        alert("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
-        return;
-      }
+      if (!form.file) return notifyError("먼저 영수증 이미지를 선택하세요.");
+      if (form.file.size > MAX_FILE_SIZE)
+        return notifyError("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
       const ext = (form.file.name.split(".").pop() || "").toLowerCase();
       const mime =
         form.file.type ||
@@ -252,8 +238,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         !/^image\//i.test(mime) &&
         !/^application\/(pdf|x-pdf|acrobat)$/i.test(mime)
       ) {
-        alert("OCR은 이미지 또는 PDF만 지원합니다.");
-        return;
+        return notifyError("OCR은 이미지 또는 PDF만 지원합니다.");
       }
       setOcrLoading(true);
       const fd = new FormData();
@@ -275,7 +260,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         next.category = result.categorySuggestion;
         const suggested = String(result.categorySuggestion).trim();
         if (suggested && !suggestions.includes(suggested)) {
-          alert(
+          notifyInfo(
             `OCR AI에서는 해당 카테고리를 "${suggested}"로 추천합니다. 카테고리를 신설하거나 기타로 설정해주세요`
           );
         }
@@ -285,7 +270,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       const axiosLike = e as { response?: { data?: { message?: string } } };
       const msg =
         axiosLike?.response?.data?.message || "OCR 분석에 실패했습니다.";
-      alert(msg);
+      notifyError(msg);
     } finally {
       setOcrLoading(false);
     }

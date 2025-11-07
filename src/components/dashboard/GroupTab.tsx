@@ -4,6 +4,7 @@ import { isAdminFor } from "../../utils/group";
 import GroupSelector from "../GroupSelector";
 import GroupMembers from "../GroupMembers";
 import { Button } from "../../styles/primitives";
+import { notifyError, confirmAsync } from "../../utils/notify";
 
 type GroupWithRole = {
   id: number;
@@ -54,7 +55,7 @@ const GroupTab: React.FC = () => {
             <Button
               onClick={async () => {
                 if (!groupId) return;
-                const ok = confirm(
+                const ok = await confirmAsync(
                   "정말로 이 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
                 );
                 if (!ok) return;
@@ -65,7 +66,7 @@ const GroupTab: React.FC = () => {
                   const next = list[0]?.id ?? null;
                   setGroupId(next);
                 } catch (e) {
-                  alert("그룹 삭제에 실패했습니다.");
+                  notifyError("그룹 삭제에 실패했습니다.");
                 }
               }}
               $variant="outline"
@@ -77,7 +78,7 @@ const GroupTab: React.FC = () => {
             <Button
               onClick={async () => {
                 if (!groupId) return;
-                const ok = confirm("이 그룹에서 탈퇴하시겠습니까?");
+                const ok = await confirmAsync("이 그룹에서 탈퇴하시겠습니까?");
                 if (!ok) return;
                 try {
                   await leaveGroupApi(groupId);
@@ -86,7 +87,7 @@ const GroupTab: React.FC = () => {
                   const next = list[0]?.id ?? null;
                   setGroupId(next);
                 } catch (e) {
-                  alert("그룹 탈퇴에 실패했습니다.");
+                  notifyError("그룹 탈퇴에 실패했습니다.");
                 }
               }}
               $variant="outline"

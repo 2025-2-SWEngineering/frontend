@@ -11,6 +11,8 @@ type Props = {
 const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) => {
   const [list, setList] = useState<string[]>([]);
   const [input, setInput] = useState("");
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editingValue, setEditingValue] = useState<string>("");
 
   useEffect(() => {
     if (!visible) return;
@@ -64,30 +66,58 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
               <tbody>
                 {list.map((c, idx) => (
                   <tr key={`${c}-${idx}`}>
-                    <Td style={{ padding: 10 }}>{c}</Td>
-                    <Td style={{ padding: 10, textAlign: "right", width: 140 }}>
-                      <Button
-                        onClick={() => {
-                          const name = prompt("이름 변경", c) || "";
-                          const v = name.trim();
-                          if (!v) return;
-                          setList((prev) => {
-                            const next = prev.slice();
-                            next[idx] = v;
-                            return Array.from(new Set(next));
-                          });
-                        }}
-                        $variant="outline"
-                        style={{ marginRight: 6 }}
-                      >
-                        이름변경
-                      </Button>
-                      <Button
-                        $variant="outline"
-                        onClick={() => setList((prev) => prev.filter((_, i) => i !== idx))}
-                      >
-                        삭제
-                      </Button>
+                    <Td style={{ padding: 10 }}>
+                      {editingIdx === idx ? (
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <Input
+                            value={editingValue}
+                            onChange={(e) => setEditingValue(e.target.value)}
+                            style={{ flex: 1 }}
+                          />
+                          <Button
+                            onClick={() => {
+                              const v = editingValue.trim();
+                              if (!v) return;
+                              setList((prev) => {
+                                const next = prev.slice();
+                                next[idx] = v;
+                                return Array.from(new Set(next));
+                              });
+                              setEditingIdx(null);
+                              setEditingValue("");
+                            }}
+                          >
+                            저장
+                          </Button>
+                          <Button $variant="outline" onClick={() => { setEditingIdx(null); setEditingValue(""); }}>
+                            취소
+                          </Button>
+                        </div>
+                      ) : (
+                        <span>{c}</span>
+                      )}
+                    </Td>
+                    <Td style={{ padding: 10, textAlign: "right", width: 200 }}>
+                      {editingIdx === idx ? null : (
+                        <>
+                          <Button
+                            onClick={() => {
+                              setEditingIdx(idx);
+                              setEditingValue(c);
+                            }}
+                            $variant="outline"
+                            style={{ marginRight: 6 }}
+                          >
+                            이름변경
+                          </Button>
+                          <Button
+                            $variant="outline"
+                            onClick={() => setList((prev) => prev.filter((_, i) => i !== idx))}
+                          >
+                            삭제
+                          </Button>
+                        </>
+                      )}
                     </Td>
                   </tr>
                 ))}

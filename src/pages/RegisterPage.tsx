@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import api from "../services/api";
+import { notifyError } from "../utils/notify";
 import { Input, Button } from "../styles/primitives";
 
 const Container = styled.div`
@@ -55,7 +56,7 @@ const RegisterPage: React.FC = () => {
       window.location.href = "/groups";
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "회원가입에 실패했습니다.";
-      alert(msg);
+      notifyError(msg);
     } finally {
       setLoading(false);
     }

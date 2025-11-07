@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalBackdrop, ModalCard } from "../styles/primitives";
+import { ModalBackdrop, ModalCard, colors } from "../styles/primitives";
 
 type Props = {
   visible: boolean;
@@ -37,8 +37,8 @@ const LoadingOverlay: React.FC<Props> = ({ visible, label }) => {
               width: 48,
               height: 48,
               borderRadius: "50%",
-              border: "4px solid #e5e7eb",
-              borderTopColor: "#667eea",
+              border: `4px solid ${colors.border}`,
+              borderTopColor: colors.primary,
               animation: "spinnerRotate 0.9s linear infinite",
             }}
           />
