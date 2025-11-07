@@ -5,6 +5,8 @@ import {
   Button,
   Input,
   Container as PageContainer,
+  Spacer,
+  SectionTitle,
 } from "../styles/primitives";
 import { fetchGroups, createNewGroup } from "../api/client";
 import InviteAcceptor from "../components/InviteAcceptor";
@@ -69,7 +71,7 @@ const GroupSelectPage: React.FC = () => {
         들어갈 그룹을 선택하거나 새 그룹을 생성하세요.
       </p>
       <Card>
-        <h2 style={{ marginBottom: 12, color: "#333" }}>내 그룹</h2>
+        <SectionTitle>내 그룹</SectionTitle>
         {loadingGroups ? (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {Array.from({ length: 4 }).map((_, i) => (
@@ -127,10 +129,10 @@ const GroupSelectPage: React.FC = () => {
         )}
       </Card>
 
-      <div style={{ height: 20 }} />
+      <Spacer $size={20} />
 
       <Card>
-        <h2 style={{ marginBottom: 12, color: "#333" }}>새 그룹 생성</h2>
+        <SectionTitle>새 그룹 생성</SectionTitle>
         <form onSubmit={createGroup}>
           <div style={{ display: "flex", gap: 8 }}>
             <Input
@@ -149,10 +151,10 @@ const GroupSelectPage: React.FC = () => {
         </form>
       </Card>
 
-      <div style={{ height: 20 }} />
+      <Spacer $size={20} />
 
       <Card>
-        <h2 style={{ marginBottom: 12, color: "#333" }}>초대 코드로 참여</h2>
+        <SectionTitle>초대 코드로 참여</SectionTitle>
         <InviteAcceptor
           onAccepted={async (gid) => {
             await loadGroups();

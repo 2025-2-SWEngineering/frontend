@@ -129,4 +129,8 @@ export const AmountText = styled.span<{ $type: "income" | "expense" }>`
   display: inline-block;
 `;
 
+export const Spacer = styled.div<{ $size?: number }>`
+  height: ${(p) => (p.$size == null ? 20 : p.$size)}px;
+`;
+
 

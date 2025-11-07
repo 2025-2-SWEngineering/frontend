@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { getGroupCategories, setGroupCategories } from "../utils/category";
-import { ModalBackdrop, ModalCard, Button, Input } from "../styles/primitives";
+import { ModalBackdrop, ModalCard, Button, Input, Table, Td } from "../styles/primitives";
 
 type Props = {
   groupId: number;
@@ -60,12 +60,12 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
           {list.length === 0 ? (
             <div style={{ padding: 16, color: "#6b7280" }}>등록된 카테고리가 없습니다. 위 입력창에서 추가하세요.</div>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <Table>
               <tbody>
                 {list.map((c, idx) => (
                   <tr key={`${c}-${idx}`}>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f5f5f5" }}>{c}</td>
-                    <td style={{ padding: 10, borderBottom: "1px solid #f5f5f5", textAlign: "right", width: 140 }}>
+                    <Td style={{ padding: 10 }}>{c}</Td>
+                    <Td style={{ padding: 10, textAlign: "right", width: 140 }}>
                       <Button
                         onClick={() => {
                           const name = prompt("이름 변경", c) || "";
@@ -88,11 +88,11 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
                       >
                         삭제
                       </Button>
-                    </td>
+                    </Td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </Table>
           )}
         </div>
 
