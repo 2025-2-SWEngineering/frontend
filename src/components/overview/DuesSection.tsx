@@ -3,7 +3,12 @@ import { Card, SectionTitle } from "../../styles/primitives";
 import { Skeleton } from "../ui/Loading";
 import { DuesTable } from "../shared";
 
-type Due = { userId: number; userName: string; isPaid: boolean; paidAt?: string };
+type Due = {
+  userId: number;
+  userName: string;
+  isPaid: boolean;
+  paidAt?: string;
+};
 
 type Props = {
   loading: boolean;
@@ -57,5 +62,3 @@ const DuesSection: React.FC<Props> = ({ loading, dues, isAdmin, onToggle }) => {
 };
 
 export default DuesSection;
-
-
