@@ -40,7 +40,14 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        // 빌드 성능 최적화: dist 디렉토리 내의 필수 파일만 스캔
+        globPatterns: [
+          "assets/**/*.{js,css}",
+          "*.{html,ico,png,svg,webmanifest}",
+          "favicon-*.png",
+          "apple-touch-icon.png",
+          "pwa-*.png",
+        ],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         cleanupOutdatedCaches: true,
         skipWaiting: true,
@@ -52,9 +59,15 @@ export default defineConfig({
           "**/.vscode/**/*",
           "**/src/**/*",
           "**/*.map",
+          "sw.js",
+          "workbox-*.js",
+          "registerSW.js",
         ],
         // Service Worker 파일명 명시
         swDest: "sw.js",
+        // 빌드 성능 최적화: 디렉토리 스캔 범위 제한
+        globDirectory: "dist",
+        // 캐싱 전략 단순화
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./i,
