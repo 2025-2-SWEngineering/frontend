@@ -40,29 +40,37 @@ export default defineConfig({
       },
       strategies: "generateSW",
       workbox: {
+        // 최적화: 필요한 파일만 명시적으로 지정 (와일드카드 최소화)
         globPatterns: [
-          "assets/**/*.{js,css}",
-          "*.{html,ico,png,svg,webmanifest}",
-          "favicon-*.png",
+          "assets/index-*.{js,css}",
+          "index.html",
+          "manifest.webmanifest",
+          "favicon.ico",
+          "favicon-16x16.png",
+          "favicon-32x32.png",
           "apple-touch-icon.png",
-          "pwa-*.png",
+          "pwa-192x192.png",
+          "pwa-512x512.png",
         ],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
+        // 최적화: 제외 패턴 강화 (불필요한 스캔 방지)
         globIgnores: [
-          "**/node_modules/**/*",
-          "**/.git/**/*",
-          "**/.vscode/**/*",
-          "**/src/**/*",
+          "**/node_modules/**",
+          "**/.git/**",
+          "**/.vscode/**",
+          "**/src/**",
           "**/*.map",
           "sw.js",
           "workbox-*.js",
           "registerSW.js",
+          "site.webmanifest",
         ],
         swDest: "dist/sw.js",
         globDirectory: "dist",
+        // 최적화: 캐싱 전략 단순화
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./i,
@@ -71,7 +79,7 @@ export default defineConfig({
               cacheName: "api-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24,
+                maxAgeSeconds: 86400, // 24시간
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -79,8 +87,6 @@ export default defineConfig({
             },
           },
         ],
-        // 푸시 알림 이벤트 리스너 추가
-        additionalManifestEntries: [],
       },
       devOptions: {
         enabled: false, // 개발 중에는 비활성화 (필요시 true로 변경)
