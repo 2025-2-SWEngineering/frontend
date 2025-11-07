@@ -1,4 +1,5 @@
 import axios from "axios";
+import { incrementLoading, decrementLoading } from "../state/globalLoading";
 
 // 개발환경에서는 Vite 프록시('/api' → 3001)를 사용
 // 배포환경에서는 VITE_API_URL이 설정되면 해당 값을 사용
@@ -15,6 +16,9 @@ const api = axios.create({
 // 요청 인터셉터 - JWT 토큰 추가
 api.interceptors.request.use(
     (config) => {
+        try {
+            incrementLoading();
+        } catch {}
         const token = localStorage.getItem("token");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -40,10 +44,18 @@ function addSubscriber(callback: (token: string) => void) {
 }
 
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        try {
+            decrementLoading();
+        } catch {}
+        return response;
+    },
     async (error) => {
         const originalRequest = error.config || {};
         const status = error?.response?.status;
+        try {
+            decrementLoading();
+        } catch {}
         if (status !== 401) {
             return Promise.reject(error);
         }

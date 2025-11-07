@@ -24,6 +24,8 @@ import TransactionsList from "../TransactionsList";
 import LoadMore from "../LoadMore";
 import DuesTable from "../DuesTable";
 import TransactionForm from "../TransactionForm";
+import { Skeleton, SkeletonLines } from "../Loading";
+import LoadingOverlay from "../LoadingOverlay";
 import type {
   TransactionsListResponse,
   MonthlyResponse,
@@ -46,7 +48,7 @@ const OverviewTab: React.FC = () => {
     totalIncome: number;
     totalExpense: number;
   } | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<
     Array<{
       id: number;
@@ -85,6 +87,7 @@ const OverviewTab: React.FC = () => {
   const [byCategory, setByCategory] = useState<
     Array<{ category: string; income: number; expense: number; total: number }>
   >([]);
+  const [categoryLoading, setCategoryLoading] = useState(false);
   const [categoryRange, setCategoryRange] = useState<{
     from: string;
     to: string;
@@ -119,6 +122,7 @@ const OverviewTab: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const groupsList = await fetchGroups();
         setGroups(groupsList);
         const saved = Number(localStorage.getItem("selectedGroupId") || 0);
@@ -128,7 +132,12 @@ const OverviewTab: React.FC = () => {
           (groupsList as Array<GroupWithRole>).some((g) => g.id === saved)
             ? saved
             : first;
-        if (gid) setGroupId(gid);
+        if (gid) {
+          setGroupId(gid);
+        } else {
+          // 선택 가능한 그룹이 없을 때는 초기 로딩 해제
+          setLoading(false);
+        }
       } catch {
         // ignore
       }
@@ -201,6 +210,7 @@ const OverviewTab: React.FC = () => {
     if (categoryRange.from > categoryRange.to) return;
     (async () => {
       try {
+        setCategoryLoading(true);
         const catRes = await apiFetchByCategory(groupId, {
           from: categoryRange.from,
           to: categoryRange.to,
@@ -214,6 +224,8 @@ const OverviewTab: React.FC = () => {
         setByCategory(c);
       } catch {
         // ignore
+      } finally {
+        setCategoryLoading(false);
       }
     })();
   }, [groupId, categoryRange.from, categoryRange.to]);
@@ -318,6 +330,7 @@ const OverviewTab: React.FC = () => {
 
   return (
     <>
+      <LoadingOverlay visible={loading} label="데이터 불러오는 중..." />
       <div
         style={{
           background: "white",
@@ -406,7 +419,9 @@ const OverviewTab: React.FC = () => {
         }}
       >
         <h2 style={{ marginBottom: 16, color: "#333" }}>월별 수입/지출 추이</h2>
-        {monthly.length === 0 ? (
+        {loading ? (
+          <Skeleton height={300} />
+        ) : monthly.length === 0 ? (
           <p style={{ color: "#999" }}>데이터가 없습니다.</p>
         ) : (
           <MonthlyBars data={monthly} />
@@ -460,7 +475,12 @@ const OverviewTab: React.FC = () => {
             />
           </div>
         </div>
-        {byCategory.length === 0 ? (
+        {loading || categoryLoading ? (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <Skeleton height={300} />
+            <Skeleton height={300} />
+          </div>
+        ) : byCategory.length === 0 ? (
           <p style={{ color: "#999" }}>데이터가 없습니다.</p>
         ) : (
           <CategoryChart data={byCategory} />
@@ -482,13 +502,25 @@ const OverviewTab: React.FC = () => {
         }}
       >
         <h2 style={{ marginBottom: 16, color: "#333" }}>최근 거래 내역</h2>
-        <TransactionsList
-          items={items}
-          groupId={groupId || 0}
-          isAdmin={isAdminFor(groups, groupId)}
-          currentUserId={currentUser?.id}
-          onAfterChange={refreshAll}
-        />
+        {loading ? (
+          <div>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+                <Skeleton width={120} height={22} />
+                <Skeleton width={80} height={22} />
+                <Skeleton height={22} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <TransactionsList
+            items={items}
+            groupId={groupId || 0}
+            isAdmin={isAdminFor(groups, groupId)}
+            currentUserId={currentUser?.id}
+            onAfterChange={refreshAll}
+          />
+        )}
       </div>
 
       <LoadMore
@@ -533,16 +565,33 @@ const OverviewTab: React.FC = () => {
         }}
       >
         <h2 style={{ marginBottom: 16, color: "#333" }}>회비 납부 현황</h2>
-        <DuesTable
-          dues={dues}
-          isAdmin={
-            !!(
-              groupId &&
-              groups.find((g) => g.id === groupId)?.user_role === "admin"
-            )
-          }
-          onToggle={toggleDues}
-        />
+        {loading ? (
+          <div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, paddingBottom: 12, borderBottom: "1px solid #eee", marginBottom: 8 }}>
+              <Skeleton height={18} width={120} />
+              <Skeleton height={18} width={80} />
+              <Skeleton height={18} width={80} />
+            </div>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, padding: "8px 0", borderBottom: "1px solid #f6f6f6" }}>
+                <Skeleton height={16} />
+                <Skeleton height={16} width={80} />
+                <Skeleton height={16} width={100} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <DuesTable
+            dues={dues}
+            isAdmin={
+              !!(
+                groupId &&
+                groups.find((g) => g.id === groupId)?.user_role === "admin"
+              )
+            }
+            onToggle={toggleDues}
+          />
+        )}
       </div>
 
       <TransactionForm groupId={groupId || 0} onSubmitted={refreshAll} />

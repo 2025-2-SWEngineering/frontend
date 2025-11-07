@@ -12,10 +12,16 @@ type Props = {
 const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
   const [members, setMembers] = useState<Member[]>([]);
   const [saving, setSaving] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function load() {
-    const membersList = await fetchGroupMembers(groupId);
-    setMembers(membersList || []);
+    try {
+      setLoading(true);
+      const membersList = await fetchGroupMembers(groupId);
+      setMembers(membersList || []);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -44,7 +50,22 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
   return (
     <div style={{ background: "white", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
       <h2 style={{ marginBottom: 12, color: "#333" }}>그룹 멤버</h2>
-      {members.length === 0 ? (
+      {loading ? (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 100px", gap: 12, paddingBottom: 12, borderBottom: "1px solid #eee", marginBottom: 8 }}>
+            <div style={{ width: 120, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
+            <div style={{ width: 80, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />
+            {isAdmin && <div style={{ width: 80, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />}
+          </div>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 100px", gap: 12, padding: "8px 0", borderBottom: "1px solid #f6f6f6" }}>
+              <div style={{ height: 16, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
+              <div style={{ height: 16, width: 80, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />
+              {isAdmin && <div style={{ height: 16, width: 80, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />}
+            </div>
+          ))}
+        </div>
+      ) : members.length === 0 ? (
         <p style={{ color: "#999" }}>멤버가 없습니다.</p>
       ) : (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>

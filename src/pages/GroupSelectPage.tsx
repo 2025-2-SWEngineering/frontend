@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { fetchGroups, createNewGroup } from "../api/client";
 import InviteAcceptor from "../components/InviteAcceptor";
 import LogoutButton from "../components/LogoutButton";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 const Container = styled.div`
   max-width: 720px;
@@ -20,14 +21,18 @@ const Card = styled.div`
 const GroupSelectPage: React.FC = () => {
   const [groups, setGroups] = useState<Array<{ id: number; name: string }>>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingGroups, setLoadingGroups] = useState(true);
   const [name, setName] = useState("");
 
   async function loadGroups() {
     try {
+      setLoadingGroups(true);
       const list = await fetchGroups();
       setGroups(list || []);
     } catch {
       // ignore
+    } finally {
+      setLoadingGroups(false);
     }
   }
 
@@ -59,6 +64,7 @@ const GroupSelectPage: React.FC = () => {
 
   return (
     <Container>
+      <LoadingOverlay visible={loadingGroups || loading} label={loading ? "그룹 생성 중..." : "그룹 불러오는 중..."} />
       <LogoutButton />
       <h1 style={{ color: "#333", marginBottom: 12 }}>그룹 선택</h1>
       <p style={{ color: "#666", marginBottom: 20 }}>
@@ -66,7 +72,16 @@ const GroupSelectPage: React.FC = () => {
       </p>
       <Card>
         <h2 style={{ marginBottom: 12, color: "#333" }}>내 그룹</h2>
-        {groups.length === 0 ? (
+        {loadingGroups ? (
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <li key={i} style={{ padding: "10px 0", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #f0f0f0" }}>
+                <div style={{ width: 160, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
+                <div style={{ width: 80, height: 28, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
+              </li>
+            ))}
+          </ul>
+        ) : groups.length === 0 ? (
           <p style={{ color: "#999" }}>아직 속한 그룹이 없습니다.</p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>

@@ -11,6 +11,7 @@ import DashboardPage from "./pages/DashboardPage";
 import RegisterPage from "./pages/RegisterPage";
 import GroupSelectPage from "./pages/GroupSelectPage";
 import "./App.css";
+import GlobalLoadingOverlay from "./components/GlobalLoadingOverlay";
 
 const AppContainer = styled.div`
   width: 100%;
@@ -21,6 +22,7 @@ const AppContainer = styled.div`
 const App: React.FC = () => {
   return (
     <AppContainer>
+      <GlobalLoadingOverlay />
       <Router>
         <Routes>
           <Route
