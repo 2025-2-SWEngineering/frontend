@@ -7,6 +7,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: "auto",
+      filename: "sw.js",
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
         name: "우리회계",
@@ -51,6 +53,8 @@ export default defineConfig({
           "**/src/**/*",
           "**/*.map",
         ],
+        // Service Worker 파일명 명시
+        swDest: "sw.js",
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./i,
