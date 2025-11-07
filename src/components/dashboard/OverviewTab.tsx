@@ -25,6 +25,7 @@ import LoadMore from "../LoadMore";
 import DuesTable from "../DuesTable";
 import TransactionForm from "../TransactionForm";
 import { Skeleton, SkeletonLines } from "../Loading";
+import { Card, SectionTitle } from "../../styles/primitives";
 import LoadingOverlay from "../LoadingOverlay";
 import type {
   TransactionsListResponse,
@@ -331,19 +332,7 @@ const OverviewTab: React.FC = () => {
   return (
     <>
       <LoadingOverlay visible={loading} label="데이터 불러오는 중..." />
-      <div
-        style={{
-          background: "white",
-          padding: 16,
-          borderRadius: 12,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 20,
-        }}
-      >
+      <Card style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
         <div
           style={{
             display: "flex",
@@ -400,7 +389,7 @@ const OverviewTab: React.FC = () => {
             </button>
           )}
         </div>
-      </div>
+      </Card>
 
       <StatsCards
         loading={loading}
@@ -409,16 +398,8 @@ const OverviewTab: React.FC = () => {
         totalExpense={formatted.totalExpense}
       />
 
-      <div
-        style={{
-          background: "white",
-          padding: 24,
-          borderRadius: 12,
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-          marginBottom: 20,
-        }}
-      >
-        <h2 style={{ marginBottom: 16, color: "#333" }}>월별 수입/지출 추이</h2>
+      <Card style={{ marginBottom: 20 }}>
+        <SectionTitle>월별 수입/지출 추이</SectionTitle>
         {loading ? (
           <Skeleton height={300} />
         ) : monthly.length === 0 ? (
@@ -426,17 +407,9 @@ const OverviewTab: React.FC = () => {
         ) : (
           <MonthlyBars data={monthly} />
         )}
-      </div>
+      </Card>
 
-      <div
-        style={{
-          background: "white",
-          padding: 24,
-          borderRadius: 12,
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-          marginBottom: 20,
-        }}
-      >
+      <Card style={{ marginBottom: 20 }}>
         <div
           style={{
             display: "flex",
@@ -445,7 +418,7 @@ const OverviewTab: React.FC = () => {
             marginBottom: 16,
           }}
         >
-          <h2 style={{ margin: 0, color: "#333" }}>항목별 집계</h2>
+          <SectionTitle style={{ margin: 0 }}>항목별 집계</SectionTitle>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {/* <label style={{ color: "#555" }}>기간</label> */}
             <input
@@ -485,7 +458,7 @@ const OverviewTab: React.FC = () => {
         ) : (
           <CategoryChart data={byCategory} />
         )}
-      </div>
+      </Card>
 
       <ReportDownload
         range={reportRange}
@@ -493,15 +466,8 @@ const OverviewTab: React.FC = () => {
         onDownload={downloadReport}
       />
 
-      <div
-        style={{
-          background: "white",
-          padding: 24,
-          borderRadius: 12,
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-        }}
-      >
-        <h2 style={{ marginBottom: 16, color: "#333" }}>최근 거래 내역</h2>
+      <Card>
+        <SectionTitle>최근 거래 내역</SectionTitle>
         {loading ? (
           <div>
             {Array.from({ length: 5 }).map((_, i) => (
@@ -521,7 +487,7 @@ const OverviewTab: React.FC = () => {
             onAfterChange={refreshAll}
           />
         )}
-      </div>
+      </Card>
 
       <LoadMore
         visible={txHasMore}
@@ -555,16 +521,8 @@ const OverviewTab: React.FC = () => {
         }}
       />
 
-      <div
-        style={{
-          background: "white",
-          padding: 24,
-          borderRadius: 12,
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-          marginTop: 20,
-        }}
-      >
-        <h2 style={{ marginBottom: 16, color: "#333" }}>회비 납부 현황</h2>
+      <Card style={{ marginTop: 20 }}>
+        <SectionTitle>회비 납부 현황</SectionTitle>
         {loading ? (
           <div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, paddingBottom: 12, borderBottom: "1px solid #eee", marginBottom: 8 }}>
@@ -592,7 +550,7 @@ const OverviewTab: React.FC = () => {
             onToggle={toggleDues}
           />
         )}
-      </div>
+      </Card>
 
       <TransactionForm groupId={groupId || 0} onSubmitted={refreshAll} />
 

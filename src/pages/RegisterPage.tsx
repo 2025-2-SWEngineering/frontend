@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import api from "../services/api";
+import { Input, Button } from "../styles/primitives";
 
 const Container = styled.div`
   display: flex;
@@ -70,69 +71,23 @@ const RegisterPage: React.FC = () => {
             <label style={{ display: "block", marginBottom: 8, color: "#333" }}>
               이름
             </label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: 12,
-                border: "1px solid #ddd",
-                borderRadius: 8,
-              }}
-            />
+            <Input value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: "block", marginBottom: 8, color: "#333" }}>
               이메일
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: 12,
-                border: "1px solid #ddd",
-                borderRadius: 8,
-              }}
-            />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div style={{ marginBottom: 24 }}>
             <label style={{ display: "block", marginBottom: 8, color: "#333" }}>
               비밀번호
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: 12,
-                border: "1px solid #ddd",
-                borderRadius: 8,
-              }}
-            />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: 12,
-              background: "#667eea",
-              color: "#fff",
-              border: "none",
-              borderRadius: 8,
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-            disabled={loading}
-          >
+          <Button type="submit" disabled={loading} style={{ width: "100%", padding: 12, fontSize: 16 }}>
             {loading ? "가입 중..." : "가입하기"}
-          </button>
+          </Button>
           <div style={{ marginTop: 16, textAlign: "center" }}>
             <a href="/" style={{ color: "#667eea" }}>
               이미 계정이 있으신가요? 로그인

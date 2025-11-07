@@ -3,6 +3,7 @@ import { fetchGroups, deleteGroupApi, leaveGroupApi } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
 import GroupSelector from "../GroupSelector";
 import GroupMembers from "../GroupMembers";
+import { Button } from "../../styles/primitives";
 
 type GroupWithRole = {
   id: number;
@@ -50,7 +51,7 @@ const GroupTab: React.FC = () => {
       {groupId && (
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           {isAdminFor(groups, groupId) ? (
-            <button
+            <Button
               onClick={async () => {
                 if (!groupId) return;
                 const ok = confirm(
@@ -67,19 +68,13 @@ const GroupTab: React.FC = () => {
                   alert("그룹 삭제에 실패했습니다.");
                 }
               }}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid #ef4444",
-                color: "#ef4444",
-                background: "#fff",
-                cursor: "pointer",
-              }}
+              $variant="outline"
+              style={{ color: "#ef4444", borderColor: "#ef4444" }}
             >
               그룹 삭제
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={async () => {
                 if (!groupId) return;
                 const ok = confirm("이 그룹에서 탈퇴하시겠습니까?");
@@ -94,16 +89,10 @@ const GroupTab: React.FC = () => {
                   alert("그룹 탈퇴에 실패했습니다.");
                 }
               }}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid #ddd",
-                background: "#fff",
-                cursor: "pointer",
-              }}
+              $variant="outline"
             >
               그룹 탈퇴
-            </button>
+            </Button>
           )}
         </div>
       )}

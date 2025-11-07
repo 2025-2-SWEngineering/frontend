@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import api from "../services/api";
+import { Input, Button } from "../styles/primitives";
 
 const LoginContainer = styled.div`
   display: flex;
@@ -67,19 +68,7 @@ const LoginPage: React.FC = () => {
             >
               이메일
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-              }}
-              required
-            />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div style={{ marginBottom: "24px" }}>
             <label
@@ -87,37 +76,11 @@ const LoginPage: React.FC = () => {
             >
               비밀번호
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-              }}
-              required
-            />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: "12px",
-              backgroundColor: "#667eea",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-            disabled={loading}
-          >
+          <Button type="submit" disabled={loading} style={{ width: "100%", padding: 12, fontSize: 16 }}>
             {loading ? "로그인 중..." : "로그인"}
-          </button>
+          </Button>
         </form>
         <div style={{ marginTop: 16, textAlign: "center" }}>
           <a href="/register" style={{ color: "#667eea" }}>
