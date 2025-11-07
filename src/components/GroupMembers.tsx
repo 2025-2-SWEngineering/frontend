@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { fetchGroupMembers, kickMemberApi } from "../api/client";
+import { Card, Table, Th, Td, Button } from "../styles/primitives";
 
 type Member = { user_id: number; user_name: string; role: "admin" | "member" };
 
@@ -48,7 +49,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
   if (!groupId) return null;
 
   return (
-    <div style={{ background: "white", padding: 24, borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+    <Card>
       <h2 style={{ marginBottom: 12, color: "#333" }}>그룹 멤버</h2>
       {loading ? (
         <div>
@@ -68,21 +69,19 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
       ) : members.length === 0 ? (
         <p style={{ color: "#999" }}>멤버가 없습니다.</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <Table>
           <thead>
             <tr>
-              <th style={{ textAlign: "left", padding: 8, color: "#666", borderBottom: "1px solid #eee" }}>이름</th>
-              <th style={{ textAlign: "right", padding: 8, color: "#666", borderBottom: "1px solid #eee" }}>역할</th>
-              {isAdmin && (
-                <th style={{ textAlign: "right", padding: 8, color: "#666", borderBottom: "1px solid #eee", width: 100 }}>관리</th>
-              )}
+              <Th style={{ textAlign: "left" }}>이름</Th>
+              <Th style={{ textAlign: "right" }}>역할</Th>
+              {isAdmin && <Th style={{ textAlign: "right", width: 100 }}>관리</Th>}
             </tr>
           </thead>
           <tbody>
             {members.map((m) => (
               <tr key={m.user_id}>
-                <td style={{ padding: 8, borderBottom: "1px solid #f6f6f6" }}>{m.user_name}</td>
-                <td style={{ padding: 8, borderBottom: "1px solid #f6f6f6", textAlign: "right" }}>
+                <Td>{m.user_name}</Td>
+                <Td style={{ textAlign: "right" }}>
                   {isAdmin ? (
                     <select
                       value={m.role}
@@ -96,10 +95,11 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                   ) : (
                     <span style={{ color: "#333" }}>{m.role}</span>
                   )}
-                </td>
+                </Td>
                 {isAdmin && (
-                  <td style={{ padding: 8, borderBottom: "1px solid #f6f6f6", textAlign: "right" }}>
-                    <button
+                  <Td style={{ textAlign: "right" }}>
+                    <Button
+                      $variant="outline"
                       onClick={async () => {
                         if (!groupId) return;
                         const ok = confirm(`정말 ${m.user_name} 님을 추방하시겠습니까?`);
@@ -116,25 +116,18 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                         }
                       }}
                       disabled={saving === m.user_id}
-                      style={{
-                        padding: "6px 10px",
-                        borderRadius: 8,
-                        border: "1px solid #ef4444",
-                        color: "#ef4444",
-                        background: "#fff",
-                        cursor: "pointer",
-                      }}
+                      style={{ color: "#ef4444", borderColor: "#ef4444" }}
                     >
                       추방
-                    </button>
-                  </td>
+                    </Button>
+                  </Td>
                 )}
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       )}
-    </div>
+    </Card>
   );
 };
 
