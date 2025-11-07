@@ -1,10 +1,11 @@
 #!/bin/sh
 
-# Run Prettier check on the repo (or lint-staged if configured), then typecheck
+# Run lint-staged for ESLint + Prettier, then TypeScript typecheck
 if command -v npx >/dev/null 2>&1; then
-  npx lint-staged || npm run format:check || exit 1
+  npx lint-staged || exit 1
 else
   npm run format:check || exit 1
+  npm run lint || exit 1
 fi
 
 npm run typecheck || exit 1
