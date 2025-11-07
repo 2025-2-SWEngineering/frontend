@@ -1,9 +1,20 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { readFileSync } from "fs";
+
+// Amazon Linux 감지 및 빠른 모드 기본 적용
+const isAmazonLinux = (() => {
+  try {
+    const osr = readFileSync("/etc/os-release", "utf-8");
+    return /Amazon Linux/i.test(osr);
+  } catch {
+    return false;
+  }
+})();
 
 // 빠른 PWA 빌드를 위한 플래그 (PWA_FAST=1 npm run build)
-const isPwaFast = process.env.PWA_FAST === "1" || process.env.PWA_FAST === "true";
+const isPwaFast = process.env.PWA_FAST === "1" || process.env.PWA_FAST === "true" || isAmazonLinux;
 
 export default defineConfig({
   plugins: [
@@ -43,35 +54,18 @@ export default defineConfig({
           },
         ],
       },
-      strategies: "generateSW",
-      workbox: isPwaFast
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      injectManifest: isPwaFast
         ? {
-            // 빠른 모드: 필수 파일만 선별적으로 precache (스캔 최소화)
+            // 빠른 모드: 필수 파일만 precache
             globPatterns: ["assets/index-*.{js,css}", "index.html"],
             maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
-            cleanupOutdatedCaches: false,
-            skipWaiting: true,
-            clientsClaim: true,
             globIgnores: ["**/*.map"],
-            swDest: "dist/sw.js",
-            globDirectory: "dist",
-            runtimeCaching: [
-              {
-                urlPattern: /^https:\/\/api\./i,
-                handler: "NetworkFirst",
-                options: {
-                  cacheName: "api-cache",
-                  expiration: {
-                    maxEntries: 50,
-                    maxAgeSeconds: 86400,
-                  },
-                  cacheableResponse: { statuses: [0, 200] },
-                },
-              },
-            ],
           }
         : {
-            // 기본 모드: 현재 설정 유지
+            // 기본 모드: 아이콘/manifest 포함
             globPatterns: [
               "assets/index-*.{js,css}",
               "index.html",
@@ -84,9 +78,6 @@ export default defineConfig({
               "pwa-512x512.png",
             ],
             maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-            cleanupOutdatedCaches: true,
-            skipWaiting: true,
-            clientsClaim: true,
             globIgnores: [
               "**/node_modules/**",
               "**/.git/**",
@@ -97,24 +88,6 @@ export default defineConfig({
               "workbox-*.js",
               "registerSW.js",
               "site.webmanifest",
-            ],
-            swDest: "dist/sw.js",
-            globDirectory: "dist",
-            runtimeCaching: [
-              {
-                urlPattern: /^https:\/\/api\./i,
-                handler: "NetworkFirst",
-                options: {
-                  cacheName: "api-cache",
-                  expiration: {
-                    maxEntries: 50,
-                    maxAgeSeconds: 86400, // 24시간
-                  },
-                  cacheableResponse: {
-                    statuses: [0, 200],
-                  },
-                },
-              },
             ],
           },
       devOptions: {

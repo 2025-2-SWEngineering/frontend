@@ -34,8 +34,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsx scripts/inject-push-handlers.ts",
-    "build:fast": "PWA_FAST=1 vite build && PWA_FAST=1 tsx scripts/inject-push-handlers.ts",
+    "build": "vite build",
+    "build:fast": "PWA_FAST=1 vite build",
     "preview": "vite preview",
     "prepare": "husky install",
     "format": "prettier --write .",
