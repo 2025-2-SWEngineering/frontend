@@ -170,15 +170,37 @@ export const ModalBackdrop = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 50;
-  padding: 16px;
+  padding: 8px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  ${media.tablet} {
+    padding: 12px;
+  }
+
+  ${media.desktop} {
+    padding: 16px;
+  }
 `;
 
 export const ModalCard = styled.div`
-  width: min(450px, 96vw);
+  width: min(450px, calc(100vw - 16px));
+  max-width: 96vw;
+  max-height: calc(100vh - 16px);
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  padding: 20px;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  ${media.tablet} {
+    padding: 18px;
+  }
+
+  ${media.desktop} {
+    padding: 20px;
+  }
 `;
 
 export const Badge = styled.span`
