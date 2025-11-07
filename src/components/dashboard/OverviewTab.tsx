@@ -5,7 +5,7 @@ import { CategorySettingsModal } from "../modals";
 import { StatsCards, LoadMore, LoadingOverlay } from "../ui";
 import { ReportDownload } from "../shared";
 import TransactionForm from "../forms/TransactionForm";
-import { Card, SectionTitle, Input } from "../../styles/primitives";
+import { Card } from "../../styles/primitives";
 import { formatCurrencyKRW } from "../../utils/format";
 import { notifyError } from "../../utils/notify";
 import {
