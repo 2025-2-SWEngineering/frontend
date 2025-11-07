@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { colors } from "../../styles/primitives";
 
 type Props = {
   checked: boolean;
@@ -21,7 +22,7 @@ const PreferencesToggle: React.FC<Props> = ({ checked, onToggle, compact }) => {
 export default PreferencesToggle;
 
 const Label = styled.label`
-  color: #666;
+  color: ${colors.textMuted};
   display: inline-flex;
   align-items: center;
 `;

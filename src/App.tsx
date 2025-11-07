@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import styled from "styled-components";
+import { colors } from "./styles/primitives";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -11,7 +12,7 @@ import { GlobalLoadingOverlay } from "./components/ui";
 const AppContainer = styled.div`
   width: 100%;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: ${colors.bgPage};
 `;
 
 const App: React.FC = () => {

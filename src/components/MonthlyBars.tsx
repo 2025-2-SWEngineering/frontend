@@ -27,8 +27,8 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
       return (
         <div
           style={{
-            background: "#fff",
-            border: "1px solid #e5e7eb",
+            background: colors.white,
+            border: `1px solid ${colors.border}`,
             borderRadius: 8,
             padding: 10,
           }}
@@ -36,7 +36,7 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
           <div style={{ fontWeight: 700, marginBottom: 6 }}>{label}</div>
           <div>수입: {currency(Number(p.income || 0))}</div>
           <div>지출: {currency(Number(p.expense || 0))}</div>
-          <div style={{ marginTop: 6, color: isIncome ? "#16a34a" : "#dc2626" }}>
+          <div style={{ marginTop: 6, color: isIncome ? colors.income : colors.expense }}>
             {isIncome ? "순수익" : "순지출"}: {currency(Number(p.net || 0))}
           </div>
         </div>
@@ -74,7 +74,7 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
               <stop offset="100%" stopColor={colors.expense} stopOpacity={0.6} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
           <XAxis dataKey="month" tickMargin={8} />
           <YAxis tickFormatter={(v) => new Intl.NumberFormat("ko-KR").format(Number(v))} />
           <Tooltip content={<CustomTooltip />} />

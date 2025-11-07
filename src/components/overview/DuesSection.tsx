@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, SectionTitle } from "../../styles/primitives";
+import { Card, SectionTitle, colors } from "../../styles/primitives";
 import { Skeleton } from "../ui/Loading";
 import { DuesTable } from "../shared";
 
@@ -29,7 +29,7 @@ const DuesSection: React.FC<Props> = ({ loading, dues, isAdmin, onToggle }) => {
               gridTemplateColumns: "1fr 1fr 1fr",
               gap: 12,
               paddingBottom: 12,
-              borderBottom: "1px solid #eee",
+              borderBottom: `1px solid ${colors.divider}`,
               marginBottom: 8,
             }}
           >
@@ -45,7 +45,7 @@ const DuesSection: React.FC<Props> = ({ loading, dues, isAdmin, onToggle }) => {
                 gridTemplateColumns: "1fr 1fr 1fr",
                 gap: 12,
                 padding: "8px 0",
-                borderBottom: "1px solid #f6f6f6",
+                borderBottom: `1px solid ${colors.bgSoft}`,
               }}
             >
               <Skeleton height={16} />

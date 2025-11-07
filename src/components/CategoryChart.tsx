@@ -1,5 +1,5 @@
 import React from "react";
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 import { formatNumberKR } from "../utils/format";
 import { colors } from "../styles/primitives";
 
@@ -16,15 +16,15 @@ type Props = {
 
 const COLORS = [
   colors.primary,
-  "#0ea5e9",
-  "#f59e0b",
+  colors.info,
+  colors.amber,
   colors.income,
   colors.expense,
-  "#8b5cf6",
-  "#14b8a6",
-  "#f97316",
-  "#84cc16",
-  "#6366f1",
+  colors.violet,
+  colors.teal,
+  colors.orange,
+  colors.lime,
+  colors.indigo,
 ];
 
 const CategoryChart: React.FC<Props> = ({ data }) => {
@@ -63,7 +63,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
             </Pie>
             <Tooltip
               formatter={(v: number, n: string) => [formatNumberKR(Number(v)) + "원", n]}
-              contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
+              contentStyle={{ borderRadius: 8, border: `1px solid ${colors.border}` }}
             />
             {/* <Legend verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: 8 }} /> */}
             <text
@@ -73,10 +73,10 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
               dominantBaseline="middle"
               style={{ pointerEvents: "none" }}
             >
-              <tspan fontSize="12" fill="#6b7280">
+              <tspan fontSize="12" fill={colors.gray500}>
                 수입 합계
               </tspan>
-              <tspan x="50%" dy="1.2em" fontSize="14" fontWeight={700} fill="#111827">
+              <tspan x="50%" dy="1.2em" fontSize="14" fontWeight={700} fill={colors.dark}>
                 {formatNumberKR(incomeTotal)}원
               </tspan>
             </text>
@@ -101,7 +101,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
             </Pie>
             <Tooltip
               formatter={(v: number, n: string) => [formatNumberKR(Number(v)) + "원", n]}
-              contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
+              contentStyle={{ borderRadius: 8, border: `1px solid ${colors.border}` }}
             />
             {/* <Legend verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: 8 }} /> */}
             <text
@@ -111,10 +111,10 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
               dominantBaseline="middle"
               style={{ pointerEvents: "none" }}
             >
-              <tspan fontSize="12" fill="#6b7280">
+              <tspan fontSize="12" fill={colors.gray500}>
                 지출 합계
               </tspan>
-              <tspan x="50%" dy="1.2em" fontSize="14" fontWeight={700} fill="#111827">
+              <tspan x="50%" dy="1.2em" fontSize="14" fontWeight={700} fill={colors.dark}>
                 {formatNumberKR(expenseTotal)}원
               </tspan>
             </text>

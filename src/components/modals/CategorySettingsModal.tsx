@@ -44,7 +44,6 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
           }}
         >
           <h2 style={{ margin: 0, color: colors.dark }}>카테고리 설정</h2>
-          {/* <button onClick={onClose} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#6b7280" }}>닫기</button> */}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: 8 }}>
           <Input

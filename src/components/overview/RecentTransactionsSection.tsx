@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, SectionTitle } from "../../styles/primitives";
+import { Card, SectionTitle, colors } from "../../styles/primitives";
 import { Skeleton } from "../ui/Loading";
 import { TransactionsList } from "../shared";
 
@@ -44,7 +44,7 @@ const RecentTransactionsSection: React.FC<Props> = ({
                 alignItems: "center",
                 gap: 12,
                 padding: "10px 0",
-                borderBottom: "1px solid #f0f0f0",
+                borderBottom: `1px solid ${colors.divider}`,
               }}
             >
               <Skeleton width={120} height={22} />

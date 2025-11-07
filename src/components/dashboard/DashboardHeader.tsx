@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { colors } from "../../styles/primitives";
 
 const DashboardHeader: React.FC = () => {
   return (
@@ -17,12 +18,12 @@ const Wrap = styled.div`
 `;
 
 const Title = styled.h1`
-  color: #333;
+  color: ${colors.text};
   font-size: 32px;
   margin-bottom: 8px;
 `;
 
 const Subtitle = styled.p`
-  color: #666;
+  color: ${colors.textMuted};
   font-size: 16px;
 `;
