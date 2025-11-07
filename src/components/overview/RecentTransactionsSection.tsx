@@ -67,3 +67,5 @@ const RecentTransactionsSection: React.FC<Props> = ({
 };
 
 export default RecentTransactionsSection;
+
+
