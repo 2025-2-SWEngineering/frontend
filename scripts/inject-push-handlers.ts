@@ -1,7 +1,36 @@
-// 커스텀 Service Worker - 푸시 알림 처리
-// vite-plugin-pwa의 injectManifest 전략으로 이 파일에 Workbox 코드가 주입됩니다.
-// Workbox import는 자동으로 주입되므로 여기서는 이벤트 리스너만 작성합니다.
+#!/usr/bin/env node
 
+/**
+ * Service Worker에 푸시 알림 이벤트 리스너를 주입하는 스크립트
+ * generateSW 전략을 사용할 때 필요합니다.
+ */
+
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join } from "path";
+
+async function main() {
+  const distPath = join(process.cwd(), "dist");
+  // generateSW 전략에서는 sw.js가 생성됨
+  const swPath = join(distPath, "sw.js");
+
+  // 파일이 생성될 때까지 최대 3초 대기
+  const maxWaitTime = 3000;
+  const checkInterval = 100;
+  let waited = 0;
+
+  while (!existsSync(swPath) && waited < maxWaitTime) {
+    await new Promise((resolve) => setTimeout(resolve, checkInterval));
+    waited += checkInterval;
+  }
+
+  if (!existsSync(swPath)) {
+    console.error("✗ Service Worker 파일(sw.js)을 찾을 수 없습니다.");
+    console.error(`   찾은 경로: ${swPath}`);
+    console.error("   빌드가 완료되었는지 확인하세요.");
+    process.exit(1);
+  }
+
+  const pushHandlers = `
 // 푸시 알림 수신 이벤트 리스너
 self.addEventListener("push", (event) => {
     let notificationData = {
@@ -23,7 +52,6 @@ self.addEventListener("push", (event) => {
                 data: payload.data || notificationData.data,
             };
         } catch (e) {
-            // JSON 파싱 실패 시 기본값 사용
             const text = event.data.text();
             if (text) {
                 notificationData.body = text;
@@ -50,9 +78,8 @@ self.addEventListener("notificationclick", (event) => {
     const data = event.notification.data || {};
     let url = "/dashboard";
 
-    // 알림 타입에 따라 다른 페이지로 이동
     if (data.type === "dues_reminder" && data.groupId) {
-        url = `/dashboard?groupId=${data.groupId}`;
+        url = \`/dashboard?groupId=\${data.groupId}\`;
     }
 
     event.waitUntil(
@@ -62,18 +89,34 @@ self.addEventListener("notificationclick", (event) => {
                 includeUncontrolled: true,
             })
             .then((clientList) => {
-                // 이미 열려있는 창이 있으면 포커스
                 for (let i = 0; i < clientList.length; i++) {
                     const client = clientList[i];
                     if (client.url.includes(url) && "focus" in client) {
                         return client.focus();
                     }
                 }
-                // 새 창 열기
                 if (clients.openWindow) {
                     return clients.openWindow(url);
                 }
             })
     );
 });
+`;
 
+  try {
+    const swContent = readFileSync(swPath, "utf-8");
+    // 파일 끝에 푸시 핸들러 추가
+    const newContent = swContent + pushHandlers;
+    writeFileSync(swPath, newContent, "utf-8");
+    console.log("✓ 푸시 알림 핸들러가 Service Worker에 주입되었습니다.");
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "알 수 없는 오류";
+    console.error("✗ Service Worker 파일을 수정할 수 없습니다:", errorMessage);
+    process.exit(1);
+  }
+}
+
+main().catch((error) => {
+  console.error("✗ 스크립트 실행 중 오류 발생:", error);
+  process.exit(1);
+});

@@ -8,7 +8,6 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: "auto",
-      filename: "sw.js",
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
         name: "우리회계",
@@ -39,8 +38,8 @@ export default defineConfig({
           },
         ],
       },
+      strategies: "generateSW",
       workbox: {
-        // 빌드 성능 최적화: dist 디렉토리 내의 필수 파일만 스캔
         globPatterns: [
           "assets/**/*.{js,css}",
           "*.{html,ico,png,svg,webmanifest}",
@@ -48,11 +47,10 @@ export default defineConfig({
           "apple-touch-icon.png",
           "pwa-*.png",
         ],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
-        // 빌드 성능 개선: 불필요한 파일 제외
         globIgnores: [
           "**/node_modules/**/*",
           "**/.git/**/*",
@@ -63,11 +61,8 @@ export default defineConfig({
           "workbox-*.js",
           "registerSW.js",
         ],
-        // Service Worker 파일명 명시
-        swDest: "sw.js",
-        // 빌드 성능 최적화: 디렉토리 스캔 범위 제한
+        swDest: "dist/sw.js",
         globDirectory: "dist",
-        // 캐싱 전략 단순화
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./i,
@@ -76,7 +71,7 @@ export default defineConfig({
               cacheName: "api-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                maxAgeSeconds: 60 * 60 * 24,
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -84,10 +79,9 @@ export default defineConfig({
             },
           },
         ],
+        // 푸시 알림 이벤트 리스너 추가
+        additionalManifestEntries: [],
       },
-      strategies: "injectManifest",
-      srcDir: "public",
-      filename: "sw-custom.js",
       devOptions: {
         enabled: false, // 개발 중에는 비활성화 (필요시 true로 변경)
       },

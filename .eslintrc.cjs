@@ -36,4 +36,12 @@ module.exports = {
     "react/prop-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
   },
+  overrides: [
+    {
+      files: ["vite.config.ts"],
+      parserOptions: {
+        project: null,
+      },
+    },
+  ],
 };
