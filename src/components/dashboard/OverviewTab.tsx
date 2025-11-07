@@ -11,18 +11,10 @@ import {
   setDues as apiSetDues,
 } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
-import InviteAcceptor from "../InviteAcceptor";
-import InviteCodeGenerator from "../InviteCodeGenerator";
 import CategorySettingsModal from "../CategorySettingsModal";
-import MonthlyBars from "../MonthlyBars";
-import CategoryChart from "../CategoryChart";
-import GroupSelector from "../GroupSelector";
-import PreferencesToggle from "../PreferencesToggle";
 import StatsCards from "../StatsCards";
 import ReportDownload from "../ReportDownload";
-import TransactionsList from "../TransactionsList";
 import LoadMore from "../LoadMore";
-import DuesTable from "../DuesTable";
 import TransactionForm from "../TransactionForm";
 import { Skeleton, SkeletonLines } from "../Loading";
 import { Card, SectionTitle, Input } from "../../styles/primitives";
@@ -36,6 +28,11 @@ import api from "../../services/api";
 import { toYmd, formatCurrencyKRW } from "../../utils/format";
 import { useAsync } from "../../hooks/useAsync";
 import { notifyError } from "../../utils/notify";
+import OverviewHeaderControls from "./OverviewHeaderControls";
+import MonthlySection from "./MonthlySection";
+import CategorySection from "./CategorySection";
+import RecentTransactionsSection from "./RecentTransactionsSection";
+import DuesSection from "./DuesSection";
 
 type GroupWithRole = {
   id: number;
@@ -145,56 +142,52 @@ const OverviewTab: React.FC = () => {
     })();
   }, []);
 
-  const { loading: overviewLoading, run: runOverview } = useAsync(
-    async () => {
-      if (!groupId) return;
-      const statsData = await fetchTxStats(groupId);
-      setStats(statsData);
-      const listRes = await apiFetchTransactions(groupId, 20, 1);
-      const mappedTx = (
-        (listRes.items || []) as TransactionsListResponse["items"]
-      ).map((r) => ({
-        id: r.id,
-        type: r.type,
-        amount: Number(r.amount),
-        description: r.description,
-        date: r.date,
-        receiptUrl: r.receipt_url || undefined,
-        category:
-          ((r as any).category && String((r as any).category).trim()) ||
-          "기타",
-        createdBy: r.created_by,
-      }));
-      setItems(mappedTx);
-      setTxHasMore((listRes.items || []).length === 20);
-      const monthlyData = await apiFetchMonthly(groupId, 6);
-      const m = ((monthlyData || []) as MonthlyResponse["data"]).map((r) => ({
-        month: r.month,
-        income: Number(r.income),
-        expense: Number(r.expense),
-      }));
-      setMonthly(m);
-      try {
-        const prefRes = await apiFetchPreferences();
-        setPrefs({
-          receive_dues_reminders: !!prefRes?.receive_dues_reminders,
-        });
-      } catch {
-        // ignore
-      }
-      const duesItems = await apiFetchDues(groupId);
-      const mapped = ((duesItems || []) as DuesListResponse["items"]).map(
-        (r) => ({
-          userId: r.user_id,
-          userName: r.user_name,
-          isPaid: !!r.is_paid,
-          paidAt: r.paid_at || undefined,
-        })
-      );
-      setDues(mapped);
-    },
-    [groupId]
-  );
+  const { loading: overviewLoading, run: runOverview } = useAsync(async () => {
+    if (!groupId) return;
+    const statsData = await fetchTxStats(groupId);
+    setStats(statsData);
+    const listRes = await apiFetchTransactions(groupId, 20, 1);
+    const mappedTx = (
+      (listRes.items || []) as TransactionsListResponse["items"]
+    ).map((r) => ({
+      id: r.id,
+      type: r.type,
+      amount: Number(r.amount),
+      description: r.description,
+      date: r.date,
+      receiptUrl: r.receipt_url || undefined,
+      category:
+        ((r as any).category && String((r as any).category).trim()) || "기타",
+      createdBy: r.created_by,
+    }));
+    setItems(mappedTx);
+    setTxHasMore((listRes.items || []).length === 20);
+    const monthlyData = await apiFetchMonthly(groupId, 6);
+    const m = ((monthlyData || []) as MonthlyResponse["data"]).map((r) => ({
+      month: r.month,
+      income: Number(r.income),
+      expense: Number(r.expense),
+    }));
+    setMonthly(m);
+    try {
+      const prefRes = await apiFetchPreferences();
+      setPrefs({
+        receive_dues_reminders: !!prefRes?.receive_dues_reminders,
+      });
+    } catch {
+      // ignore
+    }
+    const duesItems = await apiFetchDues(groupId);
+    const mapped = ((duesItems || []) as DuesListResponse["items"]).map(
+      (r) => ({
+        userId: r.user_id,
+        userName: r.user_name,
+        isPaid: !!r.is_paid,
+        paidAt: r.paid_at || undefined,
+      })
+    );
+    setDues(mapped);
+  }, [groupId]);
 
   useEffect(() => {
     if (!groupId) return;
@@ -318,71 +311,29 @@ const OverviewTab: React.FC = () => {
   return (
     <>
       <LoadingOverlay visible={loading} label="데이터 불러오는 중..." />
-      <Card
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 20,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            flexWrap: "wrap",
+      <Card style={{ marginBottom: 20 }}>
+        <OverviewHeaderControls
+          groups={groups}
+          groupId={groupId}
+          isAdmin={isAdminFor(groups, groupId)}
+          prefs={prefs}
+          onChangeGroup={(gid) => setGroupId(gid)}
+          onAcceptedInvite={async (gid) => {
+            setGroupId(gid);
+            const list = await fetchGroups();
+            setGroups(list || []);
           }}
-        >
-          <GroupSelector
-            groups={groups}
-            groupId={groupId}
-            onChange={(gid) => setGroupId(gid)}
-            isAdmin={isAdminFor(groups, groupId)}
-            compact
-          />
-          <InviteAcceptor
-            onAccepted={(gid) => {
-              setGroupId(gid);
-              (async () => {
-                const list = await fetchGroups();
-                setGroups(list || []);
-              })();
-            }}
-          />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <PreferencesToggle
-            checked={!!prefs?.receive_dues_reminders}
-            onToggle={async (next) => {
-              setPrefs({ receive_dues_reminders: next });
-              try {
-                await apiUpdatePreferences({ receive_dues_reminders: next });
-              } catch {
-                setPrefs({ receive_dues_reminders: !next });
-                notifyError("알림 설정 변경에 실패했습니다.");
-              }
-            }}
-            compact
-          />
-          {groupId && isAdminFor(groups, groupId) && (
-            <button
-              onClick={() => setShowCategoryModal(true)}
-              style={{
-                padding: "8px 12px",
-                background: "#4f46e5",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontWeight: 600,
-              }}
-            >
-              카테고리 설정
-            </button>
-          )}
-        </div>
+          onTogglePrefs={async (next) => {
+            setPrefs({ receive_dues_reminders: next });
+            try {
+              await apiUpdatePreferences({ receive_dues_reminders: next });
+            } catch {
+              setPrefs({ receive_dues_reminders: !next });
+              notifyError("알림 설정 변경에 실패했습니다.");
+            }
+          }}
+          onOpenCategory={() => setShowCategoryModal(true)}
+        />
       </Card>
 
       <StatsCards
@@ -392,59 +343,15 @@ const OverviewTab: React.FC = () => {
         totalExpense={formatted.totalExpense}
       />
 
-      <Card style={{ marginBottom: 20 }}>
-        <SectionTitle>월별 수입/지출 추이</SectionTitle>
-        {loading ? (
-          <Skeleton height={300} />
-        ) : monthly.length === 0 ? (
-          <p style={{ color: "#999" }}>데이터가 없습니다.</p>
-        ) : (
-          <MonthlyBars data={monthly} />
-        )}
-      </Card>
+      <MonthlySection loading={loading} data={monthly} />
 
-      <Card style={{ marginBottom: 20 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 16,
-          }}
-        >
-          <SectionTitle style={{ margin: 0 }}>항목별 집계</SectionTitle>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {/* <label style={{ color: "#555" }}>기간</label> */}
-            <Input
-              type="date"
-              value={categoryRange.from}
-              onChange={(e) =>
-                setCategoryRange((prev) => ({ ...prev, from: e.target.value }))
-              }
-            />
-            <span style={{ color: "#777" }}>~</span>
-            <Input
-              type="date"
-              value={categoryRange.to}
-              onChange={(e) =>
-                setCategoryRange((prev) => ({ ...prev, to: e.target.value }))
-              }
-            />
-          </div>
-        </div>
-        {loading || categoryLoading ? (
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
-          >
-            <Skeleton height={300} />
-            <Skeleton height={300} />
-          </div>
-        ) : byCategory.length === 0 ? (
-          <p style={{ color: "#999" }}>데이터가 없습니다.</p>
-        ) : (
-          <CategoryChart data={byCategory} />
-        )}
-      </Card>
+      <CategorySection
+        loading={loading}
+        categoryLoading={categoryLoading}
+        range={categoryRange}
+        onChangeRange={setCategoryRange}
+        data={byCategory}
+      />
 
       <ReportDownload
         range={reportRange}
@@ -452,37 +359,14 @@ const OverviewTab: React.FC = () => {
         onDownload={downloadReport}
       />
 
-      <Card>
-        <SectionTitle>최근 거래 내역</SectionTitle>
-        {loading ? (
-          <div>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "10px 0",
-                  borderBottom: "1px solid #f0f0f0",
-                }}
-              >
-                <Skeleton width={120} height={22} />
-                <Skeleton width={80} height={22} />
-                <Skeleton height={22} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <TransactionsList
-            items={items}
-            groupId={groupId || 0}
-            isAdmin={isAdminFor(groups, groupId)}
-            currentUserId={currentUser?.id}
-            onAfterChange={refreshAll}
-          />
-        )}
-      </Card>
+      <RecentTransactionsSection
+        loading={loading}
+        items={items}
+        groupId={groupId || 0}
+        isAdmin={isAdminFor(groups, groupId)}
+        currentUserId={currentUser?.id}
+        onAfterChange={refreshAll}
+      />
 
       <LoadMore
         visible={txHasMore}
@@ -516,54 +400,17 @@ const OverviewTab: React.FC = () => {
         }}
       />
 
-      <Card style={{ marginTop: 20 }}>
-        <SectionTitle>회비 납부 현황</SectionTitle>
-        {loading ? (
-          <div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                gap: 12,
-                paddingBottom: 12,
-                borderBottom: "1px solid #eee",
-                marginBottom: 8,
-              }}
-            >
-              <Skeleton height={18} width={120} />
-              <Skeleton height={18} width={80} />
-              <Skeleton height={18} width={80} />
-            </div>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  gap: 12,
-                  padding: "8px 0",
-                  borderBottom: "1px solid #f6f6f6",
-                }}
-              >
-                <Skeleton height={16} />
-                <Skeleton height={16} width={80} />
-                <Skeleton height={16} width={100} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <DuesTable
-            dues={dues}
-            isAdmin={
-              !!(
-                groupId &&
-                groups.find((g) => g.id === groupId)?.user_role === "admin"
-              )
-            }
-            onToggle={toggleDues}
-          />
-        )}
-      </Card>
+      <DuesSection
+        loading={loading}
+        dues={dues}
+        isAdmin={
+          !!(
+            groupId &&
+            groups.find((g) => g.id === groupId)?.user_role === "admin"
+          )
+        }
+        onToggle={toggleDues}
+      />
 
       <TransactionForm groupId={groupId || 0} onSubmitted={refreshAll} />
 

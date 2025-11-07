@@ -129,7 +129,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
             </Pie>
             <Tooltip
               formatter={(v: number, n: string) => [
-                nf.format(Number(v)) + "원",
+                formatNumberKR(Number(v)) + "원",
                 n,
               ]}
               contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
