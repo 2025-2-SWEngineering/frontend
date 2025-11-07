@@ -101,8 +101,9 @@ const SkeletonGrid = styled.div`
   grid-template-columns: 1fr;
   gap: 16px;
 
-  ${media.tablet} {
+  ${media.desktop} {
     grid-template-columns: 1fr 1fr;
+    gap: 24px;
   }
 `;
 
