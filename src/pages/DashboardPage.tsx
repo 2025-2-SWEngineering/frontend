@@ -4,6 +4,7 @@ import DashboardHeader from "../components/dashboard/DashboardHeader";
 import OverviewTab from "../components/dashboard/OverviewTab";
 import GroupTab from "../components/dashboard/GroupTab";
 import LogoutButton from "../components/LogoutButton";
+import { Button } from "../styles/primitives";
 
 const DashboardContainer = styled.div`
   max-width: 1200px;
@@ -17,8 +18,7 @@ const Tabs = styled.div`
   margin-bottom: 16px;
 `;
 
-const Tab = styled.button<{ $active: boolean }>`
-  appearance: none;
+const TabButton = styled(Button)<{ $active: boolean }>`
   background: ${(p) => (p.$active ? "#f8fafc" : "transparent")};
   color: ${(p) => (p.$active ? "#111827" : "#6b7280")};
   border: none;
@@ -26,13 +26,6 @@ const Tab = styled.button<{ $active: boolean }>`
   padding: 12px 20px;
   font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  &:hover {
-    background: #f3f4f6;
-    color: #111827;
-  }
 `;
 
 const DashboardPage: React.FC = () => {
@@ -52,18 +45,12 @@ const DashboardPage: React.FC = () => {
       </div>
 
       <Tabs>
-        <Tab
-          $active={activeTab === "overview"}
-          onClick={() => setActiveTab("overview")}
-        >
+        <TabButton $active={activeTab === "overview"} onClick={() => setActiveTab("overview")} $variant="outline">
           요약
-        </Tab>
-        <Tab
-          $active={activeTab === "group"}
-          onClick={() => setActiveTab("group")}
-        >
+        </TabButton>
+        <TabButton $active={activeTab === "group"} onClick={() => setActiveTab("group")} $variant="outline">
           그룹
-        </Tab>
+        </TabButton>
       </Tabs>
 
       {activeTab === "group" ? <GroupTab /> : <OverviewTab />}

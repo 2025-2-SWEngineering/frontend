@@ -9,6 +9,7 @@ import {
   parseReceipt,
 } from "../api/client";
 import DateTimeModal from "./DateTimeModal";
+import { Input, Select, Button } from "../styles/primitives";
 import uploadClient from "../services/uploadClient";
 
 type Props = {
@@ -311,22 +312,14 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         {" "}
         <h2 style={{ marginBottom: 16, color: "#333" }}>거래 등록</h2>
         {form.file ? (
-          <button
+          <Button
             type="button"
             onClick={handleOcr}
             disabled={ocrLoading}
-            style={{
-              padding: 10,
-              borderRadius: 8,
-              borderColor: ocrLoading ? "#ddd" : "#667eea",
-              border: "1px solid #ddd",
-              background: "#fff",
-              cursor: ocrLoading ? "default" : "pointer",
-              whiteSpace: "nowrap",
-            }}
+            $variant="outline"
           >
             {ocrLoading ? "분석중..." : "영수증 AI 분석"}
-          </button>
+          </Button>
         ) : null}
       </div>
 
@@ -340,32 +333,29 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             marginBottom: 12,
           }}
         >
-          <select
+          <Select
             value={form.type}
             onChange={(e) =>
               setForm({ ...form, type: e.target.value as "income" | "expense" })
             }
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           >
             <option value="income">수입</option>
             <option value="expense">지출</option>
-          </select>
-          <input
+          </Select>
+          <Input
             type="number"
             placeholder="금액"
             value={form.amount}
             onChange={(e) => setForm({ ...form, amount: e.target.value })}
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
-          <input
+          <Input
             type="text"
             placeholder="설명"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
           <div style={{ display: "flex", gap: 8 }}>
-            <input
+            <Input
               type="text"
               readOnly
               value={(function fmt(v: string) {
@@ -382,27 +372,15 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
                   return v;
                 }
               })(form.date)}
-              style={{
-                padding: 10,
-                border: "1px solid #ddd",
-                borderRadius: 8,
-                flex: 1,
-                background: "#f9fafb",
-              }}
+              style={{ flex: 1, background: "#f9fafb" }}
             />
-            <button
+            <Button
               type="button"
+              $variant="outline"
               onClick={() => setShowDtModal(true)}
-              style={{
-                padding: 10,
-                borderRadius: 8,
-                border: "1px solid #ddd",
-                background: "#fff",
-                cursor: "pointer",
-              }}
             >
               시간 설정
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -414,10 +392,9 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             gap: 12,
           }}
         >
-          <select
+          <Select
             value={form.category || ""}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           >
             <option value="">카테고리 선택</option>
             {suggestions.map((c) => (
@@ -426,9 +403,9 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
               </option>
             ))}
             <option value="기타">기타</option>
-          </select>
+          </Select>
           <div style={{ display: "flex", gap: 8 }}>
-            <input
+            <Input
               type="file"
               accept="image/*,application/pdf"
               ref={fileInputRef}
@@ -442,28 +419,10 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
                 }
                 setForm({ ...form, file: f });
               }}
-              style={{
-                padding: 10,
-                border: "1px solid #ddd",
-                borderRadius: 8,
-                flex: 1,
-              }}
+              style={{ flex: 1 }}
             />
           </div>
-          <button
-            type="submit"
-            style={{
-              padding: 10,
-              borderRadius: 8,
-              background: "#667eea",
-              color: "#fff",
-              border: "none",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            등록
-          </button>
+          <Button type="submit">등록</Button>
         </div>
       </form>
       <DateTimeModal

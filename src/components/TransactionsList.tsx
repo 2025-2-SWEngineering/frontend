@@ -2,6 +2,7 @@ import React from "react";
 import api from "../services/api";
 import { removeTransaction } from "../api/client";
 import { Button, Badge } from "../styles/primitives";
+import { formatDisplayDateTime } from "../utils/format";
 
 type Item = {
   id: number;
@@ -59,15 +60,7 @@ const TransactionsList: React.FC<Props> = ({
     }
   };
 
-  const fmtYmdHm = (s: string) => {
-    const d = new Date(s);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mm = String(d.getMinutes()).padStart(2, "0");
-    return `${y}-${m}-${day} ${hh}:${mm}`;
-  };
+  // 날짜 표시는 유틸 함수로 통일
 
   if (items.length === 0) {
     return <p style={{ color: "#999" }}>아직 거래 내역이 없습니다.</p>;
@@ -109,9 +102,7 @@ const TransactionsList: React.FC<Props> = ({
             <span>{it.description}</span>
           </span>
           <span style={{ color: "#999", minWidth: 120, textAlign: "right" }}>
-            {/^[\d]{4}-\d{2}-\d{2}$/.test(it.date)
-              ? `${it.date} 00:00`
-              : fmtYmdHm(it.date)}
+            {formatDisplayDateTime(it.date)}
           </span>
           {it.receiptUrl && (
             <Button $variant="outline" onClick={() => openReceipt(it.receiptUrl!)} style={{ marginLeft: 12, padding: "2px 8px" }}>

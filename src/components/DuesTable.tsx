@@ -1,5 +1,6 @@
 import React from "react";
 import { Table, Th, Td } from "../styles/primitives";
+import { formatYmd } from "../utils/format";
 
 type Dues = {
   userId: number;
@@ -49,7 +50,7 @@ const DuesTable: React.FC<Props> = ({ dues, isAdmin, onToggle }) => {
               )}
             </Td>
             <Td style={{ textAlign: "right", color: "#999" }}>
-              {d.paidAt ? d.paidAt.slice(0, 10) : "-"}
+              {d.paidAt ? formatYmd(d.paidAt) : "-"}
             </Td>
           </tr>
         ))}

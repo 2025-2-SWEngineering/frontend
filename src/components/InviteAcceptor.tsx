@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { acceptInvitation } from "../api/client";
+import { Input, Button } from "../styles/primitives";
 
 type Props = {
   onAccepted: (groupId: number) => void;
@@ -28,26 +29,10 @@ const InviteAcceptor: React.FC<Props> = ({ onAccepted }) => {
 
   return (
     <form onSubmit={submit} style={{ display: "inline-flex", gap: 8 }}>
-      <input
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder="초대 코드 입력"
-        style={{ padding: 8, border: "1px solid #ddd", borderRadius: 8 }}
-      />
-      <button
-        type="submit"
-        disabled={loading}
-        style={{
-          padding: "6px 10px",
-          background: "#10b981",
-          color: "#fff",
-          border: "none",
-          borderRadius: 6,
-          cursor: "pointer",
-        }}
-      >
+      <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="초대 코드 입력" />
+      <Button type="submit" disabled={loading} style={{ background: "#10b981" }}>
         {loading ? "가입 중..." : "코드로 가입"}
-      </button>
+      </Button>
     </form>
   );
 };

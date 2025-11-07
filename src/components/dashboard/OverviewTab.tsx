@@ -25,7 +25,7 @@ import LoadMore from "../LoadMore";
 import DuesTable from "../DuesTable";
 import TransactionForm from "../TransactionForm";
 import { Skeleton, SkeletonLines } from "../Loading";
-import { Card, SectionTitle } from "../../styles/primitives";
+import { Card, SectionTitle, Input } from "../../styles/primitives";
 import LoadingOverlay from "../LoadingOverlay";
 import type {
   TransactionsListResponse,
@@ -33,7 +33,7 @@ import type {
   DuesListResponse,
 } from "../../types/api";
 import api from "../../services/api";
-import { toYmd } from "../../utils/format";
+import { toYmd, formatCurrencyKRW } from "../../utils/format";
 
 type GroupWithRole = {
   id: number;
@@ -112,11 +112,10 @@ const OverviewTab: React.FC = () => {
   }, []);
 
   const formatted = useMemo(() => {
-    const nf = new Intl.NumberFormat("ko-KR");
     return {
-      currentBalance: nf.format(stats?.currentBalance ?? 0) + "원",
-      totalIncome: nf.format(stats?.totalIncome ?? 0) + "원",
-      totalExpense: nf.format(stats?.totalExpense ?? 0) + "원",
+      currentBalance: formatCurrencyKRW(stats?.currentBalance ?? 0),
+      totalIncome: formatCurrencyKRW(stats?.totalIncome ?? 0),
+      totalExpense: formatCurrencyKRW(stats?.totalExpense ?? 0),
     };
   }, [stats]);
 
@@ -421,30 +420,20 @@ const OverviewTab: React.FC = () => {
           <SectionTitle style={{ margin: 0 }}>항목별 집계</SectionTitle>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {/* <label style={{ color: "#555" }}>기간</label> */}
-            <input
+            <Input
               type="date"
               value={categoryRange.from}
               onChange={(e) =>
                 setCategoryRange((prev) => ({ ...prev, from: e.target.value }))
               }
-              style={{
-                padding: "6px 10px",
-                borderRadius: 6,
-                border: "1px solid #ddd",
-              }}
             />
             <span style={{ color: "#777" }}>~</span>
-            <input
+            <Input
               type="date"
               value={categoryRange.to}
               onChange={(e) =>
                 setCategoryRange((prev) => ({ ...prev, to: e.target.value }))
               }
-              style={{
-                padding: "6px 10px",
-                borderRadius: 6,
-                border: "1px solid #ddd",
-              }}
             />
           </div>
         </div>

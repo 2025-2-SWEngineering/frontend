@@ -9,6 +9,7 @@ import {
   Bar,
   Cell,
 } from "recharts";
+import { formatNumberKR } from "../utils/format";
 
 type Datum = { month: string; income: number; expense: number };
 
@@ -17,8 +18,7 @@ type Props = {
 };
 
 const MonthlyBars: React.FC<Props> = ({ data }) => {
-  const currency = (v: number) =>
-    new Intl.NumberFormat("ko-KR").format(Number(v)) + "원";
+  const currency = (v: number) => formatNumberKR(Number(v)) + "원";
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const p = payload[0]?.payload || {};

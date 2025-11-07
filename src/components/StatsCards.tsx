@@ -1,4 +1,5 @@
 import React from "react";
+import { Card } from "../styles/primitives";
 
 type Props = {
   loading: boolean;
@@ -7,12 +8,7 @@ type Props = {
   totalExpense: string;
 };
 
-const cardStyle: React.CSSProperties = {
-  background: "white",
-  padding: 24,
-  borderRadius: 12,
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-};
+// 카드 스타일은 공통 Card로 대체
 
 const StatsCards: React.FC<Props> = ({
   loading,
@@ -29,26 +25,26 @@ const StatsCards: React.FC<Props> = ({
         marginBottom: 20,
       }}
     >
-      <div style={cardStyle}>
+      <Card>
         <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>
           현재 잔액
         </p>
         <h2 style={{ color: "#333", fontSize: 32, fontWeight: "bold" }}>
           {loading ? "-" : currentBalance}
         </h2>
-      </div>
-      <div style={cardStyle}>
+      </Card>
+      <Card>
         <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>총 수입</p>
         <h2 style={{ color: "#333", fontSize: 32, fontWeight: "bold" }}>
           {loading ? "-" : totalIncome}
         </h2>
-      </div>
-      <div style={cardStyle}>
+      </Card>
+      <Card>
         <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>총 지출</p>
         <h2 style={{ color: "#333", fontSize: 32, fontWeight: "bold" }}>
           {loading ? "-" : totalExpense}
         </h2>
-      </div>
+      </Card>
     </div>
   );
 };

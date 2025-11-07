@@ -7,6 +7,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { formatNumberKR } from "../utils/format";
 
 type CategoryDatum = {
   category: string;
@@ -33,7 +34,6 @@ const COLORS = [
 ];
 
 const CategoryChart: React.FC<Props> = ({ data }) => {
-  const nf = new Intl.NumberFormat("ko-KR");
   const incomeTotal = data.reduce(
     (acc, d) => acc + Math.max(0, d.income || 0),
     0
@@ -78,7 +78,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
             </Pie>
             <Tooltip
               formatter={(v: number, n: string) => [
-                nf.format(Number(v)) + "원",
+                formatNumberKR(Number(v)) + "원",
                 n,
               ]}
               contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
@@ -101,7 +101,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
                 fontWeight={700}
                 fill="#111827"
               >
-                {nf.format(incomeTotal)}원
+                {formatNumberKR(incomeTotal)}원
               </tspan>
             </text>
           </PieChart>
@@ -151,7 +151,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
                 fontWeight={700}
                 fill="#111827"
               >
-                {nf.format(expenseTotal)}원
+                {formatNumberKR(expenseTotal)}원
               </tspan>
             </text>
           </PieChart>
