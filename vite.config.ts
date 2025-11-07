@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
+      includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
         name: "우리회계",
         short_name: "우리회계",
@@ -39,6 +39,12 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+        // 빌드 성능 개선: 불필요한 파일 제외
+        globIgnores: ["**/node_modules/**/*", "**/.git/**/*", "**/dist/**/*"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./i,
@@ -56,6 +62,7 @@ export default defineConfig({
           },
         ],
       },
+      strategies: "generateSW",
       devOptions: {
         enabled: false, // 개발 중에는 비활성화 (필요시 true로 변경)
       },
