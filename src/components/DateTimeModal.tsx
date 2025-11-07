@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ModalBackdrop, ModalCard, Button, Input } from "../styles/primitives";
 
 type Props = {
   visible: boolean;
@@ -53,63 +54,36 @@ const DateTimeModal: React.FC<Props> = ({ visible, initialIso, onClose, onSave }
   if (!visible) return null;
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.35)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 50,
-        padding: 16,
-      }}
-      onClick={onClose}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "min(420px, 96vw)",
-          background: "#fff",
-          borderRadius: 12,
-          boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-          padding: 20,
-        }}
-      >
+    <ModalBackdrop role="dialog" aria-modal="true" onClick={onClose}>
+      <ModalCard onClick={(e) => e.stopPropagation()}>
         <h3 style={{ marginTop: 0, marginBottom: 12, color: "#111827" }}>거래 시간 설정</h3>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          <input
+          <Input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
-          <input
+          <Input
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            style={{ padding: 10, border: "1px solid #ddd", borderRadius: 8 }}
           />
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-          <button onClick={onClose} style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", cursor: "pointer" }}>취소</button>
-          <button
+          <Button $variant="outline" onClick={onClose}>취소</Button>
+          <Button
             onClick={() => {
               if (!date || !time) return;
-              // local -> ISO
               const iso = new Date(`${date}T${time}:00`).toISOString();
               onSave(iso);
               onClose();
             }}
-            style={{ padding: "8px 12px", borderRadius: 8, background: "#111827", color: "#fff", border: "none", cursor: "pointer" }}
           >
             저장
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </ModalCard>
+    </ModalBackdrop>
   );
 };
 

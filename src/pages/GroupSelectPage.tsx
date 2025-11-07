@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Card, Button, Input } from "../styles/primitives";
 import { fetchGroups, createNewGroup } from "../api/client";
 import InviteAcceptor from "../components/InviteAcceptor";
 import LogoutButton from "../components/LogoutButton";
@@ -9,13 +10,6 @@ const Container = styled.div`
   max-width: 720px;
   margin: 0 auto;
   padding: 40px 20px;
-`;
-
-const Card = styled.div`
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 `;
 
 const GroupSelectPage: React.FC = () => {
@@ -64,7 +58,10 @@ const GroupSelectPage: React.FC = () => {
 
   return (
     <Container>
-      <LoadingOverlay visible={loadingGroups || loading} label={loading ? "그룹 생성 중..." : "그룹 불러오는 중..."} />
+      <LoadingOverlay
+        visible={loadingGroups || loading}
+        label={loading ? "그룹 생성 중..." : "그룹 불러오는 중..."}
+      />
       <LogoutButton />
       <h1 style={{ color: "#333", marginBottom: 12 }}>그룹 선택</h1>
       <p style={{ color: "#666", marginBottom: 20 }}>
@@ -75,9 +72,33 @@ const GroupSelectPage: React.FC = () => {
         {loadingGroups ? (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {Array.from({ length: 4 }).map((_, i) => (
-              <li key={i} style={{ padding: "10px 0", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #f0f0f0" }}>
-                <div style={{ width: 160, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
-                <div style={{ width: 80, height: 28, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
+              <li
+                key={i}
+                style={{
+                  padding: "10px 0",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  borderBottom: "1px solid #f0f0f0",
+                }}
+              >
+                <div
+                  style={{
+                    width: 160,
+                    height: 18,
+                    background: "#f3f4f6",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 8,
+                  }}
+                />
+                <div
+                  style={{
+                    width: 80,
+                    height: 28,
+                    background: "#f3f4f6",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 8,
+                  }}
+                />
               </li>
             ))}
           </ul>
@@ -96,18 +117,9 @@ const GroupSelectPage: React.FC = () => {
                 }}
               >
                 <span style={{ color: "#333" }}>{g.name}</span>
-                <button
-                  onClick={() => enterGroup(g.id)}
-                  style={{
-                    padding: "6px 10px",
-                    borderRadius: 8,
-                    border: "1px solid #ddd",
-                    background: "#fff",
-                    cursor: "pointer",
-                  }}
-                >
+                <Button $variant="outline" onClick={() => enterGroup(g.id)}>
                   들어가기
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -120,31 +132,15 @@ const GroupSelectPage: React.FC = () => {
         <h2 style={{ marginBottom: 12, color: "#333" }}>새 그룹 생성</h2>
         <form onSubmit={createGroup}>
           <div style={{ display: "flex", gap: 8 }}>
-            <input
+            <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="그룹명 입력"
-              style={{
-                flex: 1,
-                padding: 10,
-                border: "1px solid #ddd",
-                borderRadius: 8,
-              }}
+              style={{ flex: 1 }}
             />
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                padding: "10px 16px",
-                borderRadius: 8,
-                background: "#667eea",
-                color: "#fff",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
+            <Button type="submit" disabled={loading}>
               {loading ? "생성 중..." : "생성"}
-            </button>
+            </Button>
           </div>
           <p style={{ color: "#999", marginTop: 8 }}>
             생성자는 자동으로 관리자 권한이 부여됩니다.

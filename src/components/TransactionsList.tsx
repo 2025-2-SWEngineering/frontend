@@ -1,6 +1,7 @@
 import React from "react";
 import api from "../services/api";
 import { removeTransaction } from "../api/client";
+import { Button, Badge } from "../styles/primitives";
 
 type Item = {
   id: number;
@@ -104,19 +105,7 @@ const TransactionsList: React.FC<Props> = ({
               gap: 8,
             }}
           >
-            <span
-              style={{
-                background: "#f3f4f6",
-                border: "1px solid #e5e7eb",
-                color: "#4b5563",
-                borderRadius: 999,
-                padding: "2px 8px",
-                fontSize: 13,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {(it.category && it.category.trim()) || "기타"}
-            </span>
+            <Badge>{(it.category && it.category.trim()) || "기타"}</Badge>
             <span>{it.description}</span>
           </span>
           <span style={{ color: "#999", minWidth: 120, textAlign: "right" }}>
@@ -125,36 +114,14 @@ const TransactionsList: React.FC<Props> = ({
               : fmtYmdHm(it.date)}
           </span>
           {it.receiptUrl && (
-            <button
-              onClick={() => openReceipt(it.receiptUrl!)}
-              style={{
-                marginLeft: 12,
-                color: "#667eea",
-                background: "transparent",
-                border: "1px solid #c7d2fe",
-                borderRadius: 6,
-                padding: "2px 8px",
-                cursor: "pointer",
-              }}
-            >
+            <Button $variant="outline" onClick={() => openReceipt(it.receiptUrl!)} style={{ marginLeft: 12, padding: "2px 8px" }}>
               영수증
-            </button>
+            </Button>
           )}
           {canDelete(it) && (
-            <button
-              onClick={() => handleDelete(it.id)}
-              style={{
-                marginLeft: 12,
-                color: "#ef4444",
-                background: "transparent",
-                border: "1px solid #fca5a5",
-                borderRadius: 6,
-                padding: "2px 8px",
-                cursor: "pointer",
-              }}
-            >
+            <Button $variant="outline" onClick={() => handleDelete(it.id)} style={{ marginLeft: 12, padding: "2px 8px", borderColor: "#fca5a5", color: "#ef4444" }}>
               삭제
-            </button>
+            </Button>
           )}
         </li>
       ))}

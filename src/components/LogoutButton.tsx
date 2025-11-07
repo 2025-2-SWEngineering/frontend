@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "../styles/primitives";
 
 const LogoutButton: React.FC = () => {
   const handleLogout = () => {
@@ -10,20 +11,9 @@ const LogoutButton: React.FC = () => {
   };
 
   return (
-    <button
-      onClick={handleLogout}
-      style={{
-        padding: "8px 12px",
-        background: "#ef4444",
-        color: "#fff",
-        border: "none",
-        borderRadius: 8,
-        cursor: "pointer",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-      }}
-    >
+    <Button $variant="danger" onClick={handleLogout}>
       로그아웃
-    </button>
+    </Button>
   );
 };
 

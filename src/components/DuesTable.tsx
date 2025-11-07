@@ -1,4 +1,5 @@
 import React from "react";
+import { Table, Th, Td } from "../styles/primitives";
 
 type Dues = {
   userId: number;
@@ -18,54 +19,19 @@ const DuesTable: React.FC<Props> = ({ dues, isAdmin, onToggle }) => {
     return <p style={{ color: "#999" }}>회원 정보가 없습니다.</p>;
   }
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <Table>
       <thead>
         <tr>
-          <th
-            style={{
-              textAlign: "left",
-              padding: 8,
-              color: "#666",
-              borderBottom: "1px solid #eee",
-            }}
-          >
-            이름
-          </th>
-          <th
-            style={{
-              textAlign: "center",
-              padding: 8,
-              color: "#666",
-              borderBottom: "1px solid #eee",
-            }}
-          >
-            상태
-          </th>
-          <th
-            style={{
-              textAlign: "right",
-              padding: 8,
-              color: "#666",
-              borderBottom: "1px solid #eee",
-            }}
-          >
-            납부일
-          </th>
+          <Th style={{ textAlign: "left" }}>이름</Th>
+          <Th style={{ textAlign: "center" }}>상태</Th>
+          <Th style={{ textAlign: "right" }}>납부일</Th>
         </tr>
       </thead>
       <tbody>
         {dues.map((d) => (
           <tr key={d.userId}>
-            <td style={{ padding: 8, borderBottom: "1px solid #f6f6f6" }}>
-              {d.userName}
-            </td>
-            <td
-              style={{
-                padding: 8,
-                borderBottom: "1px solid #f6f6f6",
-                textAlign: "center",
-              }}
-            >
+            <Td>{d.userName}</Td>
+            <Td style={{ textAlign: "center" }}>
               {isAdmin ? (
                 <label style={{ cursor: "pointer" }}>
                   <input
@@ -81,21 +47,14 @@ const DuesTable: React.FC<Props> = ({ dues, isAdmin, onToggle }) => {
                   {d.isPaid ? "완납" : "미납"}
                 </span>
               )}
-            </td>
-            <td
-              style={{
-                padding: 8,
-                borderBottom: "1px solid #f6f6f6",
-                textAlign: "right",
-                color: "#999",
-              }}
-            >
+            </Td>
+            <Td style={{ textAlign: "right", color: "#999" }}>
               {d.paidAt ? d.paidAt.slice(0, 10) : "-"}
-            </td>
+            </Td>
           </tr>
         ))}
       </tbody>
-    </table>
+    </Table>
   );
 };
 

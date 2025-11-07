@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 type Props = {
   checked: boolean;
@@ -9,17 +10,28 @@ type Props = {
 const PreferencesToggle: React.FC<Props> = ({ checked, onToggle, compact }) => {
   return (
     <div style={{ marginTop: compact ? 0 : 8, display: "inline-flex", alignItems: "center" }}>
-      <label style={{ color: "#666" }}>
-        <input
+      <Label>
+        <Checkbox
           type="checkbox"
           checked={checked}
           onChange={(e) => onToggle(e.target.checked)}
-          style={{ marginRight: 8, width: 16, height: 16 }}
         />
         회비 미납 자동 알림 수신
-      </label>
+      </Label>
     </div>
   );
 };
 
 export default PreferencesToggle;
+
+const Label = styled.label`
+  color: #666;
+  display: inline-flex;
+  align-items: center;
+`;
+
+const Checkbox = styled.input`
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+`;

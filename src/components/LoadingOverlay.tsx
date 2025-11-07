@@ -42,7 +42,16 @@ const LoadingOverlay: React.FC<Props> = ({ visible, label }) => {
         <div style={{ marginBottom: 12, color: "#111827", fontWeight: 700 }}>
           {label || "로딩 중..."}
         </div>
-        <div aria-hidden style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 4, paddingBottom: 4 }}>
+        <div
+          aria-hidden
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingTop: 4,
+            paddingBottom: 4,
+          }}
+        >
           <div
             style={{
               width: 48,
@@ -60,5 +69,3 @@ const LoadingOverlay: React.FC<Props> = ({ visible, label }) => {
 };
 
 export default LoadingOverlay;
-
-
