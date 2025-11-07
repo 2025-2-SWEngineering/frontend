@@ -145,64 +145,68 @@ const OverviewTab: React.FC = () => {
     })();
   }, []);
 
+  const { loading: overviewLoading, run: runOverview } = useAsync(
+    async () => {
+      if (!groupId) return;
+      const statsData = await fetchTxStats(groupId);
+      setStats(statsData);
+      const listRes = await apiFetchTransactions(groupId, 20, 1);
+      const mappedTx = (
+        (listRes.items || []) as TransactionsListResponse["items"]
+      ).map((r) => ({
+        id: r.id,
+        type: r.type,
+        amount: Number(r.amount),
+        description: r.description,
+        date: r.date,
+        receiptUrl: r.receipt_url || undefined,
+        category:
+          ((r as any).category && String((r as any).category).trim()) ||
+          "기타",
+        createdBy: r.created_by,
+      }));
+      setItems(mappedTx);
+      setTxHasMore((listRes.items || []).length === 20);
+      const monthlyData = await apiFetchMonthly(groupId, 6);
+      const m = ((monthlyData || []) as MonthlyResponse["data"]).map((r) => ({
+        month: r.month,
+        income: Number(r.income),
+        expense: Number(r.expense),
+      }));
+      setMonthly(m);
+      try {
+        const prefRes = await apiFetchPreferences();
+        setPrefs({
+          receive_dues_reminders: !!prefRes?.receive_dues_reminders,
+        });
+      } catch {
+        // ignore
+      }
+      const duesItems = await apiFetchDues(groupId);
+      const mapped = ((duesItems || []) as DuesListResponse["items"]).map(
+        (r) => ({
+          userId: r.user_id,
+          userName: r.user_name,
+          isPaid: !!r.is_paid,
+          paidAt: r.paid_at || undefined,
+        })
+      );
+      setDues(mapped);
+    },
+    [groupId]
+  );
+
   useEffect(() => {
     if (!groupId) return;
     localStorage.setItem("selectedGroupId", String(groupId));
     setTxPage(1);
     setTxHasMore(true);
-    (async () => {
-      try {
-        setLoading(true);
-        const statsData = await fetchTxStats(groupId);
-        setStats(statsData);
-        const listRes = await apiFetchTransactions(groupId, 20, 1);
-        const mappedTx = (
-          (listRes.items || []) as TransactionsListResponse["items"]
-        ).map((r) => ({
-          id: r.id,
-          type: r.type,
-          amount: Number(r.amount),
-          description: r.description,
-          date: r.date,
-          receiptUrl: r.receipt_url || undefined,
-          category:
-            ((r as any).category && String((r as any).category).trim()) ||
-            "기타",
-          createdBy: r.created_by,
-        }));
-        setItems(mappedTx);
-        setTxHasMore((listRes.items || []).length === 20);
-        const monthlyData = await apiFetchMonthly(groupId, 6);
-        const m = ((monthlyData || []) as MonthlyResponse["data"]).map((r) => ({
-          month: r.month,
-          income: Number(r.income),
-          expense: Number(r.expense),
-        }));
-        setMonthly(m);
-        // byCategory는 별도 effect에서 categoryMonths 기준으로 로딩
-        try {
-          const prefRes = await apiFetchPreferences();
-          setPrefs({
-            receive_dues_reminders: !!prefRes?.receive_dues_reminders,
-          });
-        } catch {
-          // ignore
-        }
-        const duesItems = await apiFetchDues(groupId);
-        const mapped = ((duesItems || []) as DuesListResponse["items"]).map(
-          (r) => ({
-            userId: r.user_id,
-            userName: r.user_name,
-            isPaid: !!r.is_paid,
-            paidAt: r.paid_at || undefined,
-          })
-        );
-        setDues(mapped);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [groupId]);
+    runOverview();
+  }, [groupId, runOverview]);
+
+  useEffect(() => {
+    setLoading(overviewLoading);
+  }, [overviewLoading]);
 
   const { loading: categoryLoading } = useAsync(
     async () => {

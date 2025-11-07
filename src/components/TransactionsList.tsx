@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { removeTransaction } from "../api/client";
 import { Button, Badge, AmountText } from "../styles/primitives";
 import { formatDisplayDateTime, formatCurrencyKRW } from "../utils/format";
+import { notifyError, confirmAsync } from "../utils/notify";
 import { notifyError } from "../utils/notify";
 
 type Item = {
@@ -42,7 +43,7 @@ const TransactionsList: React.FC<Props> = ({
       });
       window.open(data.url, "_blank");
     } catch {
-      alert("영수증 링크 생성에 실패했습니다.");
+      notifyError("영수증 링크 생성에 실패했습니다.");
     }
   };
 
@@ -51,7 +52,7 @@ const TransactionsList: React.FC<Props> = ({
 
   const handleDelete = async (id: number) => {
     if (!groupId) return;
-    if (!confirm("이 거래를 삭제할까요?")) return;
+    if (!(await confirmAsync("이 거래를 삭제할까요?"))) return;
     try {
       await removeTransaction(id, groupId);
       await onAfterChange();

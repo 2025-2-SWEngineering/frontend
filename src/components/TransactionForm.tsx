@@ -397,7 +397,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
               onChange={(e) => {
                 const f = e.target.files?.[0] || null;
                 if (f && f.size > MAX_FILE_SIZE) {
-                  alert("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
+                  notifyError("파일 크기 제한: 3MB 이하만 업로드 가능합니다.");
                   e.target.value = "";
                   setForm({ ...form, file: null });
                   return;
