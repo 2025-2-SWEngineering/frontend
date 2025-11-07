@@ -85,7 +85,9 @@ export default defineConfig({
           },
         ],
       },
-      strategies: "generateSW",
+      strategies: "injectManifest",
+      srcDir: "public",
+      filename: "sw-custom.js",
       devOptions: {
         enabled: false, // 개발 중에는 비활성화 (필요시 true로 변경)
       },

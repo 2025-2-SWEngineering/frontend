@@ -5,3 +5,5 @@ export { default as PreferencesToggle } from "./PreferencesToggle";
 export { default as InviteAcceptor } from "./InviteAcceptor";
 export { default as InviteCodeGenerator } from "./InviteCodeGenerator";
 export { default as ReportDownload } from "./ReportDownload";
+export { default as NotificationTest } from "./NotificationTest";
+export { default as PushNotificationButton } from "./PushNotificationButton";

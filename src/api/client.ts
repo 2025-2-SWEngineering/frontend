@@ -16,6 +16,9 @@ import type {
   OcrParseResponse,
   NotificationLogsResponse,
   DuesReminderTestResponse,
+  VapidKeyResponse,
+  PushSubscribeRequest,
+  PushUnsubscribeRequest,
 } from "../types/api";
 
 // Groups
@@ -171,4 +174,18 @@ export async function testDuesReminder(groupId: number) {
     groupId,
   });
   return data;
+}
+
+// Push Notifications
+export async function getVapidPublicKey() {
+  const { data } = await api.get<VapidKeyResponse>("/push/vapid-key");
+  return data.publicKey;
+}
+
+export async function subscribePush(subscription: PushSubscribeRequest["subscription"]) {
+  await api.post("/push/subscribe", { subscription });
+}
+
+export async function unsubscribePush(endpoint: string) {
+  await api.post<PushUnsubscribeRequest>("/push/unsubscribe", { endpoint });
 }

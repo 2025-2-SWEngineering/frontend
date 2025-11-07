@@ -107,3 +107,20 @@ export type DuesReminderTestResponse = {
   total_users: number;
   results: DuesReminderTestResult[];
 };
+
+// 푸시 알림
+export type VapidKeyResponse = {
+  publicKey: string;
+};
+export type PushSubscribeRequest = {
+  subscription: {
+    endpoint: string;
+    keys: {
+      p256dh: string;
+      auth: string;
+    };
+  };
+};
+export type PushUnsubscribeRequest = {
+  endpoint: string;
+};

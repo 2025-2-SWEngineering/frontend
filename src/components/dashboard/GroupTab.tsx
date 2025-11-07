@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchGroups, deleteGroupApi, leaveGroupApi } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
-import { GroupSelector } from "../shared";
+import { GroupSelector, PushNotificationButton } from "../shared";
 import GroupMembers from "../GroupMembers";
 import NotificationTest from "../shared/NotificationTest";
 import { Button, colors } from "../../styles/primitives";
@@ -95,6 +95,9 @@ const GroupTab: React.FC = () => {
           )}
         </div>
       )}
+      <div style={{ marginBottom: 12 }}>
+        <PushNotificationButton />
+      </div>
       {groupId && <GroupMembers groupId={groupId} isAdmin={isAdminFor(groups, groupId)} />}
       {groupId && isAdminFor(groups, groupId) && <NotificationTest groupId={groupId} />}
     </>
