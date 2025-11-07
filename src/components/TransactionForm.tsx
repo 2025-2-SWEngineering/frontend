@@ -9,7 +9,7 @@ import {
   parseReceipt,
 } from "../api/client";
 import DateTimeModal from "./DateTimeModal";
-import { incrementLoading, decrementLoading } from "../state/globalLoading";
+import uploadClient from "../services/uploadClient";
 
 type Props = {
   groupId: number;
@@ -107,18 +107,10 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     // Helper: presign path
     const tryPresign = async (): Promise<string> => {
       const presign = await presignPut(name, ctype);
-      let putRes: Response;
-      try {
-        incrementLoading();
-        putRes = await fetch(presign.url, {
-          method: "PUT",
-          headers: { "Content-Type": ctype },
-          body: file,
-        });
-      } finally {
-        decrementLoading();
-      }
-      if (!putRes.ok) {
+      const putRes = await uploadClient.put(presign.url, file, {
+        headers: { "Content-Type": ctype },
+      });
+      if (!(putRes.status >= 200 && putRes.status < 300)) {
         const err = new Error("S3_PUT_FAILED");
         // @ts-ignore
         err.code = "S3_PUT_FAILED";
