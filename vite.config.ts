@@ -44,7 +44,13 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         // 빌드 성능 개선: 불필요한 파일 제외
-        globIgnores: ["**/node_modules/**/*", "**/.git/**/*", "**/dist/**/*"],
+        globIgnores: [
+          "**/node_modules/**/*",
+          "**/.git/**/*",
+          "**/.vscode/**/*",
+          "**/src/**/*",
+          "**/*.map",
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./i,
