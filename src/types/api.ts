@@ -81,3 +81,29 @@ export type OcrParseResponse = {
     currency?: string;
   };
 };
+
+// 알림
+export type NotificationLogDTO = {
+  id: number;
+  user_id: number;
+  group_id: number;
+  type: string;
+  message: string;
+  sent_at: string;
+  user_name?: string;
+  group_name?: string;
+};
+export type NotificationLogsResponse = { logs: NotificationLogDTO[] };
+
+export type DuesReminderTestResult = {
+  user_id: number;
+  user_name: string;
+  email: string;
+  sent: boolean;
+  reason?: string;
+};
+export type DuesReminderTestResponse = {
+  group_id: number;
+  total_users: number;
+  results: DuesReminderTestResult[];
+};

@@ -14,6 +14,8 @@ import type {
   InvitationCreateResponse,
   CategoryAggResponse,
   OcrParseResponse,
+  NotificationLogsResponse,
+  DuesReminderTestResponse,
 } from "../types/api";
 
 // Groups
@@ -154,4 +156,19 @@ export async function parseReceipt(fd: FormData) {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return data.result;
+}
+
+// Notifications
+export async function fetchNotificationLogs(groupId?: number, userId?: number) {
+  const { data } = await api.get<NotificationLogsResponse>("/notifications/logs", {
+    params: { groupId, userId },
+  });
+  return data.logs || [];
+}
+
+export async function testDuesReminder(groupId: number) {
+  const { data } = await api.post<DuesReminderTestResponse>("/notifications/test/dues-reminder", {
+    groupId,
+  });
+  return data;
 }

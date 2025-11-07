@@ -3,6 +3,7 @@ import { fetchGroups, deleteGroupApi, leaveGroupApi } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
 import { GroupSelector } from "../shared";
 import GroupMembers from "../GroupMembers";
+import NotificationTest from "../shared/NotificationTest";
 import { Button, colors } from "../../styles/primitives";
 import { notifyError, confirmAsync } from "../../utils/notify";
 
@@ -95,6 +96,7 @@ const GroupTab: React.FC = () => {
         </div>
       )}
       {groupId && <GroupMembers groupId={groupId} isAdmin={isAdminFor(groups, groupId)} />}
+      {groupId && isAdminFor(groups, groupId) && <NotificationTest groupId={groupId} />}
     </>
   );
 };
