@@ -70,4 +70,13 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    port: 4173, // 터널이 프록시하는 포트
+    host: true, // 0.0.0.0 바인딩
+    // 방법 1) 해당 호스트 하나만 허용
+    // allowedHosts: ["chorus-dat-separated-val.trycloudflare.com"],
+
+    // 방법 2) trycloudflare 전체 허용(테스트/임시 주소가 자주 바뀔 때 추천)
+    allowedHosts: [".trycloudflare.com"],
+  },
 });
