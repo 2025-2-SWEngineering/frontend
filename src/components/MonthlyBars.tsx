@@ -36,9 +36,7 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
           <div style={{ fontWeight: 700, marginBottom: 6 }}>{label}</div>
           <div>수입: {currency(Number(p.income || 0))}</div>
           <div>지출: {currency(Number(p.expense || 0))}</div>
-          <div
-            style={{ marginTop: 6, color: isIncome ? "#16a34a" : "#dc2626" }}
-          >
+          <div style={{ marginTop: 6, color: isIncome ? "#16a34a" : "#dc2626" }}>
             {isIncome ? "순수익" : "순지출"}: {currency(Number(p.net || 0))}
           </div>
         </div>
@@ -55,7 +53,7 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
         const net = Math.abs(income - expense);
         return { month: d.month, net, isIncomeDominant, income, expense };
       }),
-    [data]
+    [data],
   );
   return (
     <div style={{ width: "100%", height: 300 }}>
@@ -78,26 +76,13 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="month" tickMargin={8} />
-          <YAxis
-            tickFormatter={(v) =>
-              new Intl.NumberFormat("ko-KR").format(Number(v))
-            }
-          />
+          <YAxis tickFormatter={(v) => new Intl.NumberFormat("ko-KR").format(Number(v))} />
           <Tooltip content={<CustomTooltip />} />
-          <Bar
-            dataKey="net"
-            name="순변동"
-            radius={[6, 6, 0, 0]}
-            maxBarSize={42}
-          >
+          <Bar dataKey="net" name="순변동" radius={[6, 6, 0, 0]} maxBarSize={42}>
             {mapped.map((d, idx) => (
               <Cell
                 key={`${d.month}-${idx}`}
-                fill={
-                  d.isIncomeDominant
-                    ? "url(#incomeGradient)"
-                    : "url(#expenseGradient)"
-                }
+                fill={d.isIncomeDominant ? "url(#incomeGradient)" : "url(#expenseGradient)"}
               />
             ))}
           </Bar>

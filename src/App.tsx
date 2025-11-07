@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import styled from "styled-components";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -28,22 +23,14 @@ const App: React.FC = () => {
           <Route
             path="/"
             element={
-              localStorage.getItem("token") ? (
-                <Navigate to="/groups" replace />
-              ) : (
-                <LoginPage />
-              )
+              localStorage.getItem("token") ? <Navigate to="/groups" replace /> : <LoginPage />
             }
           />
           <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/groups"
             element={
-              localStorage.getItem("token") ? (
-                <GroupSelectPage />
-              ) : (
-                <Navigate to="/" replace />
-              )
+              localStorage.getItem("token") ? <GroupSelectPage /> : <Navigate to="/" replace />
             }
           />
           <Route

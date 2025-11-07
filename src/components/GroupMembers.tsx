@@ -54,16 +54,89 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
       <h2 style={{ marginBottom: 12, color: "#333" }}>그룹 멤버</h2>
       {loading ? (
         <div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 100px", gap: 12, paddingBottom: 12, borderBottom: "1px solid #eee", marginBottom: 8 }}>
-            <div style={{ width: 120, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
-            <div style={{ width: 80, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />
-            {isAdmin && <div style={{ width: 80, height: 18, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 100px",
+              gap: 12,
+              paddingBottom: 12,
+              borderBottom: "1px solid #eee",
+              marginBottom: 8,
+            }}
+          >
+            <div
+              style={{
+                width: 120,
+                height: 18,
+                background: "#f3f4f6",
+                border: "1px solid #e5e7eb",
+                borderRadius: 8,
+              }}
+            />
+            <div
+              style={{
+                width: 80,
+                height: 18,
+                background: "#f3f4f6",
+                border: "1px solid #e5e7eb",
+                borderRadius: 8,
+                justifySelf: "end",
+              }}
+            />
+            {isAdmin && (
+              <div
+                style={{
+                  width: 80,
+                  height: 18,
+                  background: "#f3f4f6",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 8,
+                  justifySelf: "end",
+                }}
+              />
+            )}
           </div>
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 100px", gap: 12, padding: "8px 0", borderBottom: "1px solid #f6f6f6" }}>
-              <div style={{ height: 16, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8 }} />
-              <div style={{ height: 16, width: 80, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />
-              {isAdmin && <div style={{ height: 16, width: 80, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 8, justifySelf: "end" }} />}
+            <div
+              key={i}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 100px",
+                gap: 12,
+                padding: "8px 0",
+                borderBottom: "1px solid #f6f6f6",
+              }}
+            >
+              <div
+                style={{
+                  height: 16,
+                  background: "#f3f4f6",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 8,
+                }}
+              />
+              <div
+                style={{
+                  height: 16,
+                  width: 80,
+                  background: "#f3f4f6",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 8,
+                  justifySelf: "end",
+                }}
+              />
+              {isAdmin && (
+                <div
+                  style={{
+                    height: 16,
+                    width: 80,
+                    background: "#f3f4f6",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 8,
+                    justifySelf: "end",
+                  }}
+                />
+              )}
             </div>
           ))}
         </div>
@@ -132,5 +205,3 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
 };
 
 export default GroupMembers;
-
-

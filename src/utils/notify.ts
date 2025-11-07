@@ -13,5 +13,3 @@ export function notifySuccess(message: string) {
 export async function confirmAsync(message: string): Promise<boolean> {
   return Promise.resolve(window.confirm(message));
 }
-
-

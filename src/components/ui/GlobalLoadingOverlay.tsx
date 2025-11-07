@@ -14,5 +14,3 @@ const GlobalLoadingOverlay: React.FC = () => {
 };
 
 export default GlobalLoadingOverlay;
-
-

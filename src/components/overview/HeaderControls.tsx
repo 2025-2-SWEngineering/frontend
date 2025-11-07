@@ -61,9 +61,7 @@ const OverviewHeaderControls: React.FC<Props> = ({
           onToggle={onTogglePrefs}
           compact
         />
-        {groupId && isAdmin && (
-          <Button onClick={onOpenCategory}>카테고리 설정</Button>
-        )}
+        {groupId && isAdmin && <Button onClick={onOpenCategory}>카테고리 설정</Button>}
       </div>
     </div>
   );

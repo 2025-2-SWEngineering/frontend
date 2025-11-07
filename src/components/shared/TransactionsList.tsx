@@ -47,8 +47,7 @@ const TransactionsList: React.FC<Props> = ({
     }
   };
 
-  const canDelete = (it: Item) =>
-    isAdmin || (!!currentUserId && currentUserId === it.createdBy);
+  const canDelete = (it: Item) => isAdmin || (!!currentUserId && currentUserId === it.createdBy);
 
   const handleDelete = async (id: number) => {
     if (!groupId) return;

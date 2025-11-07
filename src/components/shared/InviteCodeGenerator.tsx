@@ -28,7 +28,11 @@ const InviteCodeGenerator: React.FC<Props> = ({ groupId }) => {
       {code && (
         <span style={{ marginLeft: 8, color: "#333" }}>
           코드: <strong>{code}</strong>
-          <Button $variant="outline" onClick={() => navigator.clipboard.writeText(code)} style={{ marginLeft: 6, padding: "4px 8px" }}>
+          <Button
+            $variant="outline"
+            onClick={() => navigator.clipboard.writeText(code)}
+            style={{ marginLeft: 6, padding: "4px 8px" }}
+          >
             복사
           </Button>
         </span>

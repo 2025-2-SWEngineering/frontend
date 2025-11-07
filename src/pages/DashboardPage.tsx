@@ -45,10 +45,18 @@ const DashboardPage: React.FC = () => {
       </div>
 
       <Tabs>
-        <TabButton $active={activeTab === "overview"} onClick={() => setActiveTab("overview")} $variant="outline">
+        <TabButton
+          $active={activeTab === "overview"}
+          onClick={() => setActiveTab("overview")}
+          $variant="outline"
+        >
           요약
         </TabButton>
-        <TabButton $active={activeTab === "group"} onClick={() => setActiveTab("group")} $variant="outline">
+        <TabButton
+          $active={activeTab === "group"}
+          onClick={() => setActiveTab("group")}
+          $variant="outline"
+        >
           그룹
         </TabButton>
       </Tabs>

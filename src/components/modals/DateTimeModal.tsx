@@ -58,19 +58,13 @@ const DateTimeModal: React.FC<Props> = ({ visible, initialIso, onClose, onSave }
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <h3 style={{ marginTop: 0, marginBottom: 12, color: "#111827" }}>거래 시간 설정</h3>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-          <Input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-          />
+          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-          <Button $variant="outline" onClick={onClose}>취소</Button>
+          <Button $variant="outline" onClick={onClose}>
+            취소
+          </Button>
           <Button
             onClick={() => {
               if (!date || !time) return;
@@ -88,5 +82,3 @@ const DateTimeModal: React.FC<Props> = ({ visible, initialIso, onClose, onSave }
 };
 
 export default DateTimeModal;
-
-

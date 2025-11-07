@@ -30,7 +30,7 @@ const GroupSelectPage: React.FC = () => {
       return list || [];
     },
     [],
-    { immediate: true }
+    { immediate: true },
   );
   const [name, setName] = useState("");
 
@@ -147,9 +147,7 @@ const GroupSelectPage: React.FC = () => {
               {loading ? "생성 중..." : "생성"}
             </Button>
           </div>
-          <p style={{ color: "#999", marginTop: 8 }}>
-            생성자는 자동으로 관리자 권한이 부여됩니다.
-          </p>
+          <p style={{ color: "#999", marginTop: 8 }}>생성자는 자동으로 관리자 권한이 부여됩니다.</p>
         </form>
       </Card>
 

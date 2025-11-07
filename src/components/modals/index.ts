@@ -1,4 +1,2 @@
-export { default as CategorySettingsModal } from './CategorySettingsModal';
-export { default as DateTimeModal } from './DateTimeModal';
-
-
+export { default as CategorySettingsModal } from "./CategorySettingsModal";
+export { default as DateTimeModal } from "./DateTimeModal";

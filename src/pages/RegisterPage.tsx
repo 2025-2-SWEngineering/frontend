@@ -55,7 +55,9 @@ const RegisterPage: React.FC = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "/groups";
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "회원가입에 실패했습니다.";
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "회원가입에 실패했습니다.";
       notifyError(msg);
     } finally {
       setLoading(false);
@@ -69,24 +71,27 @@ const RegisterPage: React.FC = () => {
         <Subtitle>우리회계에 오신 것을 환영합니다</Subtitle>
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: "block", marginBottom: 8, color: "#333" }}>
-              이름
-            </label>
+            <label style={{ display: "block", marginBottom: 8, color: "#333" }}>이름</label>
             <Input value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: "block", marginBottom: 8, color: "#333" }}>
-              이메일
-            </label>
+            <label style={{ display: "block", marginBottom: 8, color: "#333" }}>이메일</label>
             <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div style={{ marginBottom: 24 }}>
-            <label style={{ display: "block", marginBottom: 8, color: "#333" }}>
-              비밀번호
-            </label>
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <label style={{ display: "block", marginBottom: 8, color: "#333" }}>비밀번호</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
-          <Button type="submit" disabled={loading} style={{ width: "100%", padding: 12, fontSize: 16 }}>
+          <Button
+            type="submit"
+            disabled={loading}
+            style={{ width: "100%", padding: 12, fontSize: 16 }}
+          >
             {loading ? "가입 중..." : "가입하기"}
           </Button>
           <div style={{ marginTop: 16, textAlign: "center" }}>

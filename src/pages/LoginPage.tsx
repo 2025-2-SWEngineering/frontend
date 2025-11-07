@@ -50,7 +50,9 @@ const LoginPage: React.FC = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "/groups";
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "로그인에 실패했습니다.";
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "로그인에 실패했습니다.";
       notifyError(msg);
     } finally {
       setLoading(false);
@@ -64,22 +66,23 @@ const LoginPage: React.FC = () => {
         <Subtitle>소규모 조직을 위한 회계 관리</Subtitle>
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "20px" }}>
-            <label
-              style={{ display: "block", marginBottom: "8px", color: "#333" }}
-            >
-              이메일
-            </label>
+            <label style={{ display: "block", marginBottom: "8px", color: "#333" }}>이메일</label>
             <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div style={{ marginBottom: "24px" }}>
-            <label
-              style={{ display: "block", marginBottom: "8px", color: "#333" }}
-            >
-              비밀번호
-            </label>
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <label style={{ display: "block", marginBottom: "8px", color: "#333" }}>비밀번호</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
-          <Button type="submit" disabled={loading} style={{ width: "100%", padding: 12, fontSize: 16 }}>
+          <Button
+            type="submit"
+            disabled={loading}
+            style={{ width: "100%", padding: 12, fontSize: 16 }}
+          >
             {loading ? "로그인 중..." : "로그인"}
           </Button>
         </form>

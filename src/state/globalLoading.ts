@@ -27,5 +27,3 @@ export function subscribeLoading(fn: Listener) {
 export function getLoadingCount() {
   return pendingCount;
 }
-
-

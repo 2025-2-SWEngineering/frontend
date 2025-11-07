@@ -24,10 +24,7 @@ const GroupTab: React.FC = () => {
         const saved = Number(localStorage.getItem("selectedGroupId") || 0);
         const first = (groupsList || [])[0]?.id ?? null;
         const gid =
-          saved &&
-          (groupsList as Array<GroupWithRole>).some((g) => g.id === saved)
-            ? saved
-            : first;
+          saved && (groupsList as Array<GroupWithRole>).some((g) => g.id === saved) ? saved : first;
         if (gid) setGroupId(gid);
       } catch {
         // ignore
@@ -56,7 +53,7 @@ const GroupTab: React.FC = () => {
               onClick={async () => {
                 if (!groupId) return;
                 const ok = await confirmAsync(
-                  "정말로 이 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+                  "정말로 이 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
                 );
                 if (!ok) return;
                 try {
@@ -97,9 +94,7 @@ const GroupTab: React.FC = () => {
           )}
         </div>
       )}
-      {groupId && (
-        <GroupMembers groupId={groupId} isAdmin={isAdminFor(groups, groupId)} />
-      )}
+      {groupId && <GroupMembers groupId={groupId} isAdmin={isAdminFor(groups, groupId)} />}
     </>
   );
 };

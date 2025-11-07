@@ -21,7 +21,8 @@ export function useGroupsSelection() {
         const groupsList = await reload();
         const saved = Number(localStorage.getItem("selectedGroupId") || 0);
         const first = (groupsList || [])[0]?.id ?? null;
-        const gid = saved && (groupsList as Array<GroupWithRole>).some((g) => g.id === saved) ? saved : first;
+        const gid =
+          saved && (groupsList as Array<GroupWithRole>).some((g) => g.id === saved) ? saved : first;
         if (gid) setGroupId(gid);
       } finally {
         setLoading(false);
@@ -36,5 +37,3 @@ export function useGroupsSelection() {
 
   return { groups, groupId, setGroupId: changeGroup, reloadGroups: reload, loading } as const;
 }
-
-

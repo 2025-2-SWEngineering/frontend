@@ -24,5 +24,3 @@ const MonthlySection: React.FC<Props> = ({ loading, data }) => {
 };
 
 export default MonthlySection;
-
-

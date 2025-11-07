@@ -1,15 +1,15 @@
 import styled from "styled-components";
 
 export const colors = {
-    primary: "#667eea",
-    dark: "#111827",
-    danger: "#ef4444",
-    income: "#16a34a",
-    expense: "#dc2626",
-    border: "#e5e7eb",
-    bgSoft: "#f3f4f6",
-    text: "#333",
-    textMuted: "#666",
+  primary: "#667eea",
+  dark: "#111827",
+  danger: "#ef4444",
+  income: "#16a34a",
+  expense: "#dc2626",
+  border: "#e5e7eb",
+  bgSoft: "#f3f4f6",
+  text: "#333",
+  textMuted: "#666",
 };
 
 export const Container = styled.div`
@@ -39,15 +39,10 @@ export const Button = styled.button<{ $variant?: "primary" | "danger" | "outline
   border: none;
   color: #fff;
   background: ${colors.primary};
+  ${(p) => p.$variant === "danger" && `background:${colors.danger};`}
   ${(p) =>
-        p.$variant === "danger" &&
-        `background:${colors.danger};`}
-  ${(p) =>
-        p.$variant === "outline" &&
-        `background:#fff;color:#333;border:1px solid #ddd;font-weight:600;`}
-  ${(p) =>
-        p.$variant === "dark" &&
-        `background:${colors.dark};`}
+    p.$variant === "outline" && `background:#fff;color:#333;border:1px solid #ddd;font-weight:600;`}
+  ${(p) => p.$variant === "dark" && `background:${colors.dark};`}
 `;
 
 export const Input = styled.input`
@@ -132,5 +127,3 @@ export const AmountText = styled.span<{ $type: "income" | "expense" }>`
 export const Spacer = styled.div<{ $size?: number }>`
   height: ${(p) => (p.$size == null ? 20 : p.$size)}px;
 `;
-
-

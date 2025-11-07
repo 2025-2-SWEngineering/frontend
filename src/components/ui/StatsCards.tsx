@@ -10,12 +10,7 @@ type Props = {
 
 // 카드 스타일은 공통 Card로 대체
 
-const StatsCards: React.FC<Props> = ({
-  loading,
-  currentBalance,
-  totalIncome,
-  totalExpense,
-}) => {
+const StatsCards: React.FC<Props> = ({ loading, currentBalance, totalIncome, totalExpense }) => {
   return (
     <div
       style={{
@@ -26,9 +21,7 @@ const StatsCards: React.FC<Props> = ({
       }}
     >
       <Card>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>
-          현재 잔액
-        </p>
+        <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>현재 잔액</p>
         <h2 style={{ color: "#333", fontSize: 32, fontWeight: "bold" }}>
           {loading ? "-" : currentBalance}
         </h2>

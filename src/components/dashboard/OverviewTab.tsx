@@ -41,15 +41,11 @@ const OverviewTab: React.FC = () => {
     refreshAll,
     toggleDues,
   } = useOverviewData(groupId);
-  const [reportRange, setReportRange] = useState<{ from: string; to: string }>(
-    () => {
-      const today = new Date();
-      const from = new Date(today.getFullYear(), today.getMonth(), 1)
-        .toISOString()
-        .slice(0, 10);
-      return { from, to: today.toISOString().slice(0, 10) };
-    }
-  );
+  const [reportRange, setReportRange] = useState<{ from: string; to: string }>(() => {
+    const today = new Date();
+    const from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0, 10);
+    return { from, to: today.toISOString().slice(0, 10) };
+  });
   const {
     range: categoryRange,
     setRange: setCategoryRange,
@@ -148,11 +144,7 @@ const OverviewTab: React.FC = () => {
         data={byCategory}
       />
 
-      <ReportDownload
-        range={reportRange}
-        onChange={setReportRange}
-        onDownload={downloadReport}
-      />
+      <ReportDownload range={reportRange} onChange={setReportRange} onDownload={downloadReport} />
 
       <RecentTransactionsSection
         loading={loading}
@@ -163,21 +155,12 @@ const OverviewTab: React.FC = () => {
         onAfterChange={refreshAll}
       />
 
-      <LoadMore
-        visible={txHasMore}
-        loading={txMoreLoading}
-        onClick={loadMore}
-      />
+      <LoadMore visible={txHasMore} loading={txMoreLoading} onClick={loadMore} />
 
       <DuesSection
         loading={loading}
         dues={dues}
-        isAdmin={
-          !!(
-            groupId &&
-            groups.find((g) => g.id === groupId)?.user_role === "admin"
-          )
-        }
+        isAdmin={!!(groupId && groups.find((g) => g.id === groupId)?.user_role === "admin")}
         onToggle={toggleDues}
       />
 

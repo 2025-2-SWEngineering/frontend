@@ -11,11 +11,7 @@ const PreferencesToggle: React.FC<Props> = ({ checked, onToggle, compact }) => {
   return (
     <div style={{ marginTop: compact ? 0 : 8, display: "inline-flex", alignItems: "center" }}>
       <Label>
-        <Checkbox
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => onToggle(e.target.checked)}
-        />
+        <Checkbox type="checkbox" checked={checked} onChange={(e) => onToggle(e.target.checked)} />
         회비 미납 자동 알림 수신
       </Label>
     </div>

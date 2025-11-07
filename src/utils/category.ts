@@ -21,4 +21,3 @@ export function setGroupCategories(groupId: number, categories: string[]): void 
     // ignore
   }
 }
-

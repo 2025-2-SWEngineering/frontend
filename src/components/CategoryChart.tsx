@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-} from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { formatNumberKR } from "../utils/format";
 import { colors } from "../styles/primitives";
 
@@ -35,14 +28,8 @@ const COLORS = [
 ];
 
 const CategoryChart: React.FC<Props> = ({ data }) => {
-  const incomeTotal = data.reduce(
-    (acc, d) => acc + Math.max(0, d.income || 0),
-    0
-  );
-  const expenseTotal = data.reduce(
-    (acc, d) => acc + Math.max(0, d.expense || 0),
-    0
-  );
+  const incomeTotal = data.reduce((acc, d) => acc + Math.max(0, d.income || 0), 0);
+  const expenseTotal = data.reduce((acc, d) => acc + Math.max(0, d.expense || 0), 0);
   const incomeData = data
     .filter((d) => (d.income || 0) > 0)
     .map((d) => ({ name: d.category, value: Math.max(0, d.income || 0) }));
@@ -71,17 +58,11 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
               label={(d) => `${d.name}`}
             >
               {incomeData.map((entry, index) => (
-                <Cell
-                  key={`inc-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
+                <Cell key={`inc-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip
-              formatter={(v: number, n: string) => [
-                formatNumberKR(Number(v)) + "원",
-                n,
-              ]}
+              formatter={(v: number, n: string) => [formatNumberKR(Number(v)) + "원", n]}
               contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
             />
             {/* <Legend verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: 8 }} /> */}
@@ -95,13 +76,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
               <tspan fontSize="12" fill="#6b7280">
                 수입 합계
               </tspan>
-              <tspan
-                x="50%"
-                dy="1.2em"
-                fontSize="14"
-                fontWeight={700}
-                fill="#111827"
-              >
+              <tspan x="50%" dy="1.2em" fontSize="14" fontWeight={700} fill="#111827">
                 {formatNumberKR(incomeTotal)}원
               </tspan>
             </text>
@@ -121,17 +96,11 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
               label={(d) => `${d.name}`}
             >
               {expenseData.map((entry, index) => (
-                <Cell
-                  key={`exp-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
+                <Cell key={`exp-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip
-              formatter={(v: number, n: string) => [
-                formatNumberKR(Number(v)) + "원",
-                n,
-              ]}
+              formatter={(v: number, n: string) => [formatNumberKR(Number(v)) + "원", n]}
               contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
             />
             {/* <Legend verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: 8 }} /> */}
@@ -145,13 +114,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
               <tspan fontSize="12" fill="#6b7280">
                 지출 합계
               </tspan>
-              <tspan
-                x="50%"
-                dy="1.2em"
-                fontSize="14"
-                fontWeight={700}
-                fill="#111827"
-              >
+              <tspan x="50%" dy="1.2em" fontSize="14" fontWeight={700} fill="#111827">
                 {formatNumberKR(expenseTotal)}원
               </tspan>
             </text>

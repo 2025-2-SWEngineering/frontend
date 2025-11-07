@@ -76,15 +76,8 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         setSuggestions([]);
       }
     };
-    window.addEventListener(
-      "group-categories-updated",
-      onUpdated as EventListener
-    );
-    return () =>
-      window.removeEventListener(
-        "group-categories-updated",
-        onUpdated as EventListener
-      );
+    window.addEventListener("group-categories-updated", onUpdated as EventListener);
+    return () => window.removeEventListener("group-categories-updated", onUpdated as EventListener);
   }, [groupId]);
 
   async function fetchModeFresh(): Promise<"s3" | "local"> {
@@ -171,11 +164,9 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
     e.preventDefault();
     if (!groupId) return;
     const amountNum = Number(form.amount);
-    if (!amountNum || amountNum <= 0)
-      return notifyError("금액을 올바르게 입력하세요.");
+    if (!amountNum || amountNum <= 0) return notifyError("금액을 올바르게 입력하세요.");
     if (!form.description.trim()) return notifyError("설명은 필수입니다.");
-    if (!form.category || !form.category.trim())
-      return notifyError("카테고리를 선택하세요.");
+    if (!form.category || !form.category.trim()) return notifyError("카테고리를 선택하세요.");
     if (form.type === "expense" && !form.file)
       return notifyError("지출 등록 시 영수증 파일 첨부가 필수입니다.");
     if (form.file && form.file.size > MAX_FILE_SIZE)
@@ -209,12 +200,9 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         response?: { data?: { message?: string; details?: string[] } };
       };
       const details = axiosLike.response?.data?.details;
-      const message =
-        axiosLike.response?.data?.message || "거래 등록에 실패했습니다.";
+      const message = axiosLike.response?.data?.message || "거래 등록에 실패했습니다.";
       notifyError(
-        details && Array.isArray(details)
-          ? `${message}\n- ${details.join("\n- ")}`
-          : message
+        details && Array.isArray(details) ? `${message}\n- ${details.join("\n- ")}` : message,
       );
     }
   }
@@ -230,14 +218,11 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         (ext === "png"
           ? "image/png"
           : ext === "jpg" || ext === "jpeg"
-          ? "image/jpeg"
-          : ext === "pdf"
-          ? "application/pdf"
-          : "");
-      if (
-        !/^image\//i.test(mime) &&
-        !/^application\/(pdf|x-pdf|acrobat)$/i.test(mime)
-      ) {
+            ? "image/jpeg"
+            : ext === "pdf"
+              ? "application/pdf"
+              : "");
+      if (!/^image\//i.test(mime) && !/^application\/(pdf|x-pdf|acrobat)$/i.test(mime)) {
         return notifyError("OCR은 이미지 또는 PDF만 지원합니다.");
       }
       setOcrLoading(true);
@@ -251,25 +236,22 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
           next.type = "expense"; // 영수증은 보통 지출
         }
       }
-      if (result.description && !form.description)
-        next.description = result.description;
-      if (result.merchant && !form.description)
-        next.description = result.merchant;
+      if (result.description && !form.description) next.description = result.description;
+      if (result.merchant && !form.description) next.description = result.merchant;
       if (result.date) next.date = result.date;
       if (result.categorySuggestion) {
         next.category = result.categorySuggestion;
         const suggested = String(result.categorySuggestion).trim();
         if (suggested && !suggestions.includes(suggested)) {
           notifyInfo(
-            `OCR AI에서는 해당 카테고리를 "${suggested}"로 추천합니다. 카테고리를 신설하거나 기타로 설정해주세요`
+            `OCR AI에서는 해당 카테고리를 "${suggested}"로 추천합니다. 카테고리를 신설하거나 기타로 설정해주세요`,
           );
         }
       }
       setForm(next);
     } catch (e: unknown) {
       const axiosLike = e as { response?: { data?: { message?: string } } };
-      const msg =
-        axiosLike?.response?.data?.message || "OCR 분석에 실패했습니다.";
+      const msg = axiosLike?.response?.data?.message || "OCR 분석에 실패했습니다.";
       notifyError(msg);
     } finally {
       setOcrLoading(false);
@@ -297,12 +279,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         {" "}
         <h2 style={{ marginBottom: 16, color: "#333" }}>거래 등록</h2>
         {form.file ? (
-          <Button
-            type="button"
-            onClick={handleOcr}
-            disabled={ocrLoading}
-            $variant="outline"
-          >
+          <Button type="button" onClick={handleOcr} disabled={ocrLoading} $variant="outline">
             {ocrLoading ? "분석중..." : "영수증 AI 분석"}
           </Button>
         ) : null}
@@ -320,9 +297,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         >
           <Select
             value={form.type}
-            onChange={(e) =>
-              setForm({ ...form, type: e.target.value as "income" | "expense" })
-            }
+            onChange={(e) => setForm({ ...form, type: e.target.value as "income" | "expense" })}
           >
             <option value="income">수입</option>
             <option value="expense">지출</option>
@@ -359,11 +334,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
               })(form.date)}
               style={{ flex: 1, background: "#f9fafb" }}
             />
-            <Button
-              type="button"
-              $variant="outline"
-              onClick={() => setShowDtModal(true)}
-            >
+            <Button type="button" $variant="outline" onClick={() => setShowDtModal(true)}>
               시간 설정
             </Button>
           </div>

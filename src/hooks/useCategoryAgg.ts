@@ -8,7 +8,9 @@ export function useCategoryAgg(groupId: number | null) {
     const fromDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
     return { from: toYmd(fromDate), to: toYmd(today) };
   });
-  const [data, setData] = React.useState<Array<{ category: string; income: number; expense: number; total: number }>>([]);
+  const [data, setData] = React.useState<
+    Array<{ category: string; income: number; expense: number; total: number }>
+  >([]);
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -34,5 +36,3 @@ export function useCategoryAgg(groupId: number | null) {
 
   return { range, setRange, data, loading } as const;
 }
-
-

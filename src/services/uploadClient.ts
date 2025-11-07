@@ -20,7 +20,7 @@ uploadClient.interceptors.request.use(
       decrementLoading();
     } catch {}
     return Promise.reject(error);
-  }
+  },
 );
 
 uploadClient.interceptors.response.use(
@@ -35,9 +35,7 @@ uploadClient.interceptors.response.use(
       decrementLoading();
     } catch {}
     return Promise.reject(error);
-  }
+  },
 );
 
 export default uploadClient;
-
-

@@ -9,7 +9,7 @@ type AsyncState<T> = {
 export function useAsync<T>(
   fn: () => Promise<T>,
   deps: React.DependencyList = [],
-  options?: { immediate?: boolean }
+  options?: { immediate?: boolean },
 ) {
   const [state, setState] = React.useState<AsyncState<T>>({
     data: null,
@@ -37,5 +37,3 @@ export function useAsync<T>(
 
   return { ...state, run } as const;
 }
-
-

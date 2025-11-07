@@ -27,7 +27,14 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
   return (
     <ModalBackdrop role="dialog" aria-modal="true" onClick={onClose}>
       <ModalCard onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 12,
+          }}
+        >
           <h2 style={{ margin: 0, color: "#111827" }}>카테고리 설정</h2>
           {/* <button onClick={onClose} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#6b7280" }}>닫기</button> */}
         </div>
@@ -58,9 +65,19 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
           </Button>
         </div>
 
-        <div style={{ marginTop: 12, maxHeight: 360, overflow: "auto", border: "1px solid #eee", borderRadius: 8 }}>
+        <div
+          style={{
+            marginTop: 12,
+            maxHeight: 360,
+            overflow: "auto",
+            border: "1px solid #eee",
+            borderRadius: 8,
+          }}
+        >
           {list.length === 0 ? (
-            <div style={{ padding: 16, color: "#6b7280" }}>등록된 카테고리가 없습니다. 위 입력창에서 추가하세요.</div>
+            <div style={{ padding: 16, color: "#6b7280" }}>
+              등록된 카테고리가 없습니다. 위 입력창에서 추가하세요.
+            </div>
           ) : (
             <Table>
               <tbody>
@@ -89,7 +106,13 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
                           >
                             저장
                           </Button>
-                          <Button $variant="outline" onClick={() => { setEditingIdx(null); setEditingValue(""); }}>
+                          <Button
+                            $variant="outline"
+                            onClick={() => {
+                              setEditingIdx(null);
+                              setEditingValue("");
+                            }}
+                          >
                             취소
                           </Button>
                         </div>
@@ -127,7 +150,9 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-          <Button $variant="outline" onClick={onClose}>취소</Button>
+          <Button $variant="outline" onClick={onClose}>
+            취소
+          </Button>
           <Button
             onClick={() => {
               if (!canSave) return;
@@ -144,5 +169,3 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
 };
 
 export default CategorySettingsModal;
-
-

@@ -14,7 +14,7 @@
 
 ## 실행 방법
 
-1) 설치 & 개발 서버
+1. 설치 & 개발 서버
 
 ```bash
 npm install
@@ -23,7 +23,7 @@ npm run dev
 
 앱: http://localhost:3000
 
-2) 빌드/미리보기
+2. 빌드/미리보기
 
 ```bash
 npm run build
@@ -90,7 +90,6 @@ npm run build && npm run preview
 ## Env
 
 - Use `VITE_API_URL` in deployments to bypass proxy.
-
 
 ## Routes
 

@@ -13,7 +13,13 @@ type Props = {
   data: Array<{ category: string; income: number; expense: number; total: number }>;
 };
 
-const CategorySection: React.FC<Props> = ({ loading, categoryLoading, range, onChangeRange, data }) => {
+const CategorySection: React.FC<Props> = ({
+  loading,
+  categoryLoading,
+  range,
+  onChangeRange,
+  data,
+}) => {
   return (
     <Card style={{ marginBottom: 20 }}>
       <div
@@ -54,5 +60,3 @@ const CategorySection: React.FC<Props> = ({ loading, categoryLoading, range, onC
 };
 
 export default CategorySection;
-
-

@@ -49,5 +49,3 @@ export const SkeletonLines: React.FC<{
     </div>
   );
 };
-
-
