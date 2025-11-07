@@ -16,19 +16,20 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@types/styled-components": "^5.1.35",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^5.1.0",
-    "typescript": "^5.9.3",
-    "vite": "^7.1.12",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "eslint": "^8.57.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-import": "^2.29.1"
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12",
+    "vite-plugin-pwa": "^1.1.0"
   },
   "scripts": {
     "dev": "vite",
@@ -42,10 +43,10 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "src/**/*.{ts,tsx}": [
       "eslint --max-warnings=0 --fix"
     ],
-    "*.{js,jsx,ts,tsx,css,md,json}": [
+    "*.{js,jsx,ts,tsx,css,md,json,html}": [
       "prettier --write"
     ]
   }

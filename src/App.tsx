@@ -7,7 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import RegisterPage from "./pages/RegisterPage";
 import GroupSelectPage from "./pages/GroupSelectPage";
 import "./App.css";
-import { GlobalLoadingOverlay } from "./components/ui";
+import { GlobalLoadingOverlay, PWAInstallPrompt } from "./components/ui";
 
 const AppContainer = styled.div`
   width: 100%;
@@ -19,6 +19,7 @@ const App: React.FC = () => {
   return (
     <AppContainer>
       <GlobalLoadingOverlay />
+      <PWAInstallPrompt />
       <Router>
         <Routes>
           <Route
