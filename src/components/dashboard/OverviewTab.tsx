@@ -1,20 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { updatePreferences as apiUpdatePreferences } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
-import CategorySettingsModal from "../modals/CategorySettingsModal";
-import StatsCards from "../ui/StatsCards";
-import ReportDownload from "../shared/ReportDownload";
-import LoadMore from "../ui/LoadMore";
+import { CategorySettingsModal } from "../modals";
+import { StatsCards, LoadMore, LoadingOverlay } from "../ui";
+import { ReportDownload } from "../shared";
 import TransactionForm from "../forms/TransactionForm";
 import { Card, SectionTitle, Input } from "../../styles/primitives";
-import LoadingOverlay from "../ui/LoadingOverlay";
 import { formatCurrencyKRW } from "../../utils/format";
 import { notifyError } from "../../utils/notify";
-import OverviewHeaderControls from "../overview/HeaderControls";
-import MonthlySection from "../overview/MonthlySection";
-import CategorySection from "../overview/CategorySection";
-import RecentTransactionsSection from "../overview/RecentTransactionsSection";
-import DuesSection from "../overview/DuesSection";
+import { HeaderControls, MonthlySection, CategorySection, RecentTransactionsSection, DuesSection } from "../overview";
 import { downloadReportFile } from "../../utils/overview";
 import { useGroupsSelection } from "../../hooks/useGroupsSelection";
 import { useOverviewData } from "../../hooks/useOverviewData";
@@ -108,7 +102,7 @@ const OverviewTab: React.FC = () => {
     <>
       <LoadingOverlay visible={loading} label="데이터 불러오는 중..." />
       <Card style={{ marginBottom: 20 }}>
-        <OverviewHeaderControls
+        <HeaderControls
           groups={groups}
           groupId={groupId}
           isAdmin={isAdminFor(groups, groupId)}

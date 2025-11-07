@@ -8,7 +8,7 @@ import {
   createTransactionApi,
   parseReceipt,
 } from "../../api/client";
-import DateTimeModal from "../modals/DateTimeModal";
+import { DateTimeModal } from "../modals";
 import { Input, Select, Button } from "../../styles/primitives";
 import uploadClient from "../../services/uploadClient";
 import { notifyError, notifyInfo, notifySuccess } from "../../utils/notify";

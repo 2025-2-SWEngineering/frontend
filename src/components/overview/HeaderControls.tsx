@@ -1,7 +1,5 @@
 import React from "react";
-import GroupSelector from "../shared/GroupSelector";
-import InviteAcceptor from "../shared/InviteAcceptor";
-import PreferencesToggle from "../shared/PreferencesToggle";
+import { GroupSelector, InviteAcceptor, PreferencesToggle } from "../shared";
 import { Button } from "../../styles/primitives";
 
 type GroupWithRole = {

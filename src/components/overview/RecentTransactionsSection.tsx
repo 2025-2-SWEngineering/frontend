@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, SectionTitle } from "../../styles/primitives";
 import { Skeleton } from "../ui/Loading";
-import TransactionsList from "../shared/TransactionsList";
+import { TransactionsList } from "../shared";
 
 type Item = {
   id: number;

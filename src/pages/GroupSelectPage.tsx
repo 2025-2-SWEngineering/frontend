@@ -9,9 +9,9 @@ import {
   SectionTitle,
 } from "../styles/primitives";
 import { fetchGroups, createNewGroup } from "../api/client";
-import InviteAcceptor from "../components/shared/InviteAcceptor";
+import { InviteAcceptor } from "../components/shared";
 import LogoutButton from "../components/LogoutButton";
-import LoadingOverlay from "../components/ui/LoadingOverlay";
+import { LoadingOverlay } from "../components/ui";
 import { useAsync } from "../hooks/useAsync";
 import { notifyError } from "../utils/notify";
 
