@@ -1,7 +1,8 @@
 import React from "react";
+import styled from "styled-components";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 import { formatNumberKR } from "../utils/format";
-import { colors } from "../styles/primitives";
+import { colors, media } from "../styles/primitives";
 
 type CategoryDatum = {
   category: string;
@@ -37,14 +38,7 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
     .filter((d) => (d.expense || 0) > 0)
     .map((d) => ({ name: d.category, value: Math.max(0, d.expense || 0) }));
   return (
-    <div
-      style={{
-        width: "100%",
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 16,
-      }}
-    >
+    <ChartContainer>
       <div style={{ width: "100%", height: 300 }}>
         <ResponsiveContainer>
           <PieChart>
@@ -121,8 +115,19 @@ const CategoryChart: React.FC<Props> = ({ data }) => {
           </PieChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </ChartContainer>
   );
 };
+
+const ChartContainer = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  ${media.tablet} {
+    grid-template-columns: 1fr 1fr;
+  }
+`;
 
 export default CategoryChart;

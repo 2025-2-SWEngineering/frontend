@@ -9,9 +9,10 @@ import {
   parseReceipt,
 } from "../../api/client";
 import { DateTimeModal } from "../modals";
-import { Input, Select, Button, colors } from "../../styles/primitives";
+import { Input, Select, Button, colors, Card, media } from "../../styles/primitives";
 import uploadClient from "../../services/uploadClient";
 import { notifyError, notifyInfo, notifySuccess } from "../../utils/notify";
+import styled from "styled-components";
 
 type Props = {
   groupId: number;
@@ -258,42 +259,19 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
   }
 
   return (
-    <div
-      style={{
-        background: "white",
-        padding: 24,
-        borderRadius: 12,
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-        marginTop: 20,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingBottom: 16,
-        }}
-      >
-        {" "}
-        <h2 style={{ marginBottom: 16, color: colors.text }}>거래 등록</h2>
+    <FormCard>
+      <FormHeader>
+        <h2 style={{ margin: 0, color: colors.text }}>거래 등록</h2>
         {form.file ? (
           <Button type="button" onClick={handleOcr} disabled={ocrLoading} $variant="outline">
             {ocrLoading ? "분석중..." : "영수증 AI 분석"}
           </Button>
         ) : null}
-      </div>
+      </FormHeader>
 
       <form onSubmit={submit}>
         {/* 1행: 수입/지출, 금액, 설명, 날짜 */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "120px 1fr 2fr 1.5fr",
-            gap: 12,
-            marginBottom: 12,
-          }}
-        >
+        <FormRow1>
           <Select
             value={form.type}
             onChange={(e) => setForm({ ...form, type: e.target.value as "income" | "expense" })}
@@ -313,7 +291,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
-          <div style={{ display: "flex", gap: 8 }}>
+          <DateInputWrapper>
             <Input
               type="text"
               readOnly
@@ -336,17 +314,11 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             <Button type="button" $variant="outline" onClick={() => setShowDtModal(true)}>
               시간 설정
             </Button>
-          </div>
-        </div>
+          </DateInputWrapper>
+        </FormRow1>
 
         {/* 2행: 카테고리, 파일첨부, 등록 버튼 */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 2fr 240px",
-            gap: 12,
-          }}
-        >
+        <FormRow2>
           <Select
             value={form.category || ""}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -359,7 +331,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
             ))}
             <option value="기타">기타</option>
           </Select>
-          <div style={{ display: "flex", gap: 8 }}>
+          <FileInputWrapper>
             <Input
               type="file"
               accept="image/*,application/pdf"
@@ -376,9 +348,11 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
               }}
               style={{ flex: 1 }}
             />
-          </div>
-          <Button type="submit">등록</Button>
-        </div>
+          </FileInputWrapper>
+          <Button type="submit" style={{ width: "100%" }}>
+            등록
+          </Button>
+        </FormRow2>
       </form>
       <DateTimeModal
         visible={showDtModal}
@@ -386,8 +360,70 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         onClose={() => setShowDtModal(false)}
         onSave={(iso) => setForm({ ...form, date: iso })}
       />
-    </div>
+    </FormCard>
   );
 };
+
+const FormCard = styled(Card)`
+  margin-top: 20px;
+`;
+
+const FormHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  ${media.mobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    button {
+      width: 100%;
+    }
+  }
+`;
+
+const FormRow1 = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  ${media.tablet} {
+    grid-template-columns: 120px 1fr 1fr;
+  }
+
+  ${media.desktop} {
+    grid-template-columns: 120px 1fr 2fr 1.5fr;
+  }
+`;
+
+const FormRow2 = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  ${media.tablet} {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  ${media.desktop} {
+    grid-template-columns: 2fr 2fr 240px;
+  }
+`;
+
+const DateInputWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const FileInputWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+`;
 
 export default TransactionForm;

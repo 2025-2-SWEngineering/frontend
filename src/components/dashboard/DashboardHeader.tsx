@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { colors } from "../../styles/primitives";
+import { colors, media } from "../../styles/primitives";
 
 const DashboardHeader: React.FC = () => {
   return (
@@ -14,16 +14,29 @@ const DashboardHeader: React.FC = () => {
 export default DashboardHeader;
 
 const Wrap = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: 0;
 `;
 
 const Title = styled.h1`
   color: ${colors.text};
-  font-size: 32px;
-  margin-bottom: 8px;
+  font-size: 24px;
+  margin-bottom: 6px;
+
+  ${media.tablet} {
+    font-size: 28px;
+  }
+
+  ${media.desktop} {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
 `;
 
 const Subtitle = styled.p`
   color: ${colors.textMuted};
-  font-size: 16px;
+  font-size: 14px;
+
+  ${media.desktop} {
+    font-size: 16px;
+  }
 `;

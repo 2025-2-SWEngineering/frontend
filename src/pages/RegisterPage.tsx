@@ -2,34 +2,56 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import api from "../services/api";
 import { notifyError } from "../utils/notify";
-import { Input, Button, colors } from "../styles/primitives";
+import { Input, Button, colors, media } from "../styles/primitives";
 
 const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 16px;
   background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent} 100%);
 `;
 
 const Box = styled.div`
   background: white;
-  padding: 40px;
+  padding: 24px;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 420px;
+
+  ${media.tablet} {
+    padding: 32px;
+  }
+
+  ${media.desktop} {
+    padding: 40px;
+  }
 `;
 
 const Title = styled.h1`
   color: ${colors.text};
   margin-bottom: 8px;
-  font-size: 28px;
+  font-size: 24px;
+
+  ${media.tablet} {
+    font-size: 26px;
+  }
+
+  ${media.desktop} {
+    font-size: 28px;
+  }
 `;
 
 const Subtitle = styled.p`
   color: ${colors.textMuted};
   margin-bottom: 24px;
+  font-size: 14px;
+
+  ${media.desktop} {
+    font-size: 16px;
+  }
 `;
 
 const RegisterPage: React.FC = () => {
