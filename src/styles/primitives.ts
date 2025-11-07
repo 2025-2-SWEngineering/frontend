@@ -2,14 +2,23 @@ import styled from "styled-components";
 
 export const colors = {
   primary: "#667eea",
+  primaryStrong: "#4f46e5",
+  accent: "#764ba2",
   dark: "#111827",
   danger: "#ef4444",
+  dangerSoft: "#fca5a5",
   income: "#16a34a",
   expense: "#dc2626",
   border: "#e5e7eb",
   bgSoft: "#f3f4f6",
+  bgLighter: "#f8fafc",
+  bgField: "#f9fafb",
   text: "#333",
   textMuted: "#666",
+  muted: "#999",
+  divider: "#f0f0f0",
+  gray500: "#6b7280",
+  info: "#0ea5e9",
 };
 
 export const Container = styled.div`

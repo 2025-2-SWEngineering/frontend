@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ModalBackdrop, ModalCard, Button, Input } from "../../styles/primitives";
+import { ModalBackdrop, ModalCard, Button, Input, colors } from "../../styles/primitives";
 
 type Props = {
   visible: boolean;
@@ -56,7 +56,7 @@ const DateTimeModal: React.FC<Props> = ({ visible, initialIso, onClose, onSave }
   return (
     <ModalBackdrop role="dialog" aria-modal="true" onClick={onClose}>
       <ModalCard onClick={(e) => e.stopPropagation()}>
-        <h3 style={{ marginTop: 0, marginBottom: 12, color: "#111827" }}>거래 시간 설정</h3>
+        <h3 style={{ marginTop: 0, marginBottom: 12, color: colors.dark }}>거래 시간 설정</h3>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} />

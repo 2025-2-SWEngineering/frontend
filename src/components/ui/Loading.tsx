@@ -1,4 +1,5 @@
 import React from "react";
+import { colors } from "../../styles/primitives";
 
 type SkeletonProps = {
   width?: number | string;
@@ -22,8 +23,8 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         width,
         height,
         borderRadius,
-        background: "#f3f4f6",
-        border: "1px solid #e5e7eb",
+        background: colors.bgSoft,
+        border: `1px solid ${colors.border}`,
         ...style,
       }}
     />

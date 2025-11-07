@@ -1,6 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { getGroupCategories, setGroupCategories } from "../../utils/category";
-import { ModalBackdrop, ModalCard, Button, Input, Table, Td } from "../../styles/primitives";
+import {
+  ModalBackdrop,
+  ModalCard,
+  Button,
+  Input,
+  Table,
+  Td,
+  colors,
+} from "../../styles/primitives";
 
 type Props = {
   groupId: number;
@@ -35,7 +43,7 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
             marginBottom: 12,
           }}
         >
-          <h2 style={{ margin: 0, color: "#111827" }}>카테고리 설정</h2>
+          <h2 style={{ margin: 0, color: colors.dark }}>카테고리 설정</h2>
           {/* <button onClick={onClose} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#6b7280" }}>닫기</button> */}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: 8 }}>
@@ -70,12 +78,12 @@ const CategorySettingsModal: React.FC<Props> = ({ groupId, visible, onClose }) =
             marginTop: 12,
             maxHeight: 360,
             overflow: "auto",
-            border: "1px solid #eee",
+            border: `1px solid ${colors.divider}`,
             borderRadius: 8,
           }}
         >
           {list.length === 0 ? (
-            <div style={{ padding: 16, color: "#6b7280" }}>
+            <div style={{ padding: 16, color: colors.gray500 }}>
               등록된 카테고리가 없습니다. 위 입력창에서 추가하세요.
             </div>
           ) : (

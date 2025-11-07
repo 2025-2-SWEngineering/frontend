@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Th, Td } from "../../styles/primitives";
+import { Table, Th, Td, colors } from "../../styles/primitives";
 import { formatYmd } from "../../utils/format";
 
 type Dues = {
@@ -17,7 +17,7 @@ type Props = {
 
 const DuesTable: React.FC<Props> = ({ dues, isAdmin, onToggle }) => {
   if (dues.length === 0) {
-    return <p style={{ color: "#999" }}>회원 정보가 없습니다.</p>;
+    return <p style={{ color: colors.muted }}>회원 정보가 없습니다.</p>;
   }
   return (
     <Table>
@@ -44,12 +44,12 @@ const DuesTable: React.FC<Props> = ({ dues, isAdmin, onToggle }) => {
                   {d.isPaid ? "완납" : "미납"}
                 </label>
               ) : (
-                <span style={{ color: d.isPaid ? "#16a34a" : "#dc2626" }}>
+                <span style={{ color: d.isPaid ? colors.income : colors.expense }}>
                   {d.isPaid ? "완납" : "미납"}
                 </span>
               )}
             </Td>
-            <Td style={{ textAlign: "right", color: "#999" }}>
+            <Td style={{ textAlign: "right", color: colors.muted }}>
               {d.paidAt ? formatYmd(d.paidAt) : "-"}
             </Td>
           </tr>

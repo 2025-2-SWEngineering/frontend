@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "../../styles/primitives";
+import { Card, colors } from "../../styles/primitives";
 
 type Props = {
   loading: boolean;
@@ -21,20 +21,20 @@ const StatsCards: React.FC<Props> = ({ loading, currentBalance, totalIncome, tot
       }}
     >
       <Card>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>현재 잔액</p>
-        <h2 style={{ color: "#333", fontSize: 32, fontWeight: "bold" }}>
+        <p style={{ color: colors.textMuted, fontSize: 14, marginBottom: 8 }}>현재 잔액</p>
+        <h2 style={{ color: colors.text, fontSize: 32, fontWeight: "bold" }}>
           {loading ? "-" : currentBalance}
         </h2>
       </Card>
       <Card>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>총 수입</p>
-        <h2 style={{ color: "#333", fontSize: 32, fontWeight: "bold" }}>
+        <p style={{ color: colors.textMuted, fontSize: 14, marginBottom: 8 }}>총 수입</p>
+        <h2 style={{ color: colors.text, fontSize: 32, fontWeight: "bold" }}>
           {loading ? "-" : totalIncome}
         </h2>
       </Card>
       <Card>
-        <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>총 지출</p>
-        <h2 style={{ color: "#333", fontSize: 32, fontWeight: "bold" }}>
+        <p style={{ color: colors.textMuted, fontSize: 14, marginBottom: 8 }}>총 지출</p>
+        <h2 style={{ color: colors.text, fontSize: 32, fontWeight: "bold" }}>
           {loading ? "-" : totalExpense}
         </h2>
       </Card>

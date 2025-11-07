@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, SectionTitle, Button, Input, Flex } from "../../styles/primitives";
+import { Card, SectionTitle, Button, Input, Flex, colors } from "../../styles/primitives";
 
 type Range = { from: string; to: string };
 
@@ -14,7 +14,7 @@ const ReportDownload: React.FC<Props> = ({ range, onChange, onDownload }) => {
     <Card style={{ marginBottom: 20 }}>
       <SectionTitle>보고서 다운로드</SectionTitle>
       <Flex $gap={12} $center>
-        <span style={{ color: "#666" }}>기간</span>
+        <span style={{ color: colors.textMuted }}>기간</span>
         <Input
           type="date"
           value={range.from}
@@ -31,7 +31,7 @@ const ReportDownload: React.FC<Props> = ({ range, onChange, onDownload }) => {
         <Button $variant="dark" onClick={() => onDownload("pdf")}>
           PDF
         </Button>
-        <Button onClick={() => onDownload("xlsx")} style={{ background: "#0ea5e9" }}>
+        <Button onClick={() => onDownload("xlsx")} style={{ background: colors.info }}>
           Excel
         </Button>
       </Flex>

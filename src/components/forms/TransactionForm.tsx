@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import api from "../../services/api";
-import { getGroupCategories, setGroupCategories } from "../../utils/category";
+import { getGroupCategories } from "../../utils/category";
 import {
   getUploadMode,
   presignPut,
@@ -9,7 +9,7 @@ import {
   parseReceipt,
 } from "../../api/client";
 import { DateTimeModal } from "../modals";
-import { Input, Select, Button } from "../../styles/primitives";
+import { Input, Select, Button, colors } from "../../styles/primitives";
 import uploadClient from "../../services/uploadClient";
 import { notifyError, notifyInfo, notifySuccess } from "../../utils/notify";
 
@@ -98,7 +98,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       else ctype = "application/octet-stream";
     }
     const ensureMode = async () => storageMode ?? (await fetchModeFresh());
-    let mode = await ensureMode();
+    const mode = await ensureMode();
     // Helper: presign path
     const tryPresign = async (): Promise<string> => {
       const presign = await presignPut(name, ctype);
@@ -107,8 +107,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
       });
       if (!(putRes.status >= 200 && putRes.status < 300)) {
         const err = new Error("S3_PUT_FAILED");
-        // @ts-ignore
-        err.code = "S3_PUT_FAILED";
+        (err as unknown as { code?: string }).code = "S3_PUT_FAILED";
         throw err;
       }
       return presign.key as string;
@@ -277,7 +276,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
         }}
       >
         {" "}
-        <h2 style={{ marginBottom: 16, color: "#333" }}>거래 등록</h2>
+        <h2 style={{ marginBottom: 16, color: colors.text }}>거래 등록</h2>
         {form.file ? (
           <Button type="button" onClick={handleOcr} disabled={ocrLoading} $variant="outline">
             {ocrLoading ? "분석중..." : "영수증 AI 분석"}
@@ -332,7 +331,7 @@ const TransactionForm: React.FC<Props> = ({ groupId, onSubmitted }) => {
                   return v;
                 }
               })(form.date)}
-              style={{ flex: 1, background: "#f9fafb" }}
+              style={{ flex: 1, background: colors.bgField }}
             />
             <Button type="button" $variant="outline" onClick={() => setShowDtModal(true)}>
               시간 설정

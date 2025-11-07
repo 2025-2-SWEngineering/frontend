@@ -3,7 +3,7 @@ import { fetchGroups, deleteGroupApi, leaveGroupApi } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
 import { GroupSelector } from "../shared";
 import GroupMembers from "../GroupMembers";
-import { Button } from "../../styles/primitives";
+import { Button, colors } from "../../styles/primitives";
 import { notifyError, confirmAsync } from "../../utils/notify";
 
 type GroupWithRole = {
@@ -67,7 +67,7 @@ const GroupTab: React.FC = () => {
                 }
               }}
               $variant="outline"
-              style={{ color: "#ef4444", borderColor: "#ef4444" }}
+              style={{ color: colors.danger, borderColor: colors.danger }}
             >
               그룹 삭제
             </Button>

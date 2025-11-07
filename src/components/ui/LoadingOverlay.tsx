@@ -19,7 +19,7 @@ const LoadingOverlay: React.FC<Props> = ({ visible, label }) => {
         `}
       </style>
       <ModalCard>
-        <div style={{ marginBottom: 12, color: "#111827", fontWeight: 700 }}>
+        <div style={{ marginBottom: 12, color: colors.dark, fontWeight: 700 }}>
           {label || "로딩 중..."}
         </div>
         <div

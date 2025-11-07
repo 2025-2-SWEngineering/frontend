@@ -1,8 +1,17 @@
 #!/bin/sh
 
+# Ensure local binaries are resolvable
+export PATH="$PATH:$PWD/node_modules/.bin"
+
 # Run lint-staged for ESLint + Prettier, then TypeScript typecheck
 if command -v npx >/dev/null 2>&1; then
-  npx lint-staged || exit 1
+  if ! npx lint-staged; then
+    echo "lint-staged failed. Trying to auto-fix with eslint --fix and prettier --write..."
+    npm run lint:fix || true
+    npm run format || true
+    echo "Re-running lint-staged after auto-fix..."
+    npx lint-staged || exit 1
+  fi
 else
   npm run format:check || exit 1
   npm run lint || exit 1

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, SectionTitle } from "../../styles/primitives";
+import { Card, SectionTitle, colors } from "../../styles/primitives";
 import { Skeleton } from "../ui/Loading";
 import MonthlyBars from "../MonthlyBars";
 
@@ -15,7 +15,7 @@ const MonthlySection: React.FC<Props> = ({ loading, data }) => {
       {loading ? (
         <Skeleton height={300} />
       ) : data.length === 0 ? (
-        <p style={{ color: "#999" }}>데이터가 없습니다.</p>
+        <p style={{ color: colors.muted }}>데이터가 없습니다.</p>
       ) : (
         <MonthlyBars data={data} />
       )}

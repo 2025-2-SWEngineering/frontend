@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createInvitationCode } from "../../api/client";
-import { Button } from "../../styles/primitives";
+import { Button, colors } from "../../styles/primitives";
 
 type Props = {
   groupId: number;
@@ -26,7 +26,7 @@ const InviteCodeGenerator: React.FC<Props> = ({ groupId }) => {
         {loading ? "생성 중..." : "초대 코드 생성"}
       </Button>
       {code && (
-        <span style={{ marginLeft: 8, color: "#333" }}>
+        <span style={{ marginLeft: 8, color: colors.text }}>
           코드: <strong>{code}</strong>
           <Button
             $variant="outline"

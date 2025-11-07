@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import {
   Card,
   Button,
@@ -7,6 +6,7 @@ import {
   Container as PageContainer,
   Spacer,
   SectionTitle,
+  colors,
 } from "../styles/primitives";
 import { fetchGroups, createNewGroup } from "../api/client";
 import { InviteAcceptor } from "../components/shared";
@@ -68,8 +68,8 @@ const GroupSelectPage: React.FC = () => {
         label={loading ? "그룹 생성 중..." : "그룹 불러오는 중..."}
       />
       <LogoutButton />
-      <h1 style={{ color: "#333", marginBottom: 12 }}>그룹 선택</h1>
-      <p style={{ color: "#666", marginBottom: 20 }}>
+      <h1 style={{ color: colors.text, marginBottom: 12 }}>그룹 선택</h1>
+      <p style={{ color: colors.textMuted, marginBottom: 20 }}>
         들어갈 그룹을 선택하거나 새 그룹을 생성하세요.
       </p>
       <Card>
@@ -83,15 +83,15 @@ const GroupSelectPage: React.FC = () => {
                   padding: "10px 0",
                   display: "flex",
                   justifyContent: "space-between",
-                  borderBottom: "1px solid #f0f0f0",
+                  borderBottom: `1px solid ${colors.divider}`,
                 }}
               >
                 <div
                   style={{
                     width: 160,
                     height: 18,
-                    background: "#f3f4f6",
-                    border: "1px solid #e5e7eb",
+                    background: colors.bgSoft,
+                    border: `1px solid ${colors.border}`,
                     borderRadius: 8,
                   }}
                 />
@@ -99,8 +99,8 @@ const GroupSelectPage: React.FC = () => {
                   style={{
                     width: 80,
                     height: 28,
-                    background: "#f3f4f6",
-                    border: "1px solid #e5e7eb",
+                    background: colors.bgSoft,
+                    border: `1px solid ${colors.border}`,
                     borderRadius: 8,
                   }}
                 />
@@ -108,7 +108,7 @@ const GroupSelectPage: React.FC = () => {
             ))}
           </ul>
         ) : groups.length === 0 ? (
-          <p style={{ color: "#999" }}>아직 속한 그룹이 없습니다.</p>
+          <p style={{ color: colors.muted }}>아직 속한 그룹이 없습니다.</p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {groups.map((g) => (
@@ -118,10 +118,10 @@ const GroupSelectPage: React.FC = () => {
                   padding: "10px 0",
                   display: "flex",
                   justifyContent: "space-between",
-                  borderBottom: "1px solid #f0f0f0",
+                  borderBottom: `1px solid ${colors.divider}`,
                 }}
               >
-                <span style={{ color: "#333" }}>{g.name}</span>
+                <span style={{ color: colors.text }}>{g.name}</span>
                 <Button $variant="outline" onClick={() => enterGroup(g.id)}>
                   들어가기
                 </Button>
@@ -147,7 +147,9 @@ const GroupSelectPage: React.FC = () => {
               {loading ? "생성 중..." : "생성"}
             </Button>
           </div>
-          <p style={{ color: "#999", marginTop: 8 }}>생성자는 자동으로 관리자 권한이 부여됩니다.</p>
+          <p style={{ color: colors.muted, marginTop: 8 }}>
+            생성자는 자동으로 관리자 권한이 부여됩니다.
+          </p>
         </form>
       </Card>
 

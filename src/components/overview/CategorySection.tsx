@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, SectionTitle, Input } from "../../styles/primitives";
+import { Card, SectionTitle, Input, colors } from "../../styles/primitives";
 import { Skeleton } from "../ui/Loading";
 import CategoryChart from "../CategoryChart";
 
@@ -37,7 +37,7 @@ const CategorySection: React.FC<Props> = ({
             value={range.from}
             onChange={(e) => onChangeRange({ ...range, from: e.target.value })}
           />
-          <span style={{ color: "#777" }}>~</span>
+          <span style={{ color: colors.textMuted }}>~</span>
           <Input
             type="date"
             value={range.to}
@@ -51,7 +51,7 @@ const CategorySection: React.FC<Props> = ({
           <Skeleton height={300} />
         </div>
       ) : data.length === 0 ? (
-        <p style={{ color: "#999" }}>데이터가 없습니다.</p>
+        <p style={{ color: colors.muted }}>데이터가 없습니다.</p>
       ) : (
         <CategoryChart data={data} />
       )}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { fetchGroupMembers, kickMemberApi } from "../api/client";
-import { Card, Table, Th, Td, Button, Select } from "../styles/primitives";
+import { Card, Table, Th, Td, Button, Select, colors } from "../styles/primitives";
 import { notifyError, confirmAsync } from "../utils/notify";
 
 type Member = { user_id: number; user_name: string; role: "admin" | "member" };
@@ -51,7 +51,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
 
   return (
     <Card>
-      <h2 style={{ marginBottom: 12, color: "#333" }}>그룹 멤버</h2>
+      <h2 style={{ marginBottom: 12, color: colors.text }}>그룹 멤버</h2>
       {loading ? (
         <div>
           <div
@@ -60,7 +60,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
               gridTemplateColumns: "1fr 1fr 100px",
               gap: 12,
               paddingBottom: 12,
-              borderBottom: "1px solid #eee",
+              borderBottom: `1px solid ${colors.divider}`,
               marginBottom: 8,
             }}
           >
@@ -68,8 +68,8 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
               style={{
                 width: 120,
                 height: 18,
-                background: "#f3f4f6",
-                border: "1px solid #e5e7eb",
+                background: colors.bgSoft,
+                border: `1px solid ${colors.border}`,
                 borderRadius: 8,
               }}
             />
@@ -77,8 +77,8 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
               style={{
                 width: 80,
                 height: 18,
-                background: "#f3f4f6",
-                border: "1px solid #e5e7eb",
+                background: colors.bgSoft,
+                border: `1px solid ${colors.border}`,
                 borderRadius: 8,
                 justifySelf: "end",
               }}
@@ -88,8 +88,8 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                 style={{
                   width: 80,
                   height: 18,
-                  background: "#f3f4f6",
-                  border: "1px solid #e5e7eb",
+                  background: colors.bgSoft,
+                  border: `1px solid ${colors.border}`,
                   borderRadius: 8,
                   justifySelf: "end",
                 }}
@@ -104,14 +104,14 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                 gridTemplateColumns: "1fr 1fr 100px",
                 gap: 12,
                 padding: "8px 0",
-                borderBottom: "1px solid #f6f6f6",
+                borderBottom: `1px solid ${colors.bgSoft}`,
               }}
             >
               <div
                 style={{
                   height: 16,
-                  background: "#f3f4f6",
-                  border: "1px solid #e5e7eb",
+                  background: colors.bgSoft,
+                  border: `1px solid ${colors.border}`,
                   borderRadius: 8,
                 }}
               />
@@ -119,8 +119,8 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                 style={{
                   height: 16,
                   width: 80,
-                  background: "#f3f4f6",
-                  border: "1px solid #e5e7eb",
+                  background: colors.bgSoft,
+                  border: `1px solid ${colors.border}`,
                   borderRadius: 8,
                   justifySelf: "end",
                 }}
@@ -130,8 +130,8 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                   style={{
                     height: 16,
                     width: 80,
-                    background: "#f3f4f6",
-                    border: "1px solid #e5e7eb",
+                    background: colors.bgSoft,
+                    border: `1px solid ${colors.border}`,
                     borderRadius: 8,
                     justifySelf: "end",
                   }}
@@ -141,7 +141,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
           ))}
         </div>
       ) : members.length === 0 ? (
-        <p style={{ color: "#999" }}>멤버가 없습니다.</p>
+        <p style={{ color: colors.muted }}>멤버가 없습니다.</p>
       ) : (
         <Table>
           <thead>
@@ -166,7 +166,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                       <option value="admin">admin</option>
                     </Select>
                   ) : (
-                    <span style={{ color: "#333" }}>{m.role}</span>
+                    <span style={{ color: colors.text }}>{m.role}</span>
                   )}
                 </Td>
                 {isAdmin && (
@@ -189,7 +189,7 @@ const GroupMembers: React.FC<Props> = ({ groupId, isAdmin }) => {
                         }
                       }}
                       disabled={saving === m.user_id}
-                      style={{ color: "#ef4444", borderColor: "#ef4444" }}
+                      style={{ color: colors.danger, borderColor: colors.danger }}
                     >
                       추방
                     </Button>

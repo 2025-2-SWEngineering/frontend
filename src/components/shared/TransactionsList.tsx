@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { removeTransaction } from "../../api/client";
-import { Button, Badge, AmountText } from "../../styles/primitives";
+import { Button, Badge, AmountText, colors } from "../../styles/primitives";
 import { formatDisplayDateTime, formatCurrencyKRW } from "../../utils/format";
 import { notifyError, confirmAsync } from "../../utils/notify";
 import api from "../../services/api";
@@ -64,7 +64,7 @@ const TransactionsList: React.FC<Props> = ({
   // 날짜 표시는 유틸 함수로 통일
 
   if (items.length === 0) {
-    return <p style={{ color: "#999" }}>아직 거래 내역이 없습니다.</p>;
+    return <p style={{ color: colors.muted }}>아직 거래 내역이 없습니다.</p>;
   }
 
   return (
@@ -96,8 +96,8 @@ const TransactionsList: React.FC<Props> = ({
               style={{
                 marginLeft: 12,
                 padding: "2px 8px",
-                borderColor: "#fca5a5",
-                color: "#ef4444",
+                borderColor: colors.dangerSoft,
+                color: colors.danger,
               }}
             >
               삭제
@@ -121,15 +121,15 @@ const Row = styled.li`
   display: flex;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid ${colors.border};
   transition: background 0.15s ease;
   &:hover {
-    background: #f3f4f6;
+    background: ${colors.bgSoft};
   }
 `;
 
 const Meta = styled.span`
-  color: #333;
+  color: ${colors.text};
   flex: 1;
   margin-left: 12px;
   display: flex;
@@ -138,7 +138,7 @@ const Meta = styled.span`
 `;
 
 const When = styled.span`
-  color: #999;
+  color: ${colors.muted};
   min-width: 120px;
   text-align: right;
 `;
