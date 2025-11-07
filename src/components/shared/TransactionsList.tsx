@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { removeTransaction } from "../../api/client";
-import { Button, Badge, AmountText, colors } from "../../styles/primitives";
+import { Button, Badge, AmountText, colors, media } from "../../styles/primitives";
 import { formatDisplayDateTime, formatCurrencyKRW } from "../../utils/format";
 import { notifyError, confirmAsync } from "../../utils/notify";
 import api from "../../services/api";
@@ -80,29 +80,30 @@ const TransactionsList: React.FC<Props> = ({
             <span>{it.description}</span>
           </Meta>
           <When>{formatDisplayDateTime(it.date)}</When>
-          {it.receiptUrl && (
-            <Button
-              $variant="outline"
-              onClick={() => openReceipt(it.receiptUrl!)}
-              style={{ marginLeft: 12, padding: "2px 8px" }}
-            >
-              영수증
-            </Button>
-          )}
-          {canDelete(it) && (
-            <Button
-              $variant="outline"
-              onClick={() => handleDelete(it.id)}
-              style={{
-                marginLeft: 12,
-                padding: "2px 8px",
-                borderColor: colors.dangerSoft,
-                color: colors.danger,
-              }}
-            >
-              삭제
-            </Button>
-          )}
+          <ActionButtons>
+            {it.receiptUrl && (
+              <Button
+                $variant="outline"
+                onClick={() => openReceipt(it.receiptUrl!)}
+                style={{ padding: "2px 8px" }}
+              >
+                영수증
+              </Button>
+            )}
+            {canDelete(it) && (
+              <Button
+                $variant="outline"
+                onClick={() => handleDelete(it.id)}
+                style={{
+                  padding: "2px 8px",
+                  borderColor: colors.dangerSoft,
+                  color: colors.danger,
+                }}
+              >
+                삭제
+              </Button>
+            )}
+          </ActionButtons>
         </Row>
       ))}
     </List>
@@ -123,6 +124,15 @@ const Row = styled.li`
   padding: 12px 0;
   border-bottom: 1px solid ${colors.border};
   transition: background 0.15s ease;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  ${media.mobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 0;
+  }
+
   &:hover {
     background: ${colors.bgSoft};
   }
@@ -135,10 +145,35 @@ const Meta = styled.span`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+
+  ${media.mobile} {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
 `;
 
 const When = styled.span`
   color: ${colors.muted};
   min-width: 120px;
   text-align: right;
+
+  ${media.mobile} {
+    min-width: auto;
+    text-align: left;
+    font-size: 13px;
+  }
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  ${media.mobile} {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
 `;

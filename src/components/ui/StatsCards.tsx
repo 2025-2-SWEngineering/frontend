@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, colors } from "../../styles/primitives";
+import styled from "styled-components";
+import { Card, colors, media } from "../../styles/primitives";
 
 type Props = {
   loading: boolean;
@@ -10,16 +11,26 @@ type Props = {
 
 // 카드 스타일은 공통 Card로 대체
 
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  ${media.tablet} {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  ${media.desktop} {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+`;
+
 const StatsCards: React.FC<Props> = ({ loading, currentBalance, totalIncome, totalExpense }) => {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-        gap: 24,
-        marginBottom: 20,
-      }}
-    >
+    <StatsGrid>
       <Card>
         <p style={{ color: colors.textMuted, fontSize: 14, marginBottom: 8 }}>현재 잔액</p>
         <h2 style={{ color: colors.text, fontSize: 32, fontWeight: "bold" }}>
@@ -38,7 +49,7 @@ const StatsCards: React.FC<Props> = ({ loading, currentBalance, totalIncome, tot
           {loading ? "-" : totalExpense}
         </h2>
       </Card>
-    </div>
+    </StatsGrid>
   );
 };
 

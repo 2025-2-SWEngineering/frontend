@@ -4,14 +4,29 @@ import DashboardHeader from "../components/dashboard/DashboardHeader";
 import OverviewTab from "../components/dashboard/OverviewTab";
 import GroupTab from "../components/dashboard/GroupTab";
 import LogoutButton from "../components/LogoutButton";
-import { Button, Container as PageContainer, colors } from "../styles/primitives";
+import { Button, Container as PageContainer, colors, media } from "../styles/primitives";
 
 // 컨테이너는 프리미티브 PageContainer 사용
+
+const HeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 12px;
+
+  ${media.mobile} {
+    flex-direction: column;
+    gap: 16px;
+  }
+`;
 
 const Tabs = styled.div`
   display: flex;
   border-bottom: 2px solid ${colors.border};
   margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 `;
 
 const TabButton = styled(Button)<{ $active: boolean }>`
@@ -22,6 +37,15 @@ const TabButton = styled(Button)<{ $active: boolean }>`
   padding: 12px 20px;
   font-size: 16px;
   font-weight: 600;
+  white-space: nowrap;
+  min-height: 44px;
+
+  ${media.mobile} {
+    padding: 12px 16px;
+    font-size: 15px;
+    flex: 1;
+  }
+
   &:hover {
     background: ${colors.bgSoft};
     color: ${colors.dark};
@@ -33,16 +57,10 @@ const DashboardPage: React.FC = () => {
 
   return (
     <PageContainer>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
+      <HeaderWrapper>
         <DashboardHeader />
         <LogoutButton />
-      </div>
+      </HeaderWrapper>
 
       <Tabs>
         <TabButton
