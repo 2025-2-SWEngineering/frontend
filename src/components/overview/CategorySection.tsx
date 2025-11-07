@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, SectionTitle, Input } from "../../styles/primitives";
-import { Skeleton } from "../Loading";
+import { Skeleton } from "../ui/Loading";
 import CategoryChart from "../CategoryChart";
 
 type Range = { from: string; to: string };
