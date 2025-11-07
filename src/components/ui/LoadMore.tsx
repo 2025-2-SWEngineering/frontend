@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../styles/primitives";
+import { Button } from "../../styles/primitives";
 
 type Props = {
   visible: boolean;

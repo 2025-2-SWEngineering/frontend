@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { acceptInvitation } from "../api/client";
-import { Input, Button } from "../styles/primitives";
-import { notifyError, notifySuccess } from "../utils/notify";
+import { acceptInvitation } from "../../api/client";
+import { Input, Button } from "../../styles/primitives";
+import { notifyError, notifySuccess } from "../../utils/notify";
 
 type Props = {
   onAccepted: (groupId: number) => void;

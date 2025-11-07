@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ModalBackdrop, ModalCard, Button, Input } from "../styles/primitives";
+import { ModalBackdrop, ModalCard, Button, Input } from "../../styles/primitives";
 
 type Props = {
   visible: boolean;

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { getGroupCategories, setGroupCategories } from "../utils/category";
-import { ModalBackdrop, ModalCard, Button, Input, Table, Td } from "../styles/primitives";
+import { getGroupCategories, setGroupCategories } from "../../utils/category";
+import { ModalBackdrop, ModalCard, Button, Input, Table, Td } from "../../styles/primitives";
 
 type Props = {
   groupId: number;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "../styles/primitives";
+import { Card } from "../../styles/primitives";
 
 type Props = {
   loading: boolean;

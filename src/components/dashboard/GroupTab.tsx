@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchGroups, deleteGroupApi, leaveGroupApi } from "../../api/client";
 import { isAdminFor } from "../../utils/group";
-import GroupSelector from "../GroupSelector";
+import GroupSelector from "../shared/GroupSelector";
 import GroupMembers from "../GroupMembers";
 import { Button } from "../../styles/primitives";
 import { notifyError, confirmAsync } from "../../utils/notify";

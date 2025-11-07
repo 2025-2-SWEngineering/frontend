@@ -1,6 +1,6 @@
 import React from "react";
-import { Table, Th, Td } from "../styles/primitives";
-import { formatYmd } from "../utils/format";
+import { Table, Th, Td } from "../../styles/primitives";
+import { formatYmd } from "../../utils/format";
 
 type Dues = {
   userId: number;

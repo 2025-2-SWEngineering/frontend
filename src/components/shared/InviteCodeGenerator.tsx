@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { createInvitationCode } from "../api/client";
-import { Button } from "../styles/primitives";
+import { createInvitationCode } from "../../api/client";
+import { Button } from "../../styles/primitives";
 
 type Props = {
   groupId: number;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Select, Button } from "../styles/primitives";
+import { Select, Button } from "../../styles/primitives";
 import InviteCodeGenerator from "./InviteCodeGenerator";
 
 type Group = { id: number; name: string; user_role?: string };

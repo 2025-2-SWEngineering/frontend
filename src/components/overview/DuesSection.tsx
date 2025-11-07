@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, SectionTitle } from "../../styles/primitives";
 import { Skeleton } from "../Loading";
-import DuesTable from "../DuesTable";
+import DuesTable from "../shared/DuesTable";
 
 type Due = { userId: number; userName: string; isPaid: boolean; paidAt?: string };
 

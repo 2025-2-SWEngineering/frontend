@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import api from "../services/api";
-import { getGroupCategories, setGroupCategories } from "../utils/category";
+import api from "../../services/api";
+import { getGroupCategories, setGroupCategories } from "../../utils/category";
 import {
   getUploadMode,
   presignPut,
   uploadDirect,
   createTransactionApi,
   parseReceipt,
-} from "../api/client";
-import DateTimeModal from "./DateTimeModal";
-import { Input, Select, Button } from "../styles/primitives";
-import uploadClient from "../services/uploadClient";
-import { notifyError, notifyInfo, notifySuccess } from "../utils/notify";
+} from "../../api/client";
+import DateTimeModal from "../modals/DateTimeModal";
+import { Input, Select, Button } from "../../styles/primitives";
+import uploadClient from "../../services/uploadClient";
+import { notifyError, notifyInfo, notifySuccess } from "../../utils/notify";
 
 type Props = {
   groupId: number;

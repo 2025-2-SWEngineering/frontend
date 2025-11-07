@@ -1,6 +1,6 @@
 import React from "react";
 import LoadingOverlay from "./LoadingOverlay";
-import { getLoadingCount, subscribeLoading } from "../state/globalLoading";
+import { getLoadingCount, subscribeLoading } from "../../state/globalLoading";
 
 const GlobalLoadingOverlay: React.FC = () => {
   const [count, setCount] = React.useState(getLoadingCount());

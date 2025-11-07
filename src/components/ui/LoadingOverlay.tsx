@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalBackdrop, ModalCard, colors } from "../styles/primitives";
+import { ModalBackdrop, ModalCard, colors } from "../../styles/primitives";
 
 type Props = {
   visible: boolean;

@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { removeTransaction } from "../api/client";
-import { Button, Badge, AmountText } from "../styles/primitives";
-import { formatDisplayDateTime, formatCurrencyKRW } from "../utils/format";
-import { notifyError, confirmAsync } from "../utils/notify";
-import api from "../services/api";
+import { removeTransaction } from "../../api/client";
+import { Button, Badge, AmountText } from "../../styles/primitives";
+import { formatDisplayDateTime, formatCurrencyKRW } from "../../utils/format";
+import { notifyError, confirmAsync } from "../../utils/notify";
+import api from "../../services/api";
 
 type Item = {
   id: number;

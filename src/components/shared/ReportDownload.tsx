@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, SectionTitle, Button, Input, Flex } from "../styles/primitives";
+import { Card, SectionTitle, Button, Input, Flex } from "../../styles/primitives";
 
 type Range = { from: string; to: string };
 
