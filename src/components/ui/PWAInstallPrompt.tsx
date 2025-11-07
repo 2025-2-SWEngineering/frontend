@@ -7,10 +7,26 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
+// 모바일 기기 감지
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+// iOS 감지
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
+};
+
+// Android Chrome 감지
+const isAndroidChrome = () => {
+  return /Android/.test(navigator.userAgent) && /Chrome/.test(navigator.userAgent);
+};
+
 const PWAInstallPrompt: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   useEffect(() => {
     // 이미 설치되어 있는지 확인
@@ -19,22 +35,42 @@ const PWAInstallPrompt: React.FC = () => {
       return;
     }
 
-    // 설치 프롬프트 이벤트 리스너
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // 로컬 스토리지에서 이전에 거부했는지 확인
+    const mobile = isMobile();
+    setIsMobileDevice(mobile);
+
+    // 데스크톱: beforeinstallprompt 이벤트 사용
+    if (!mobile) {
+      const handleBeforeInstallPrompt = (e: Event) => {
+        e.preventDefault();
+        setDeferredPrompt(e as BeforeInstallPromptEvent);
+        const dismissed = localStorage.getItem("pwa-install-dismissed");
+        if (!dismissed) {
+          setShowPrompt(true);
+        }
+      };
+
+      window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+      return () => {
+        window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      };
+    } else {
+      // 모바일: 로컬 스토리지 확인 후 안내 표시
       const dismissed = localStorage.getItem("pwa-install-dismissed");
-      if (!dismissed) {
-        setShowPrompt(true);
+      const dismissedTime = dismissed ? parseInt(dismissed, 10) : 0;
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+
+      // 24시간이 지났거나 처음 방문한 경우
+      if (!dismissed || now - dismissedTime > oneDay) {
+        // 약간의 지연 후 표시 (사용자가 페이지를 본 후)
+        const timer = setTimeout(() => {
+          setShowPrompt(true);
+        }, 3000);
+
+        return () => clearTimeout(timer);
       }
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    };
+    }
   }, []);
 
   const handleInstall = async () => {
@@ -58,7 +94,68 @@ const PWAInstallPrompt: React.FC = () => {
     setShowPrompt(false);
   };
 
-  if (isInstalled || !showPrompt || !deferredPrompt) {
+  if (isInstalled || !showPrompt) {
+    return null;
+  }
+
+  // 모바일인 경우 설치 안내 메시지
+  if (isMobileDevice && !deferredPrompt) {
+    const getInstallInstructions = () => {
+      if (isIOS()) {
+        return {
+          title: "홈 화면에 추가",
+          description: "Safari에서 공유 버튼(□↑)을 누르고 '홈 화면에 추가'를 선택하세요.",
+          steps: [
+            "1. Safari 하단의 공유 버튼(□↑) 클릭",
+            "2. '홈 화면에 추가' 선택",
+            "3. 홈 화면에서 앱 실행",
+          ],
+        };
+      } else if (isAndroidChrome()) {
+        return {
+          title: "홈 화면에 추가",
+          description: "Chrome 메뉴에서 '홈 화면에 추가'를 선택하세요.",
+          steps: [
+            "1. Chrome 주소창 옆 메뉴(⋮) 클릭",
+            "2. '홈 화면에 추가' 선택",
+            "3. 홈 화면에서 앱 실행",
+          ],
+        };
+      } else {
+        return {
+          title: "홈 화면에 추가",
+          description: "브라우저 메뉴에서 '홈 화면에 추가' 또는 '앱 설치' 옵션을 찾아주세요.",
+          steps: [],
+        };
+      }
+    };
+
+    const instructions = getInstallInstructions();
+
+    return (
+      <PromptContainer>
+        <PromptContent>
+          <PromptText>
+            <PromptTitle>{instructions.title}</PromptTitle>
+            <PromptDescription>{instructions.description}</PromptDescription>
+            {instructions.steps.length > 0 && (
+              <StepsList>
+                {instructions.steps.map((step, index) => (
+                  <StepItem key={index}>{step}</StepItem>
+                ))}
+              </StepsList>
+            )}
+          </PromptText>
+          <PromptActions>
+            <DismissButton onClick={handleDismiss}>확인</DismissButton>
+          </PromptActions>
+        </PromptContent>
+      </PromptContainer>
+    );
+  }
+
+  // 데스크톱: beforeinstallprompt 사용
+  if (!deferredPrompt) {
     return null;
   }
 
@@ -150,6 +247,19 @@ const DismissButton = styled.button`
   &:active {
     opacity: 0.8;
   }
+`;
+
+const StepsList = styled.ul`
+  margin: 12px 0 0 0;
+  padding-left: 20px;
+  list-style: decimal;
+  color: ${colors.textMuted};
+  font-size: 13px;
+  line-height: 1.6;
+`;
+
+const StepItem = styled.li`
+  margin-bottom: 4px;
 `;
 
 export default PWAInstallPrompt;
