@@ -4,13 +4,9 @@ import DashboardHeader from "../components/dashboard/DashboardHeader";
 import OverviewTab from "../components/dashboard/OverviewTab";
 import GroupTab from "../components/dashboard/GroupTab";
 import LogoutButton from "../components/LogoutButton";
-import { Button } from "../styles/primitives";
+import { Button, Container as PageContainer } from "../styles/primitives";
 
-const DashboardContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-`;
+// 컨테이너는 프리미티브 PageContainer 사용
 
 const Tabs = styled.div`
   display: flex;
@@ -26,13 +22,17 @@ const TabButton = styled(Button)<{ $active: boolean }>`
   padding: 12px 20px;
   font-size: 16px;
   font-weight: 600;
+  &:hover {
+    background: #f3f4f6;
+    color: #111827;
+  }
 `;
 
 const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"overview" | "group">("overview");
 
   return (
-    <DashboardContainer>
+    <PageContainer>
       <div
         style={{
           display: "flex",
@@ -54,7 +54,7 @@ const DashboardPage: React.FC = () => {
       </Tabs>
 
       {activeTab === "group" ? <GroupTab /> : <OverviewTab />}
-    </DashboardContainer>
+    </PageContainer>
   );
 };
 

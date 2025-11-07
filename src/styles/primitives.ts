@@ -1,5 +1,17 @@
 import styled from "styled-components";
 
+export const colors = {
+    primary: "#667eea",
+    dark: "#111827",
+    danger: "#ef4444",
+    income: "#16a34a",
+    expense: "#dc2626",
+    border: "#e5e7eb",
+    bgSoft: "#f3f4f6",
+    text: "#333",
+    textMuted: "#666",
+};
+
 export const Container = styled.div`
   width: 100%;
   max-width: 1200px;
@@ -26,16 +38,16 @@ export const Button = styled.button<{ $variant?: "primary" | "danger" | "outline
   cursor: pointer;
   border: none;
   color: #fff;
-  background: #667eea;
+  background: ${colors.primary};
   ${(p) =>
         p.$variant === "danger" &&
-        `background:#ef4444;`}
+        `background:${colors.danger};`}
   ${(p) =>
         p.$variant === "outline" &&
         `background:#fff;color:#333;border:1px solid #ddd;font-weight:600;`}
   ${(p) =>
         p.$variant === "dark" &&
-        `background:#111827;`}
+        `background:${colors.dark};`}
 `;
 
 export const Input = styled.input`
@@ -84,8 +96,8 @@ export const ModalCard = styled.div`
 `;
 
 export const Badge = styled.span`
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: ${colors.bgSoft};
+  border: 1px solid ${colors.border};
   color: #4b5563;
   border-radius: 999px;
   padding: 2px 8px;
@@ -108,6 +120,13 @@ export const Th = styled.th`
 export const Td = styled.td`
   padding: 8px;
   border-bottom: 1px solid #f6f6f6;
+`;
+
+export const AmountText = styled.span<{ $type: "income" | "expense" }>`
+  color: ${(p) => (p.$type === "income" ? colors.income : colors.expense)};
+  font-weight: 600;
+  min-width: 120px;
+  display: inline-block;
 `;
 
 

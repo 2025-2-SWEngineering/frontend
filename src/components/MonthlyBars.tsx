@@ -10,6 +10,7 @@ import {
   Cell,
 } from "recharts";
 import { formatNumberKR } from "../utils/format";
+import { colors } from "../styles/primitives";
 
 type Datum = { month: string; income: number; expense: number };
 
@@ -67,12 +68,12 @@ const MonthlyBars: React.FC<Props> = ({ data }) => {
         >
           <defs>
             <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#16a34a" stopOpacity={0.9} />
-              <stop offset="100%" stopColor="#16a34a" stopOpacity={0.6} />
+              <stop offset="0%" stopColor={colors.income} stopOpacity={0.9} />
+              <stop offset="100%" stopColor={colors.income} stopOpacity={0.6} />
             </linearGradient>
             <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#dc2626" stopOpacity={0.9} />
-              <stop offset="100%" stopColor="#dc2626" stopOpacity={0.6} />
+              <stop offset="0%" stopColor={colors.expense} stopOpacity={0.9} />
+              <stop offset="100%" stopColor={colors.expense} stopOpacity={0.6} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />

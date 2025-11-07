@@ -1,8 +1,9 @@
 import React from "react";
+import styled from "styled-components";
 import api from "../services/api";
 import { removeTransaction } from "../api/client";
-import { Button, Badge } from "../styles/primitives";
-import { formatDisplayDateTime } from "../utils/format";
+import { Button, Badge, AmountText } from "../styles/primitives";
+import { formatDisplayDateTime, formatCurrencyKRW } from "../utils/format";
 
 type Item = {
   id: number;
@@ -67,57 +68,77 @@ const TransactionsList: React.FC<Props> = ({
   }
 
   return (
-    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+    <List>
       {items.map((it) => (
-        <li
-          key={it.id}
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "10px 0",
-            borderBottom: "1px solid #f0f0f0",
-          }}
-        >
-          <span
-            style={{
-              color: it.type === "income" ? "#16a34a" : "#dc2626",
-              fontWeight: 600,
-              minWidth: 120,
-            }}
-          >
+        <Row key={it.id}>
+          <AmountText $type={it.type}>
             {it.type === "income" ? "+ " : "- "}
-            {new Intl.NumberFormat("ko-KR").format(it.amount)}원
-          </span>
-          <span
-            style={{
-              color: "#333",
-              flex: 1,
-              marginLeft: 12,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
+            {formatCurrencyKRW(it.amount)}
+          </AmountText>
+          <Meta>
             <Badge>{(it.category && it.category.trim()) || "기타"}</Badge>
             <span>{it.description}</span>
-          </span>
-          <span style={{ color: "#999", minWidth: 120, textAlign: "right" }}>
-            {formatDisplayDateTime(it.date)}
-          </span>
+          </Meta>
+          <When>{formatDisplayDateTime(it.date)}</When>
           {it.receiptUrl && (
-            <Button $variant="outline" onClick={() => openReceipt(it.receiptUrl!)} style={{ marginLeft: 12, padding: "2px 8px" }}>
+            <Button
+              $variant="outline"
+              onClick={() => openReceipt(it.receiptUrl!)}
+              style={{ marginLeft: 12, padding: "2px 8px" }}
+            >
               영수증
             </Button>
           )}
           {canDelete(it) && (
-            <Button $variant="outline" onClick={() => handleDelete(it.id)} style={{ marginLeft: 12, padding: "2px 8px", borderColor: "#fca5a5", color: "#ef4444" }}>
+            <Button
+              $variant="outline"
+              onClick={() => handleDelete(it.id)}
+              style={{
+                marginLeft: 12,
+                padding: "2px 8px",
+                borderColor: "#fca5a5",
+                color: "#ef4444",
+              }}
+            >
               삭제
             </Button>
           )}
-        </li>
+        </Row>
       ))}
-    </ul>
+    </List>
   );
 };
 
 export default TransactionsList;
+
+const List = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const Row = styled.li`
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s ease;
+  &:hover {
+    background: #fafafa;
+  }
+`;
+
+const Meta = styled.span`
+  color: #333;
+  flex: 1;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const When = styled.span`
+  color: #999;
+  min-width: 120px;
+  text-align: right;
+`;

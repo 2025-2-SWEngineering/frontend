@@ -8,6 +8,7 @@ import {
   Legend,
 } from "recharts";
 import { formatNumberKR } from "../utils/format";
+import { colors } from "../styles/primitives";
 
 type CategoryDatum = {
   category: string;
@@ -21,15 +22,15 @@ type Props = {
 };
 
 const COLORS = [
+  colors.primary,
   "#0ea5e9",
   "#f59e0b",
-  "#10b981",
-  "#ef4444",
+  colors.income,
+  colors.expense,
   "#8b5cf6",
   "#14b8a6",
   "#f97316",
   "#84cc16",
-  "#e11d48",
   "#6366f1",
 ];
 

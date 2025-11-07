@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Card, Button, Input } from "../styles/primitives";
+import {
+  Card,
+  Button,
+  Input,
+  Container as PageContainer,
+} from "../styles/primitives";
 import { fetchGroups, createNewGroup } from "../api/client";
 import InviteAcceptor from "../components/InviteAcceptor";
 import LogoutButton from "../components/LogoutButton";
 import LoadingOverlay from "../components/LoadingOverlay";
 
-const Container = styled.div`
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 40px 20px;
-`;
+// 컨테이너는 프리미티브 PageContainer 사용
 
 const GroupSelectPage: React.FC = () => {
   const [groups, setGroups] = useState<Array<{ id: number; name: string }>>([]);
@@ -57,7 +58,7 @@ const GroupSelectPage: React.FC = () => {
   };
 
   return (
-    <Container>
+    <PageContainer>
       <LoadingOverlay
         visible={loadingGroups || loading}
         label={loading ? "그룹 생성 중..." : "그룹 불러오는 중..."}
@@ -159,7 +160,7 @@ const GroupSelectPage: React.FC = () => {
           }}
         />
       </Card>
-    </Container>
+    </PageContainer>
   );
 };
 
