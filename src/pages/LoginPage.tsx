@@ -1,34 +1,7 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import api from "../services/api";
-
-const LoginContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-`;
-
-const LoginBox = styled.div`
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-`;
-
-const Title = styled.h1`
-  color: #333;
-  margin-bottom: 8px;
-  font-size: 28px;
-`;
-
-const Subtitle = styled.p`
-  color: #666;
-  margin-bottom: 32px;
-`;
+import logo from "../assets/logo.png";
+import "./LoginPage.css";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -56,76 +29,51 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <LoginContainer>
-      <LoginBox>
-        <Title>우리회계</Title>
-        <Subtitle>소규모 조직을 위한 회계 관리</Subtitle>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "20px" }}>
-            <label
-              style={{ display: "block", marginBottom: "8px", color: "#333" }}
-            >
-              이메일
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-              }}
-              required
-            />
-          </div>
-          <div style={{ marginBottom: "24px" }}>
-            <label
-              style={{ display: "block", marginBottom: "8px", color: "#333" }}
-            >
-              비밀번호
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                fontSize: "16px",
-              }}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: "12px",
-              backgroundColor: "#667eea",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-            disabled={loading}
-          >
-            {loading ? "로그인 중..." : "로그인"}
-          </button>
-        </form>
-        <div style={{ marginTop: 16, textAlign: "center" }}>
-          <a href="/register" style={{ color: "#667eea" }}>
-            계정이 없으신가요? 회원가입
-          </a>
+    <div className="login-container">
+      <img src={logo} alt="우리회계 로고" className="login-logo" />
+      <p className="login-subtitle">소규모 조직을 위한 회계 관리, 우리회계.</p>
+      
+      <form className="login-form" onSubmit={handleSubmit}>
+        <input
+          className="login-input"
+          type="email"
+          placeholder="아이디 입력"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          className="login-input"
+          type="password"
+          placeholder="비밀번호 입력"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className="login-button" type="submit" disabled={loading}>
+          {loading ? "로그인 중..." : "로그인"}
+        </button>
+      </form>
+
+      <div className="footer-links">
+        <a href="/find-id">아이디 찾기</a>
+        <span>|</span>
+        <a href="/find-password">비밀번호 찾기</a>
+        <span>|</span>
+        <a href="/register">회원가입</a>
+      </div>
+
+      <div className="sns-section">
+        <div className="sns-label">SNS 계정으로 로그인</div>
+        <div className="sns-icons">
+          <div className="sns-circle" />
+          <div className="sns-circle" />
+          <div className="sns-circle" />
+          <div className="sns-circle" />
+          <div className="sns-circle" />
         </div>
-      </LoginBox>
-    </LoginContainer>
+      </div>
+    </div>
   );
 };
 
