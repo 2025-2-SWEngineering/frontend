@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
         <input
           className="login-input"
           type="email"
-          placeholder="아이디 입력"
+          placeholder="이메일 입력"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
