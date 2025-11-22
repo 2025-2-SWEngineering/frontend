@@ -11,5 +11,9 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    allowedHosts: ["woori-accounting.site", "3.25.235.88"],
+  },
+  preview: {
+    allowedHosts: ["woori-accounting.site", "3.25.235.88"],
   },
 });
