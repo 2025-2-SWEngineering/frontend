@@ -4,6 +4,7 @@ import { useAsync } from "../hooks/useAsync";
 import CreateGroupModal from "../components/modals/CreateGroupModal";
 import JoinGroupModal from "../components/modals/JoinGroupModal";
 import LogoutButton from "../components/LogoutButton";
+import logo from "../assets/logo.png";
 import "./GroupSelectPage.css";
 
 const GroupSelectPage: React.FC = () => {
@@ -44,45 +45,56 @@ const GroupSelectPage: React.FC = () => {
     enterGroup(gid);
   };
 
+  // Get user name from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userName = user.name || "사용자";
+
   return (
     <div className="group-select-container">
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
-        <LogoutButton />
-      </div>
-      
-      <div className="group-select-header">
-        <span className="group-select-title">내 그룹</span>
-        <button className="group-join-button" onClick={() => setShowJoinModal(true)}>
-          참여하기 {">"}
-        </button>
+      <div className="top-section">
+        <img src={logo} alt="W" className="top-logo" />
+        
+        <div className="greeting-text">
+          안녕하세요 {userName}님!<br />
+          읽지 않은 알림이 3건 있어요.
+        </div>
       </div>
 
-      <div className="group-grid">
-        {groups.map((group) => (
-          <div key={group.id} className="group-card">
-            {/* Random star for visual effect, logic can be added later */}
-            {group.id % 2 === 0 && <div className="group-card-star">★</div>}
-            
-            <div className="group-card-title">{group.name}</div>
-            <div className="group-card-subtitle">그룹</div>
-            
-            <div className="group-avatars">
-              {/* Placeholder avatars */}
-              <div className="group-avatar" style={{ backgroundColor: "#ffadad" }} />
-              <div className="group-avatar" style={{ backgroundColor: "#ffd6a5" }} />
-              <div className="group-avatar" style={{ backgroundColor: "#fdffb6" }} />
-              <div className="group-avatar-more">+2</div>
+      <div className="content-section">
+        <div className="group-select-header">
+          <span className="group-select-title">내 그룹</span>
+          <button className="group-join-button" onClick={() => setShowJoinModal(true)}>
+            참여하기 {">"}
+          </button>
+        </div>
+
+        <div className="group-grid">
+          {groups.map((group) => (
+            <div key={group.id} className="group-card">
+              {/* Random star for visual effect, logic can be added later */}
+              {group.id % 2 === 0 && <div className="group-card-star">★</div>}
+              
+              <div className="group-card-title">{group.name}</div>
+              <div className="group-card-subtitle">그룹</div>
+              
+              <div className="group-avatars">
+                {/* Placeholder avatars */}
+                <div className="group-avatar" style={{ backgroundColor: "#ffadad" }} />
+                <div className="group-avatar" style={{ backgroundColor: "#ffd6a5" }} />
+                <div className="group-avatar" style={{ backgroundColor: "#fdffb6" }} />
+                <div className="group-avatar-more">+2</div>
+              </div>
+
+              <button className="group-enter-button" onClick={() => enterGroup(group.id)}>
+                입장하기
+              </button>
             </div>
+          ))}
 
-            <button className="group-enter-button" onClick={() => enterGroup(group.id)}>
-              입장하기
-            </button>
+          {/* Add Group Card */}
+          <div className="add-group-card" onClick={() => setShowCreateModal(true)}>
+            <div className="add-group-icon">+</div>
           </div>
-        ))}
-
-        {/* Add Group Card */}
-        <div className="add-group-card" onClick={() => setShowCreateModal(true)}>
-          <div className="add-group-icon">+</div>
         </div>
       </div>
 

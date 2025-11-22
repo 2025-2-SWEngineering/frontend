@@ -1,8 +1,70 @@
 .group-select-container {
   min-height: 100vh;
-  background-color: #f0f2f5; /* Light gray background like the image */
-  padding: 20px;
+  background: linear-gradient(180deg, #e3f2fd 0%, #f0f2f5 100%); /* Fallback */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Blue Header Section */
+.group-header-section {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); /* Example blue gradient */
+  padding: 40px 24px 60px; /* Extra bottom padding for overlap */
+  color: white;
+}
+
+.group-logo {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 24px;
+  background-color: white; /* Placeholder if transparent logo needed */
+  border-radius: 8px;
+  /* If actual logo is used */
+  object-fit: contain;
+  background: transparent; 
+}
+
+.group-greeting {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #000; /* Based on image, text seems black on light blue? No, image shows black text on light blue background. */
+}
+
+/* The image shows a very light blue/white gradient background for the whole top area, 
+   and the "My Groups" part is in a white rounded container. 
+   Let's adjust. */
+
+.group-select-container {
+  background-color: #eef8ff; /* Light blue background from image top */
+  min-height: 100vh;
+  position: relative;
+}
+
+.top-section {
+  padding: 40px 24px 40px;
+}
+
+.top-logo {
+  width: 40px;
+  margin-bottom: 20px;
+}
+
+.greeting-text {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.4;
+}
+
+.content-section {
+  background-color: #f7f8fa; /* Slightly darker white/gray for the bottom part */
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  padding: 30px 24px;
+  flex: 1;
+  min-height: 60vh; /* Ensure it takes up space */
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
 }
 
 .group-select-header {
