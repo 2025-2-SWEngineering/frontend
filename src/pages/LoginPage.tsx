@@ -1,58 +1,7 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import api from "../services/api";
-import { Input, Button, colors, media } from "../styles/primitives";
-import { notifyError } from "../utils/notify";
-
-const LoginContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 16px;
-  background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent} 100%);
-`;
-
-const LoginBox = styled.div`
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-
-  ${media.tablet} {
-    padding: 32px;
-  }
-
-  ${media.desktop} {
-    padding: 40px;
-  }
-`;
-
-const Title = styled.h1`
-  color: ${colors.text};
-  margin-bottom: 8px;
-  font-size: 24px;
-
-  ${media.tablet} {
-    font-size: 26px;
-  }
-
-  ${media.desktop} {
-    font-size: 28px;
-  }
-`;
-
-const Subtitle = styled.p`
-  color: ${colors.textMuted};
-  margin-bottom: 32px;
-  font-size: 14px;
-
-  ${media.desktop} {
-    font-size: 16px;
-  }
-`;
+import logo from "../assets/logo.png";
+import "./LoginPage.css";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -72,53 +21,59 @@ const LoginPage: React.FC = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "/groups";
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        "로그인에 실패했습니다.";
-      notifyError(msg);
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "로그인에 실패했습니다.";
+      alert(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <LoginContainer>
-      <LoginBox>
-        <Title>우리회계</Title>
-        <Subtitle>소규모 조직을 위한 회계 관리</Subtitle>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "8px", color: colors.text }}>
-              이메일
-            </label>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </div>
-          <div style={{ marginBottom: "24px" }}>
-            <label style={{ display: "block", marginBottom: "8px", color: colors.text }}>
-              비밀번호
-            </label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            disabled={loading}
-            style={{ width: "100%", padding: 12, fontSize: 16 }}
-          >
-            {loading ? "로그인 중..." : "로그인"}
-          </Button>
-        </form>
-        <div style={{ marginTop: 16, textAlign: "center" }}>
-          <a href="/register" style={{ color: colors.primary }}>
-            계정이 없으신가요? 회원가입
-          </a>
+    <div className="login-container">
+      <img src={logo} alt="우리회계 로고" className="login-logo" />
+      <p className="login-subtitle">소규모 조직을 위한 회계 관리, 우리회계.</p>
+      
+      <form className="login-form" onSubmit={handleSubmit}>
+        <input
+          className="login-input"
+          type="email"
+          placeholder="이메일 입력"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          className="login-input"
+          type="password"
+          placeholder="비밀번호 입력"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className="login-button" type="submit" disabled={loading}>
+          {loading ? "로그인 중..." : "로그인"}
+        </button>
+      </form>
+
+      <div className="footer-links">
+        <a href="/find-id">아이디 찾기</a>
+        <span>|</span>
+        <a href="/find-password">비밀번호 찾기</a>
+        <span>|</span>
+        <a href="/register">회원가입</a>
+      </div>
+
+      <div className="sns-section">
+        <div className="sns-label">SNS 계정으로 로그인</div>
+        <div className="sns-icons">
+          <div className="sns-circle" />
+          <div className="sns-circle" />
+          <div className="sns-circle" />
+          <div className="sns-circle" />
+          <div className="sns-circle" />
         </div>
-      </LoginBox>
-    </LoginContainer>
+      </div>
+    </div>
   );
 };
 
