@@ -1,0 +1,210 @@
+.group-select-container {
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Light gray background like the image */
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.group-select-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.group-select-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+}
+
+.group-join-button {
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 16px;
+}
+
+.group-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  aspect-ratio: 1 / 1.1; /* Slightly taller than square */
+  position: relative;
+}
+
+.group-card-star {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  color: #ffd700; /* Gold color for star */
+  font-size: 18px;
+}
+
+.group-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.group-card-subtitle {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 16px;
+}
+
+.group-avatars {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.group-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-left: -10px; /* Overlap effect */
+  background-color: #ddd;
+  object-fit: cover;
+}
+
+.group-avatar:first-child {
+  margin-left: 0;
+}
+
+.group-avatar-more {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  margin-left: 8px;
+}
+
+.group-enter-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #dbefff; /* Light blue */
+  color: #007bff; /* Blue text */
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.group-enter-button:hover {
+  background-color: #cce5ff;
+}
+
+.add-group-card {
+  background: white;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  aspect-ratio: 1 / 1.1;
+  cursor: pointer;
+}
+
+.add-group-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #dbefff;
+  color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-button.cancel {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.modal-button.confirm {
+  background-color: #000;
+  color: white;
+}

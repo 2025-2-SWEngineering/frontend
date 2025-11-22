@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  Button,
-  Input,
-  Container as PageContainer,
-  Spacer,
-  SectionTitle,
-  colors,
-} from "../styles/primitives";
-import { fetchGroups, createNewGroup } from "../api/client";
-import { InviteAcceptor } from "../components/shared";
-import LogoutButton from "../components/LogoutButton";
-import { LoadingOverlay } from "../components/ui";
+import { fetchGroups } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
-import { notifyError } from "../utils/notify";
-
-// 컨테이너는 프리미티브 PageContainer 사용
+import CreateGroupModal from "../components/modals/CreateGroupModal";
+import JoinGroupModal from "../components/modals/JoinGroupModal";
+import LogoutButton from "../components/LogoutButton";
+import "./GroupSelectPage.css";
 
 const GroupSelectPage: React.FC = () => {
   const [groups, setGroups] = useState<Array<{ id: number; name: string }>>([]);
-  const [loading, setLoading] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+
   const {
     data: groupsData,
     loading: loadingGroups,
@@ -32,7 +23,6 @@ const GroupSelectPage: React.FC = () => {
     [],
     { immediate: true },
   );
-  const [name, setName] = useState("");
 
   useEffect(() => {
     setGroups((groupsData as any) || []);
@@ -43,129 +33,75 @@ const GroupSelectPage: React.FC = () => {
     window.location.href = "/dashboard";
   };
 
-  const createGroup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    try {
-      setLoading(true);
-      const group = await createNewGroup(name.trim());
-      const groupId = group?.id;
-      if (groupId) {
-        localStorage.setItem("selectedGroupId", String(groupId));
-        window.location.href = "/dashboard";
-      }
-    } catch (e) {
-      notifyError("그룹 생성에 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
+  const handleGroupCreated = (gid: number) => {
+    setShowCreateModal(false);
+    enterGroup(gid);
+  };
+
+  const handleGroupJoined = async (gid: number) => {
+    setShowJoinModal(false);
+    await runGroups();
+    enterGroup(gid);
   };
 
   return (
-    <PageContainer>
-      <LoadingOverlay
-        visible={loadingGroups || loading}
-        label={loading ? "그룹 생성 중..." : "그룹 불러오는 중..."}
-      />
-      <LogoutButton />
-      <h1 style={{ color: colors.text, marginBottom: 12 }}>그룹 선택</h1>
-      <p style={{ color: colors.textMuted, marginBottom: 20 }}>
-        들어갈 그룹을 선택하거나 새 그룹을 생성하세요.
-      </p>
-      <Card>
-        <SectionTitle>내 그룹</SectionTitle>
-        {loadingGroups ? (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <li
-                key={i}
-                style={{
-                  padding: "10px 0",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  borderBottom: `1px solid ${colors.divider}`,
-                }}
-              >
-                <div
-                  style={{
-                    width: 160,
-                    height: 18,
-                    background: colors.bgSoft,
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: 8,
-                  }}
-                />
-                <div
-                  style={{
-                    width: 80,
-                    height: 28,
-                    background: colors.bgSoft,
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: 8,
-                  }}
-                />
-              </li>
-            ))}
-          </ul>
-        ) : groups.length === 0 ? (
-          <p style={{ color: colors.muted }}>아직 속한 그룹이 없습니다.</p>
-        ) : (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {groups.map((g) => (
-              <li
-                key={g.id}
-                style={{
-                  padding: "10px 0",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  borderBottom: `1px solid ${colors.divider}`,
-                }}
-              >
-                <span style={{ color: colors.text }}>{g.name}</span>
-                <Button $variant="outline" onClick={() => enterGroup(g.id)}>
-                  들어가기
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+    <div className="group-select-container">
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+        <LogoutButton />
+      </div>
+      
+      <div className="group-select-header">
+        <span className="group-select-title">내 그룹</span>
+        <button className="group-join-button" onClick={() => setShowJoinModal(true)}>
+          참여하기 {">"}
+        </button>
+      </div>
 
-      <Spacer $size={20} />
+      <div className="group-grid">
+        {groups.map((group) => (
+          <div key={group.id} className="group-card">
+            {/* Random star for visual effect, logic can be added later */}
+            {group.id % 2 === 0 && <div className="group-card-star">★</div>}
+            
+            <div className="group-card-title">{group.name}</div>
+            <div className="group-card-subtitle">그룹</div>
+            
+            <div className="group-avatars">
+              {/* Placeholder avatars */}
+              <div className="group-avatar" style={{ backgroundColor: "#ffadad" }} />
+              <div className="group-avatar" style={{ backgroundColor: "#ffd6a5" }} />
+              <div className="group-avatar" style={{ backgroundColor: "#fdffb6" }} />
+              <div className="group-avatar-more">+2</div>
+            </div>
 
-      <Card>
-        <SectionTitle>새 그룹 생성</SectionTitle>
-        <form onSubmit={createGroup}>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="그룹명 입력"
-              style={{ flex: 1 }}
-            />
-            <Button type="submit" disabled={loading}>
-              {loading ? "생성 중..." : "생성"}
-            </Button>
+            <button className="group-enter-button" onClick={() => enterGroup(group.id)}>
+              입장하기
+            </button>
           </div>
-          <p style={{ color: colors.muted, marginTop: 8 }}>
-            생성자는 자동으로 관리자 권한이 부여됩니다.
-          </p>
-        </form>
-      </Card>
+        ))}
 
-      <Spacer $size={20} />
+        {/* Add Group Card */}
+        <div className="add-group-card" onClick={() => setShowCreateModal(true)}>
+          <div className="add-group-icon">+</div>
+        </div>
+      </div>
 
-      <Card>
-        <SectionTitle>초대 코드로 참여</SectionTitle>
-        <InviteAcceptor
-          onAccepted={async (gid) => {
-            await runGroups();
-            enterGroup(gid);
-          }}
+      {showCreateModal && (
+        <CreateGroupModal
+          onClose={() => setShowCreateModal(false)}
+          onCreated={handleGroupCreated}
         />
-      </Card>
-    </PageContainer>
+      )}
+
+      {showJoinModal && (
+        <JoinGroupModal
+          onClose={() => setShowJoinModal(false)}
+          onJoined={handleGroupJoined}
+        />
+      )}
+    </div>
   );
 };
 
 export default GroupSelectPage;
+
