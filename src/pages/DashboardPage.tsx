@@ -205,34 +205,35 @@ const DashboardPage: React.FC = () => {
           <span className="section-title">항목별 집계</span>
         </div>
 
-        {/* Category Summary (Gauge Charts) */}
-        <div className="section-title-row">
-          <span className="section-title">항목별 집계</span>
-        </div>
-
         <div className="chart-container">
           <div className="donut-chart-wrapper">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryChartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {categoryChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.color}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {categoryChartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryChartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {categoryChartData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ position: "absolute", color: "#ccc", fontSize: 12 }}>
+                데이터 없음
+              </div>
+            )}
             <div className="donut-center-text">
               <div className="donut-label">지출</div>
               <div className="donut-value">
@@ -250,10 +251,4 @@ const DashboardPage: React.FC = () => {
              ))}
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-export default DashboardPage;
 
