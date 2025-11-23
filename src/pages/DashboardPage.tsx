@@ -40,6 +40,7 @@ const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"transactions" | "dues" | "charts">("transactions");
+  const [selectedReceiptUrl, setSelectedReceiptUrl] = useState<string | null>(null);
 
   // Refs for scrolling
   const transactionsRef = React.useRef<HTMLDivElement>(null);
@@ -48,6 +49,14 @@ const DashboardPage: React.FC = () => {
 
   const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
     ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleReceiptClick = (url?: string) => {
+    if (url) {
+      setSelectedReceiptUrl(url);
+    } else {
+      alert("등록된 영수증이 없습니다.");
+    }
   };
 
   useEffect(() => {
@@ -191,7 +200,15 @@ const DashboardPage: React.FC = () => {
                 >
                   {tx.type === "expense" ? "-" : "+"} {formatCurrencyKRW(tx.amount)}
                 </div>
-                <div className="receipt-link">영수증 {">"}</div>
+                <div 
+                  className="receipt-link"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleReceiptClick(tx.receiptUrl);
+                  }}
+                >
+                  영수증 {">"}
+                </div>
               </div>
             </div>
           ))}
@@ -332,7 +349,15 @@ const DashboardPage: React.FC = () => {
                       >
                         {tx.type === "expense" ? "-" : "+"} {formatCurrencyKRW(tx.amount)}
                       </div>
-                      <div className="receipt-link">영수증 {">"}</div>
+                      <div 
+                        className="receipt-link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReceiptClick(tx.receiptUrl);
+                        }}
+                      >
+                        영수증 {">"}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -341,6 +366,28 @@ const DashboardPage: React.FC = () => {
                     거래 내역이 없습니다.
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Receipt Modal */}
+      {selectedReceiptUrl && (
+        <div className="modal-overlay" onClick={() => setSelectedReceiptUrl(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px" }}>
+            <div className="modal-header">
+              <span className="modal-title">영수증 이미지</span>
+              <button
+                className="modal-close"
+                onClick={() => setSelectedReceiptUrl(null)}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="receipt-image-container">
+                <img src={selectedReceiptUrl} alt="영수증" className="receipt-image" />
               </div>
             </div>
           </div>
