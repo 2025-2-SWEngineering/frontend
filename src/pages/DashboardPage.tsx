@@ -37,9 +37,16 @@ const DashboardPage: React.FC = () => {
 
   const { data: categoryData } = useCategoryAgg(groupId);
 
-  const [loading, setLoading] = useState(true);
-
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+
+  // Refs for scrolling
+  const transactionsRef = React.useRef<HTMLDivElement>(null);
+  const duesRef = React.useRef<HTMLDivElement>(null);
+  const chartsRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     if (!groupsLoading && !groupId) setLoading(false);
@@ -106,16 +113,31 @@ const DashboardPage: React.FC = () => {
         </div>
 
         <div className="action-buttons">
-          <button className="action-btn primary">거래내역</button>
-          <button className="action-btn secondary">회비납부</button>
-          <button className="action-btn secondary">그래프</button>
+          <button 
+            className="action-btn primary" 
+            onClick={() => scrollToSection(transactionsRef)}
+          >
+            거래내역
+          </button>
+          <button 
+            className="action-btn secondary" 
+            onClick={() => scrollToSection(duesRef)}
+          >
+            회비납부
+          </button>
+          <button 
+            className="action-btn secondary" 
+            onClick={() => scrollToSection(chartsRef)}
+          >
+            그래프
+          </button>
         </div>
       </div>
 
       {/* Content Section */}
       <div className="dashboard-content">
         {/* Recent Transactions */}
-        <div className="section-title-row">
+        <div className="section-title-row" ref={transactionsRef}>
           <span className="section-title">최근거래 내역</span>
           <span
             className="view-all"
@@ -155,7 +177,7 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Member Status (Dues) */}
-        <div className="section-title-row">
+        <div className="section-title-row" ref={duesRef}>
           <span className="section-title">회비납부 현황</span>
         </div>
 
@@ -188,7 +210,7 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Monthly Chart */}
-        <div className="section-title-row">
+        <div className="section-title-row" ref={chartsRef}>
           <span className="section-title">월별 수입/지출 추이</span>
         </div>
 
