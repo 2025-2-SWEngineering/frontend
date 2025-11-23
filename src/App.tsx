@@ -36,6 +36,7 @@ const App: React.FC = () => {
             }
           />
           <Route
+            path="/dashboard"
             element={
               localStorage.getItem("token") ? (
                 localStorage.getItem("selectedGroupId") ? (
