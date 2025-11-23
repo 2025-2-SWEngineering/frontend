@@ -159,16 +159,16 @@ const DashboardPage: React.FC = () => {
           </div>
           {dues.map((member, idx) => (
             <div key={idx} className="member-row">
-              <span className="member-name">{member.username}</span>
+              <span className="member-name">{member.userName}</span>
               <span
                 className={`member-status ${
-                  member.status === "paid" ? "status-paid" : "status-unpaid"
+                  member.isPaid ? "status-paid" : "status-unpaid"
                 }`}
               >
-                {member.status === "paid" ? "납부" : "미납"}
+                {member.isPaid ? "납부" : "미납"}
               </span>
               <span className="member-date">
-                {member.paidDate ? member.paidDate.slice(0, 10) : "-"}
+                {member.paidAt ? member.paidAt.slice(0, 10) : "-"}
               </span>
             </div>
           ))}
