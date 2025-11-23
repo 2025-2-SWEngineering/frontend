@@ -68,11 +68,36 @@ const DashboardPage: React.FC = () => {
 
   const categoryChartData = useMemo(() => {
     if (!categoryData) return [];
-    return categoryData.map((c) => ({
-      name: c.category,
-      value: c.amount,
-      color: c.color || "#8884d8", // Fallback color
-    }));
+    
+    const result = [];
+    
+    // Process Income
+    categoryData.forEach((c, idx) => {
+      const income = Number(c.income);
+      if (income > 0) {
+        result.push({
+          name: c.category,
+          value: income,
+          type: "income",
+          color: COLORS[idx % COLORS.length], // Assign color
+        });
+      }
+    });
+
+    // Process Expense
+    categoryData.forEach((c, idx) => {
+      const expense = Number(c.expense);
+      if (expense > 0) {
+        result.push({
+          name: c.category,
+          value: expense,
+          type: "expense",
+          color: COLORS[(idx + 2) % COLORS.length], // Offset color for variety
+        });
+      }
+    });
+
+    return result;
   }, [categoryData]);
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
@@ -202,44 +227,116 @@ const DashboardPage: React.FC = () => {
           <span className="section-title">항목별 집계</span>
         </div>
 
-        <div className="chart-container">
-          <div className="donut-chart-wrapper">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryChartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {categoryChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="donut-center-text">
-              <div className="donut-label">지출</div>
-              <div className="donut-value">
-                {formatCurrencyKRW(stats?.totalExpense ?? 0)}
+        {/* Category Summary (Gauge Charts) */}
+        <div className="section-title-row">
+          <span className="section-title">항목별 집계</span>
+        </div>
+
+        <div className="charts-row">
+          {/* Income Chart */}
+          <div className="chart-card">
+            <div className="gauge-chart-wrapper">
+              <ResponsiveContainer width="100%" height="200%">
+                <PieChart>
+                  <Pie
+                    data={categoryChartData.filter((c) => c.type === "income")}
+                    cx="50%"
+                    cy="100%"
+                    startAngle={180}
+                    endAngle={0}
+                    innerRadius={40}
+                    outerRadius={55}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {categoryChartData
+                      .filter((c) => c.type === "income")
+                      .map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="gauge-center-text">
+                <div className="gauge-label">수입</div>
+                <div className="gauge-value">
+                  {formatCurrencyKRW(stats?.totalIncome ?? 0)}
+                </div>
               </div>
             </div>
+            <div className="category-list">
+              {categoryChartData
+                .filter((c) => c.type === "income")
+                .slice(0, 3)
+                .map((item, idx) => (
+                  <div key={idx} className="category-item">
+                    <div className="category-name">
+                      <div
+                        className="category-dot"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      {item.name}
+                    </div>
+                    <div className="category-amount">
+                      {formatCurrencyKRW(item.value)}
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
-          
-          <div className="chart-legend">
-             {categoryChartData.slice(0, 3).map((entry, index) => (
-               <div key={index} className="legend-item">
-                 <div className="legend-color" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                 <span>{entry.name}</span>
-               </div>
-             ))}
+
+          {/* Expense Chart */}
+          <div className="chart-card">
+            <div className="gauge-chart-wrapper">
+              <ResponsiveContainer width="100%" height="200%">
+                <PieChart>
+                  <Pie
+                    data={categoryChartData.filter((c) => c.type === "expense")}
+                    cx="50%"
+                    cy="100%"
+                    startAngle={180}
+                    endAngle={0}
+                    innerRadius={40}
+                    outerRadius={55}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {categoryChartData
+                      .filter((c) => c.type === "expense")
+                      .map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="gauge-center-text">
+                <div className="gauge-label">지출</div>
+                <div className="gauge-value">
+                  {formatCurrencyKRW(stats?.totalExpense ?? 0)}
+                </div>
+              </div>
+            </div>
+            <div className="category-list">
+              {categoryChartData
+                .filter((c) => c.type === "expense")
+                .slice(0, 3)
+                .map((item, idx) => (
+                  <div key={idx} className="category-item">
+                    <div className="category-name">
+                      <div
+                        className="category-dot"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      {item.name}
+                    </div>
+                    <div className="category-amount">
+                      {formatCurrencyKRW(item.value)}
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       </div>
