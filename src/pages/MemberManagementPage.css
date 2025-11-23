@@ -1,0 +1,170 @@
+.member-management-container {
+  min-height: 100vh;
+  background-color: #f5f6f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  padding-bottom: 40px;
+}
+
+/* Header Section */
+.member-header-section {
+  background-color: #dbefff; /* Light blue background */
+  padding: 20px 20px 80px; /* Extra padding bottom for overlapping card */
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  position: relative;
+}
+
+.member-header-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  justify-content: center;
+}
+
+.member-back-button {
+  position: absolute;
+  left: 0;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.member-header-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.group-name-display {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+/* Stats Card */
+.member-stats-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin: -60px 20px 24px; /* Negative top margin to overlap header */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Content Sections */
+.member-content-section {
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 12px;
+}
+
+.member-list-card {
+  background: white;
+  border-radius: 12px;
+  padding: 0 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.member-list-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 12px;
+  color: #999;
+}
+
+.member-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.member-list-item:last-child {
+  border-bottom: none;
+}
+
+.member-info-col {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.member-role-col {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.member-action-col {
+  flex: 1;
+  text-align: right;
+}
+
+.kick-button {
+  background: white;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kick-button:hover {
+  background: #fff0f0;
+}
+
+.empty-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}

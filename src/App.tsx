@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import RegisterPage from "./pages/RegisterPage";
 import GroupSelectPage from "./pages/GroupSelectPage";
+import MemberManagementPage from "./pages/MemberManagementPage";
 import "./App.css";
 import { GlobalLoadingOverlay } from "./components/ui";
 
@@ -35,7 +36,6 @@ const App: React.FC = () => {
             }
           />
           <Route
-            path="/dashboard"
             element={
               localStorage.getItem("token") ? (
                 localStorage.getItem("selectedGroupId") ? (
@@ -46,6 +46,12 @@ const App: React.FC = () => {
               ) : (
                 <Navigate to="/" replace />
               )
+            }
+          />
+          <Route
+            path="/groups/:groupId/members"
+            element={
+              localStorage.getItem("token") ? <MemberManagementPage /> : <Navigate to="/" replace />
             }
           />
         </Routes>

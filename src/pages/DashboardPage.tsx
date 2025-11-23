@@ -84,10 +84,15 @@ const DashboardPage: React.FC = () => {
       {/* Header Section */}
       <div className="dashboard-header">
         <div className="header-top">
-          <button className="back-button" onClick={() => navigate("/group")}>
+          <button className="back-button" onClick={() => navigate("/groups")}>
             {"<"}
           </button>
-          <span className="member-manage-link">멤버 관리</span>
+          <span 
+            className="member-manage-link" 
+            onClick={() => groupId && navigate(`/groups/${groupId}/members`)}
+          >
+            멤버 관리
+          </span>
         </div>
 
         <div className="balance-section">
