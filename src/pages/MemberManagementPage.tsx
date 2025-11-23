@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchGroupMembers, kickMemberApi, fetchGroups } from "../api/client";
+import { fetchGroupMembers, kickMemberApi, fetchGroups, createInvitationCode } from "../api/client";
 import { useOverviewData } from "../hooks/useOverviewData";
 import { LoadingOverlay } from "../components/ui";
 import { notifyError, confirmAsync } from "../utils/notify";
@@ -17,6 +17,7 @@ const MemberManagementPage: React.FC = () => {
   const [groupName, setGroupName] = useState("");
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
 
   // Use overview data hook to get unpaid count (dues)
   const { dues, loading: overviewLoading } = useOverviewData(groupId);
@@ -64,6 +65,25 @@ const MemberManagementPage: React.FC = () => {
     } catch (e) {
       notifyError("추방에 실패했습니다.");
       setLoading(false);
+    }
+  };
+
+  const handleCreateInvite = async () => {
+    try {
+      setLoading(true);
+      const result = await createInvitationCode(groupId);
+      setInviteCode(result.code);
+    } catch (e) {
+      notifyError("초대코드 생성에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (inviteCode) {
+      navigator.clipboard.writeText(inviteCode);
+      alert("초대코드가 복사되었습니다.");
     }
   };
 
@@ -134,12 +154,22 @@ const MemberManagementPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Invite Code Placeholder */}
+      {/* Invite Code Generation */}
       <div className="member-content-section">
         <div className="section-label">초대코드 생성</div>
-        <div className="empty-card">
-          초대코드를 생성하려면 클릭하세요.
-        </div>
+        {!inviteCode ? (
+          <div className="invite-create-card" onClick={handleCreateInvite}>
+            <span className="invite-create-text">초대코드를 생성하려면 클릭하세요.</span>
+          </div>
+        ) : (
+          <div className="invite-code-display">
+            <div className="invite-code-label">생성된 초대코드</div>
+            <div className="invite-code-value">{inviteCode}</div>
+            <button className="copy-button" onClick={copyToClipboard}>
+              복사하기
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
