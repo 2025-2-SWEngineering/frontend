@@ -69,7 +69,14 @@ const DashboardPage: React.FC = () => {
   const categoryChartData = useMemo(() => {
     if (!categoryData) return [];
     
-    const result = [];
+    type ChartItem = {
+      name: string;
+      value: number;
+      type: "income" | "expense";
+      color: string;
+    };
+
+    const result: ChartItem[] = [];
     
     // Process Income
     categoryData.forEach((c, idx) => {
