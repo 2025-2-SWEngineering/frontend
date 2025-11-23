@@ -313,9 +313,9 @@
 .modal-content {
   background: white;
   border-radius: 16px;
-  width: 90%;
-  max-width: 800px;
-  max-height: 80vh;
+  width: 95%;
+  max-width: 1000px;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
