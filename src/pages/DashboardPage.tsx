@@ -35,6 +35,8 @@ const DashboardPage: React.FC = () => {
     dues,
   } = useOverviewData(groupId);
 
+  const { data: categoryData } = useCategoryAgg(groupId);
+
   const [loading, setLoading] = useState(true);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"transactions" | "dues" | "charts">("transactions");
