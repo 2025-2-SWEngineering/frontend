@@ -68,14 +68,11 @@ const DashboardPage: React.FC = () => {
 
   const categoryChartData = useMemo(() => {
     if (!categoryData) return [];
-    
-    return categoryData
-      .filter(c => Number(c.expense) > 0)
-      .map((c, idx) => ({
-        name: c.category,
-        value: Number(c.expense),
-        color: COLORS[idx % COLORS.length],
-      }));
+    return categoryData.map((c) => ({
+      name: c.category,
+      value: Number(c.expense),
+      color: COLORS[idx % COLORS.length], // Fallback color
+    }));
   }, [categoryData]);
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
@@ -87,15 +84,10 @@ const DashboardPage: React.FC = () => {
       {/* Header Section */}
       <div className="dashboard-header">
         <div className="header-top">
-          <button className="back-button" onClick={() => navigate("/groups")}>
+          <button className="back-button" onClick={() => navigate("/group")}>
             {"<"}
           </button>
-          <span 
-            className="member-manage-link" 
-            onClick={() => groupId && navigate(`/groups/${groupId}/members`)}
-          >
-            멤버 관리
-          </span>
+          <span className="member-manage-link">멤버 관리</span>
         </div>
 
         <div className="balance-section">
@@ -207,33 +199,27 @@ const DashboardPage: React.FC = () => {
 
         <div className="chart-container">
           <div className="donut-chart-wrapper">
-            {categoryChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {categoryChartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.color}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div style={{ position: "absolute", color: "#ccc", fontSize: 12 }}>
-                데이터 없음
-              </div>
-            )}
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={categoryChartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {categoryChartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
             <div className="donut-center-text">
               <div className="donut-label">지출</div>
               <div className="donut-value">
@@ -245,7 +231,7 @@ const DashboardPage: React.FC = () => {
           <div className="chart-legend">
              {categoryChartData.slice(0, 3).map((entry, index) => (
                <div key={index} className="legend-item">
-                 <div className="legend-color" style={{ backgroundColor: entry.color }} />
+                 <div className="legend-color" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                  <span>{entry.name}</span>
                </div>
              ))}
