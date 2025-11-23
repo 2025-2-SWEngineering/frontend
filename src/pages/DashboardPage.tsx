@@ -37,6 +37,7 @@ const DashboardPage: React.FC = () => {
 
   const { data: categoryData } = useCategoryAgg(groupId);
 
+  const [loading, setLoading] = useState(true);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
 
   // Refs for scrolling
