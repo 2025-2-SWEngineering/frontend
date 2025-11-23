@@ -70,8 +70,8 @@ const DashboardPage: React.FC = () => {
     if (!categoryData) return [];
     return categoryData.map((c) => ({
       name: c.category,
-      value: Number(c.expense),
-      color: COLORS[idx % COLORS.length], // Fallback color
+      value: c.amount,
+      color: c.color || "#8884d8", // Fallback color
     }));
   }, [categoryData]);
 
@@ -84,10 +84,15 @@ const DashboardPage: React.FC = () => {
       {/* Header Section */}
       <div className="dashboard-header">
         <div className="header-top">
-          <button className="back-button" onClick={() => navigate("/group")}>
+          <button className="back-button" onClick={() => navigate("/groups")}>
             {"<"}
           </button>
-          <span className="member-manage-link">멤버 관리</span>
+          <span 
+            className="member-manage-link" 
+            onClick={() => groupId && navigate(`/groups/${groupId}/members`)}
+          >
+            멤버 관리
+          </span>
         </div>
 
         <div className="balance-section">
@@ -243,3 +248,4 @@ const DashboardPage: React.FC = () => {
 };
 
 export default DashboardPage;
+
