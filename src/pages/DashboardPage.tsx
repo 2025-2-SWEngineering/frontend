@@ -243,28 +243,34 @@ const DashboardPage: React.FC = () => {
           {/* Income Chart */}
           <div className="chart-card">
             <div className="gauge-chart-wrapper">
-              <ResponsiveContainer width="100%" height="200%">
-                <PieChart>
-                  <Pie
-                    data={categoryChartData.filter((c) => c.type === "income")}
-                    cx="50%"
-                    cy="100%"
-                    startAngle={180}
-                    endAngle={0}
-                    innerRadius={40}
-                    outerRadius={55}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {categoryChartData
-                      .filter((c) => c.type === "income")
-                      .map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              {categoryChartData.filter((c) => c.type === "income").length > 0 ? (
+                <ResponsiveContainer width="100%" height="200%">
+                  <PieChart>
+                    <Pie
+                      data={categoryChartData.filter((c) => c.type === "income")}
+                      cx="50%"
+                      cy="100%"
+                      startAngle={180}
+                      endAngle={0}
+                      innerRadius={40}
+                      outerRadius={55}
+                      paddingAngle={2}
+                      dataKey="value"
+                    >
+                      {categoryChartData
+                        .filter((c) => c.type === "income")
+                        .map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ position: "absolute", bottom: 40, color: "#ccc", fontSize: 12 }}>
+                  데이터 없음
+                </div>
+              )}
               <div className="gauge-center-text">
                 <div className="gauge-label">수입</div>
                 <div className="gauge-value">
@@ -296,28 +302,34 @@ const DashboardPage: React.FC = () => {
           {/* Expense Chart */}
           <div className="chart-card">
             <div className="gauge-chart-wrapper">
-              <ResponsiveContainer width="100%" height="200%">
-                <PieChart>
-                  <Pie
-                    data={categoryChartData.filter((c) => c.type === "expense")}
-                    cx="50%"
-                    cy="100%"
-                    startAngle={180}
-                    endAngle={0}
-                    innerRadius={40}
-                    outerRadius={55}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {categoryChartData
-                      .filter((c) => c.type === "expense")
-                      .map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              {categoryChartData.filter((c) => c.type === "expense").length > 0 ? (
+                <ResponsiveContainer width="100%" height="200%">
+                  <PieChart>
+                    <Pie
+                      data={categoryChartData.filter((c) => c.type === "expense")}
+                      cx="50%"
+                      cy="100%"
+                      startAngle={180}
+                      endAngle={0}
+                      innerRadius={40}
+                      outerRadius={55}
+                      paddingAngle={2}
+                      dataKey="value"
+                    >
+                      {categoryChartData
+                        .filter((c) => c.type === "expense")
+                        .map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ position: "absolute", bottom: 40, color: "#ccc", fontSize: 12 }}>
+                  데이터 없음
+                </div>
+              )}
               <div className="gauge-center-text">
                 <div className="gauge-label">지출</div>
                 <div className="gauge-value">
