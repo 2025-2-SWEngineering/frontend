@@ -35,10 +35,9 @@ const DashboardPage: React.FC = () => {
     dues,
   } = useOverviewData(groupId);
 
-  const { data: categoryData } = useCategoryAgg(groupId);
-
   const [loading, setLoading] = useState(true);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<"transactions" | "dues" | "charts">("transactions");
 
   // Refs for scrolling
   const transactionsRef = React.useRef<HTMLDivElement>(null);
@@ -48,6 +47,30 @@ const DashboardPage: React.FC = () => {
   const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
     ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -60% 0px", // Adjust trigger zone
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (entry.target === transactionsRef.current) setActiveSection("transactions");
+          else if (entry.target === duesRef.current) setActiveSection("dues");
+          else if (entry.target === chartsRef.current) setActiveSection("charts");
+        }
+      });
+    }, observerOptions);
+
+    if (transactionsRef.current) observer.observe(transactionsRef.current);
+    if (duesRef.current) observer.observe(duesRef.current);
+    if (chartsRef.current) observer.observe(chartsRef.current);
+
+    return () => observer.disconnect();
+  }, [loading]); // Re-run when loading finishes and refs are attached
 
   useEffect(() => {
     if (!groupsLoading && !groupId) setLoading(false);
@@ -115,19 +138,19 @@ const DashboardPage: React.FC = () => {
 
         <div className="action-buttons">
           <button 
-            className="action-btn primary" 
+            className={`action-btn ${activeSection === "transactions" ? "primary" : "secondary"}`}
             onClick={() => scrollToSection(transactionsRef)}
           >
             거래내역
           </button>
           <button 
-            className="action-btn secondary" 
+            className={`action-btn ${activeSection === "dues" ? "primary" : "secondary"}`}
             onClick={() => scrollToSection(duesRef)}
           >
             회비납부
           </button>
           <button 
-            className="action-btn secondary" 
+            className={`action-btn ${activeSection === "charts" ? "primary" : "secondary"}`}
             onClick={() => scrollToSection(chartsRef)}
           >
             그래프
