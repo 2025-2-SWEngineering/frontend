@@ -122,7 +122,7 @@ const DashboardPage: React.FC = () => {
             <div key={tx.id} className="transaction-card">
               <div className="trans-info">
                 <div className="trans-title-row">
-                  <span className="trans-title">{tx.title}</span>
+                  <span className="trans-title">{tx.description}</span>
                   <span className="trans-tag">{tx.category}</span>
                 </div>
                 <span className="trans-date">{tx.date}</span>
