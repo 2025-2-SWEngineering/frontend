@@ -39,6 +39,8 @@ const DashboardPage: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
 
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+
   useEffect(() => {
     if (!groupsLoading && !groupId) setLoading(false);
   }, [groupsLoading, groupId]);
@@ -66,16 +68,17 @@ const DashboardPage: React.FC = () => {
     }));
   }, [monthly]);
 
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+
   const categoryChartData = useMemo(() => {
     if (!categoryData) return [];
-    return categoryData.map((c) => ({
+    return categoryData.map((c, idx) => ({
       name: c.category,
-      value: c.amount,
-      color: c.color || "#8884d8", // Fallback color
+      value: Number(c.expense),
+      color: COLORS[idx % COLORS.length], // Fallback color
     }));
   }, [categoryData]);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
   return (
     <div className="dashboard-container">
@@ -84,11 +87,11 @@ const DashboardPage: React.FC = () => {
       {/* Header Section */}
       <div className="dashboard-header">
         <div className="header-top">
-          <button className="back-button" onClick={() => navigate("/groups")}>
+          <button className="back-button" onClick={() => navigate("/group")}>
             {"<"}
           </button>
-          <span 
-            className="member-manage-link" 
+          <span
+            className="member-manage-link"
             onClick={() => groupId && navigate(`/groups/${groupId}/members`)}
           >
             멤버 관리
@@ -114,7 +117,12 @@ const DashboardPage: React.FC = () => {
         {/* Recent Transactions */}
         <div className="section-title-row">
           <span className="section-title">최근거래 내역</span>
-          <span className="view-all">전체보기 {">"}</span>
+          <span
+            className="view-all"
+            onClick={() => setIsTransactionModalOpen(true)}
+          >
+            전체보기 {">"}
+          </span>
         </div>
 
         <div className="transaction-list">
@@ -232,7 +240,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="chart-legend">
              {categoryChartData.slice(0, 3).map((entry, index) => (
                <div key={index} className="legend-item">
@@ -243,9 +251,55 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Transaction Modal */}
+      {isTransactionModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsTransactionModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">전체 거래 내역</span>
+              <button
+                className="modal-close"
+                onClick={() => setIsTransactionModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="transaction-list">
+                {recentTransactions.map((tx) => (
+                  <div key={tx.id} className="transaction-card">
+                    <div className="trans-info">
+                      <div className="trans-title-row">
+                        <span className="trans-title">{tx.description}</span>
+                        <span className="trans-tag">{tx.category}</span>
+                      </div>
+                      <span className="trans-date">{tx.date}</span>
+                    </div>
+                    <div className="trans-amount-col">
+                      <div
+                        className={`trans-amount ${
+                          tx.type === "expense" ? "expense" : "income"
+                        }`}
+                      >
+                        {tx.type === "expense" ? "-" : "+"} {formatCurrencyKRW(tx.amount)}
+                      </div>
+                      <div className="receipt-link">영수증 {">"}</div>
+                    </div>
+                  </div>
+                ))}
+                {recentTransactions.length === 0 && (
+                  <div className="modal-empty">
+                    거래 내역이 없습니다.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default DashboardPage;
-
