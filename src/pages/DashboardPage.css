@@ -239,80 +239,60 @@
 }
 
 /* Charts */
-.charts-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.chart-card {
-  flex: 1;
+.chart-container {
   background: white;
   border-radius: 16px;
-  padding: 20px 10px;
+  padding: 20px;
+  margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.gauge-chart-wrapper {
+.donut-chart-wrapper {
   position: relative;
-  width: 140px;
-  height: 90px; /* Half height for semi-circle */
+  width: 200px;
+  height: 200px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
 }
 
-.gauge-center-text {
+.donut-center-text {
   position: absolute;
-  bottom: 0;
   text-align: center;
-  width: 100%;
 }
 
-.gauge-label {
-  font-size: 11px;
-  color: #888;
-  margin-bottom: 2px;
+.donut-label {
+  font-size: 12px;
+  color: #999;
 }
 
-.gauge-value {
-  font-size: 16px;
+.donut-value {
+  font-size: 18px;
   font-weight: 700;
   color: #000;
 }
 
-.category-list {
-  width: 100%;
-  margin-top: 10px;
-  padding: 0 10px;
-}
-
-.category-item {
+.chart-legend {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  font-size: 13px;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 20px;
 }
 
-.category-name {
-  color: #555;
+.legend-item {
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.category-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.category-amount {
+  font-size: 14px;
   font-weight: 600;
-  color: #333;
+}
+
+.legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
