@@ -129,7 +129,7 @@ const DashboardPage: React.FC = () => {
       {/* Header Section */}
       <div className="dashboard-header">
         <div className="header-top">
-          <button className="back-button" onClick={() => navigate("/group")}>
+          <button className="back-button" onClick={() => navigate("/groups")}>
             {"<"}
           </button>
           <span
