@@ -45,17 +45,6 @@ const TransactionCreatePage: React.FC = () => {
   };
 
   const uploadReceipt = async (file: File): Promise<string> => {
-    // 1. Presign
-    const { url, key } = await presignPut(file.name, file.type);
-    
-    // 2. Direct Upload (PUT to S3)
-    // Note: In a real S3 scenario, we would use fetch/axios to PUT to 'url'.
-    // However, the current backend implementation of 'uploadDirect' seems to handle multipart upload directly?
-    // Let's check api/client.ts again. 
-    // Wait, client.ts has 'uploadDirect' which posts to '/uploads/direct'.
-    // And 'presignPut' returns url/key.
-    // If we use 'uploadDirect', we send FormData.
-    
     const fd = new FormData();
     fd.append("file", file);
     const result = await uploadDirect(fd);
