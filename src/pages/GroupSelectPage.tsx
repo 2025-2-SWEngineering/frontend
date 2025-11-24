@@ -71,8 +71,7 @@ const GroupSelectPage: React.FC = () => {
         <div className="group-grid">
           {groups.map((group) => (
             <div key={group.id} className="group-card">
-              {/* Random star for visual effect, logic can be added later */}
-              {group.id % 2 === 0 && <div className="group-card-star">★</div>}
+              {/* Star icon removed */}
               
               <div className="group-card-title">{group.name}</div>
               <div className="group-card-subtitle">그룹</div>

@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import api from "../services/api";
 import logo from "../assets/logo.png";
+import LoadingPage from "./LoadingPage";
 import "./LoginPage.css";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,14 +21,25 @@ const LoginPage: React.FC = () => {
         localStorage.setItem("refreshToken", data.refreshToken);
       }
       localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "/groups";
+      
+      // Show loading screen before navigating
+      setShowLoadingScreen(true);
+      
+      // Simulate a short delay for the loading screen to be visible
+      setTimeout(() => {
+        window.location.href = "/groups";
+      }, 1500);
+      
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "로그인에 실패했습니다.";
       alert(msg);
-    } finally {
       setLoading(false);
     }
   };
+
+  if (showLoadingScreen) {
+    return <LoadingPage />;
+  }
 
   return (
     <div className="login-container">
