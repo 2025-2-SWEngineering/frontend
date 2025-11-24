@@ -54,6 +54,10 @@ export async function kickMemberApi(groupId: number, userId: number) {
   await api.delete(`/groups/${groupId}/members/${userId}`);
 }
 
+export async function updateMemberRoleApi(groupId: number, userId: number, role: "admin" | "member") {
+  await api.put(`/groups/${groupId}/members/${userId}/role`, { role });
+}
+
 // Transactions
 export async function fetchTxStats(groupId: number) {
   const { data } = await api.get<TransactionsStatsResponse>("/transactions/stats", {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchGroupMembers, kickMemberApi, fetchGroups, createInvitationCode } from "../api/client";
+import { fetchGroupMembers, kickMemberApi, fetchGroups, createInvitationCode, updateMemberRoleApi } from "../api/client";
 import { useOverviewData } from "../hooks/useOverviewData";
 import { LoadingOverlay } from "../components/ui";
 import { notifyError, confirmAsync } from "../utils/notify";
@@ -80,6 +80,25 @@ const MemberManagementPage: React.FC = () => {
     }
   };
 
+  const handleRoleChange = async (member: Member, newRole: "admin" | "member") => {
+    if (!isAdmin) return;
+    const confirmMsg = newRole === "admin" 
+      ? `${member.user_name} 님을 팀장으로 승격하시겠습니까?` 
+      : `${member.user_name} 님의 역할을 팀원으로 변경하시겠습니까?`;
+      
+    const ok = await confirmAsync(confirmMsg);
+    if (!ok) return;
+
+    try {
+      setLoading(true);
+      await updateMemberRoleApi(groupId, member.user_id, newRole);
+      await loadData(); // Reload list
+    } catch (e) {
+      notifyError("역할 변경에 실패했습니다.");
+      setLoading(false);
+    }
+  };
+
   const copyToClipboard = () => {
     if (inviteCode) {
       navigator.clipboard.writeText(inviteCode);
@@ -136,8 +155,19 @@ const MemberManagementPage: React.FC = () => {
               <div key={member.user_id} className="member-list-item">
                 <div className="member-info-col">{member.user_name}</div>
                 <div className="member-role-col">
-                  {member.role === "admin" ? "팀장" : member.role === "member" ? "팀원" : "총무"}
-                  <span style={{ fontSize: 10, color: "#999" }}>v</span>
+                  {isAdmin && member.role !== "admin" ? (
+                    <select
+                      className="role-select"
+                      value={member.role}
+                      onChange={(e) => handleRoleChange(member, e.target.value as "admin" | "member")}
+                      style={{ padding: "4px", borderRadius: "4px", border: "1px solid #ddd" }}
+                    >
+                      <option value="member">팀원</option>
+                      <option value="admin">팀장</option>
+                    </select>
+                  ) : (
+                    <span>{member.role === "admin" ? "팀장" : "팀원"}</span>
+                  )}
                 </div>
                 <div className="member-action-col">
                   {isAdmin && member.role !== "admin" && (
