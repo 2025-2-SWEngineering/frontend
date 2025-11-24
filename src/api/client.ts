@@ -146,9 +146,7 @@ export async function presignPut(filename: string, contentType: string) {
 }
 
 export async function uploadDirect(fd: FormData) {
-  const { data } = await api.post<DirectUploadResponse>("/uploads/direct", fd, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data } = await api.post<DirectUploadResponse>("/uploads/direct", fd);
   return data;
 }
 
