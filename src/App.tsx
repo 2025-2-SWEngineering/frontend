@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import RegisterPage from "./pages/RegisterPage";
 import GroupSelectPage from "./pages/GroupSelectPage";
 import MemberManagementPage from "./pages/MemberManagementPage";
+import TransactionCreatePage from "./pages/TransactionCreatePage";
 import "./App.css";
 import { GlobalLoadingOverlay } from "./components/ui";
 
