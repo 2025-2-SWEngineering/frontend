@@ -127,22 +127,28 @@ const MemberManagementPage: React.FC = () => {
             <span style={{ flex: 1, textAlign: "center" }}>역할</span>
             <span style={{ flex: 1, textAlign: "right" }}>관리</span>
           </div>
-          {members.map((member) => (
-            <div key={member.user_id} className="member-list-item">
-              <div className="member-info-col">{member.user_name}</div>
-              <div className="member-role-col">
-                {member.role === "admin" ? "팀장" : member.role === "member" ? "팀원" : "총무"}
-                <span style={{ fontSize: 10, color: "#999" }}>v</span>
-              </div>
-              <div className="member-action-col">
-                {isAdmin && member.role !== "admin" && (
-                  <button className="kick-button" onClick={() => handleKick(member)}>
-                    추방
-                  </button>
-                )}
-              </div>
+          {members.length === 0 ? (
+            <div className="empty-member-list" style={{ padding: "20px", textAlign: "center", color: "#999" }}>
+              멤버가 없습니다.
             </div>
-          ))}
+          ) : (
+            members.map((member) => (
+              <div key={member.user_id} className="member-list-item">
+                <div className="member-info-col">{member.user_name}</div>
+                <div className="member-role-col">
+                  {member.role === "admin" ? "팀장" : member.role === "member" ? "팀원" : "총무"}
+                  <span style={{ fontSize: 10, color: "#999" }}>v</span>
+                </div>
+                <div className="member-action-col">
+                  {isAdmin && member.role !== "admin" && (
+                    <button className="kick-button" onClick={() => handleKick(member)}>
+                      추방
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
