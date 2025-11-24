@@ -56,6 +56,12 @@ const App: React.FC = () => {
               localStorage.getItem("token") ? <MemberManagementPage /> : <Navigate to="/" replace />
             }
           />
+          <Route
+            path="/groups/:groupId/transactions/new"
+            element={
+              localStorage.getItem("token") ? <TransactionCreatePage /> : <Navigate to="/" replace />
+            }
+          />
         </Routes>
       </Router>
     </AppContainer>
