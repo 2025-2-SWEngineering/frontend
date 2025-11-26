@@ -8,7 +8,7 @@ import logo from "../assets/logo.png";
 import "./GroupSelectPage.css";
 
 const GroupSelectPage: React.FC = () => {
-  const [groups, setGroups] = useState<Array<{ id: number; name: string }>>([]);
+  const [groups, setGroups] = useState<Array<{ id: number; name: string; member_count?: number }>>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
 
@@ -77,11 +77,19 @@ const GroupSelectPage: React.FC = () => {
               <div className="group-card-subtitle">그룹</div>
               
               <div className="group-avatars">
-                {/* Placeholder avatars */}
-                <div className="group-avatar" style={{ backgroundColor: "#ffadad" }} />
-                <div className="group-avatar" style={{ backgroundColor: "#ffd6a5" }} />
-                <div className="group-avatar" style={{ backgroundColor: "#fdffb6" }} />
-                <div className="group-avatar-more">+2</div>
+                {/* Dynamic avatars based on member_count */}
+                {Array.from({ length: Math.min(group.member_count || 1, 3) }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="group-avatar"
+                    style={{
+                      backgroundColor: ["#ffadad", "#ffd6a5", "#fdffb6"][i % 3],
+                    }}
+                  />
+                ))}
+                {(group.member_count || 1) > 3 && (
+                  <div className="group-avatar-more">+{ (group.member_count || 1) - 3 }</div>
+                )}
               </div>
 
               <button className="group-enter-button" onClick={() => enterGroup(group.id)}>

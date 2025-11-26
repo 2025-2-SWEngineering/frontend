@@ -10,6 +10,7 @@ export type GroupSummaryDTO = {
   id: number;
   name: string;
   user_role?: "admin" | "member";
+  member_count?: number;
 };
 export type GroupsListResponse = { groups: GroupSummaryDTO[] };
 export type GroupMembersDTO = { user_id: number; user_name: string; role: "admin" | "member" };
