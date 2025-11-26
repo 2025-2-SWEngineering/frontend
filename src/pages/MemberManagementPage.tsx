@@ -170,7 +170,7 @@ const MemberManagementPage: React.FC = () => {
                   )}
                 </div>
                 <div className="member-action-col">
-                  {isAdmin && member.role !== "admin" && (
+                  {isAdmin && (
                     <button className="kick-button" onClick={() => handleKick(member)}>
                       추방
                     </button>
