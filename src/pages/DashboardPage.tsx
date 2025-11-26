@@ -13,7 +13,8 @@ import {
 } from "recharts";
 import { useGroupsSelection } from "../hooks/useGroupsSelection";
 import { useOverviewData } from "../hooks/useOverviewData";
-import { getPresignedUrl } from "../api/client";
+import { getPresignedUrl, setDues } from "../api/client";
+import DuesModal from "../components/modals/DuesModal";
 import { useCategoryAgg } from "../hooks/useCategoryAgg";
 import { formatCurrencyKRW } from "../utils/format";
 import { LoadingOverlay } from "../components/ui";
@@ -42,6 +43,69 @@ const DashboardPage: React.FC = () => {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"transactions" | "dues" | "charts">("transactions");
   const [selectedReceiptUrl, setSelectedReceiptUrl] = useState<string | null>(null);
+
+  // Dues Management State
+  const [isDuesModalOpen, setIsDuesModalOpen] = useState(false);
+  const [editingDues, setEditingDues] = useState<{
+    name: string;
+    isPaid: boolean;
+    date: string;
+    isGuest: boolean;
+    userId?: number;
+  } | null>(null);
+  const [guestDues, setGuestDues] = useState<Array<{ userName: string; isPaid: boolean; paidAt?: string; userId?: number }>>([]);
+
+  useEffect(() => {
+    if (groupId) {
+      const saved = localStorage.getItem(`guest_dues_${groupId}`);
+      if (saved) {
+        setGuestDues(JSON.parse(saved));
+      } else {
+        setGuestDues([]);
+      }
+    }
+  }, [groupId]);
+
+  const handleSaveDues = async (data: { name: string; isPaid: boolean; date: string; isGuest: boolean; userId?: number }) => {
+    try {
+      if (data.isGuest) {
+        // Handle Guest (LocalStorage)
+        const newGuest = {
+          userName: data.name,
+          isPaid: data.isPaid,
+          paidAt: data.date || undefined,
+        };
+
+        let updatedGuests;
+        if (editingDues && editingDues.isGuest) {
+          // Update existing guest
+          updatedGuests = guestDues.map(g => g.userName === editingDues.name ? newGuest : g);
+        } else {
+          // Add new guest
+          updatedGuests = [...guestDues, newGuest];
+        }
+        
+        setGuestDues(updatedGuests);
+        localStorage.setItem(`guest_dues_${groupId}`, JSON.stringify(updatedGuests));
+      } else {
+        // Handle Member (API)
+        if (data.userId) {
+          setLoading(true);
+          await setDues(groupId!, data.userId, data.isPaid);
+          // Note: Backend sets date to NOW() automatically. We can't set custom date for members without backend change.
+          // We will refresh the data to show updated status.
+          window.location.reload(); // Simple refresh to fetch updated data
+          return; 
+        }
+      }
+      setIsDuesModalOpen(false);
+    } catch (e) {
+      console.error(e);
+      alert("저장에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Refs for scrolling
   const transactionsRef = React.useRef<HTMLDivElement>(null);
@@ -243,6 +307,16 @@ const DashboardPage: React.FC = () => {
         {/* Member Status (Dues) */}
         <div className="section-title-row" ref={duesRef}>
           <span className="section-title">회비납부 현황</span>
+          <span
+            className="view-all"
+            style={{ color: "#007bff", marginRight: 0, cursor: "pointer" }}
+            onClick={() => {
+              setEditingDues(null);
+              setIsDuesModalOpen(true);
+            }}
+          >
+            + 추가하기
+          </span>
         </div>
 
         <div className="member-status-card">
@@ -250,8 +324,9 @@ const DashboardPage: React.FC = () => {
             <span className="member-header">이름</span>
             <span className="member-header">상태</span>
             <span className="member-header">마지막 납부일</span>
+            <span className="member-header" style={{ width: 40 }}></span>
           </div>
-          {dues.map((member, idx) => (
+          {[...dues, ...guestDues].map((member, idx) => (
             <div key={idx} className="member-row">
               <span className="member-name">{member.userName}</span>
               <span
@@ -264,9 +339,25 @@ const DashboardPage: React.FC = () => {
               <span className="member-date">
                 {member.paidAt ? member.paidAt.slice(0, 10) : "-"}
               </span>
+              <span 
+                className="edit-icon" 
+                onClick={() => {
+                  setEditingDues({
+                    name: member.userName,
+                    isPaid: member.isPaid || false,
+                    date: member.paidAt ? member.paidAt.slice(0, 10) : "",
+                    isGuest: !member.userId, // If no userId, it's a guest
+                    userId: member.userId,
+                  });
+                  setIsDuesModalOpen(true);
+                }}
+                style={{ cursor: "pointer", fontSize: "14px" }}
+              >
+                ✏️
+              </span>
             </div>
           ))}
-          {dues.length === 0 && (
+          {[...dues, ...guestDues].length === 0 && (
             <div style={{ textAlign: "center", padding: 20, color: "#999" }}>
               멤버 정보가 없습니다.
             </div>
@@ -413,6 +504,15 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {isDuesModalOpen && (
+        <DuesModal
+          onClose={() => setIsDuesModalOpen(false)}
+          onSave={handleSaveDues}
+          initialData={editingDues || undefined}
+          existingMemberNames={dues.map(d => d.userName)}
+        />
       )}
     </div>
   );
