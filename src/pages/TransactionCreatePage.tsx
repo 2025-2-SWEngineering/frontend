@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { createTransactionApi, presignPut, uploadDirect } from "../api/client";
 import { LoadingOverlay } from "../components/ui";
@@ -45,11 +46,16 @@ const TransactionCreatePage: React.FC = () => {
   };
 
   const uploadReceipt = async (file: File): Promise<string> => {
-    const fd = new FormData();
-    fd.append("file", file);
-    const result = await uploadDirect(fd);
-    if (!result.url) throw new Error("Upload failed");
-    return result.url;
+    // 1. Get presigned URL
+    const { url, key } = await presignPut(file.name, file.type);
+    
+    // 2. Upload to S3 directly
+    await axios.put(url, file, {
+      headers: { "Content-Type": file.type },
+    });
+
+    // 3. Return the key (to be stored in DB)
+    return key;
   };
 
   const handleSubmit = async () => {
