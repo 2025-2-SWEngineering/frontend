@@ -13,8 +13,9 @@ import {
 } from "recharts";
 import { useGroupsSelection } from "../hooks/useGroupsSelection";
 import { useOverviewData } from "../hooks/useOverviewData";
-import { getPresignedUrl, setDues } from "../api/client";
+import { getPresignedUrl, setDues, createTransactionApi } from "../api/client";
 import DuesModal from "../components/modals/DuesModal";
+import DuesSettingsModal from "../components/modals/DuesSettingsModal";
 import { useCategoryAgg } from "../hooks/useCategoryAgg";
 import { formatCurrencyKRW } from "../utils/format";
 import { LoadingOverlay } from "../components/ui";
@@ -46,6 +47,7 @@ const DashboardPage: React.FC = () => {
 
   // Dues Management State
   const [isDuesModalOpen, setIsDuesModalOpen] = useState(false);
+  const [isDuesSettingsModalOpen, setIsDuesSettingsModalOpen] = useState(false);
   const [editingDues, setEditingDues] = useState<{
     name: string;
     isPaid: boolean;
@@ -68,6 +70,30 @@ const DashboardPage: React.FC = () => {
 
   const handleSaveDues = async (data: { name: string; isPaid: boolean; date: string; isGuest: boolean; userId?: number }) => {
     try {
+      // Check for automatic transaction creation
+      // Logic: If transitioning to "Paid" (isPaid=true), create income transaction
+      // We need to know previous state. For simplicity, we assume if user clicks "Save" with "Paid", and it's a positive action, we record it.
+      // Better: Check if it was already paid? 
+      // Current logic in DuesModal sets initialData. If initialData.isPaid was false, and now data.isPaid is true -> Create Transaction.
+      
+      const wasPaid = editingDues?.isPaid || false;
+      if (data.isPaid && !wasPaid && groupId) {
+        const savedAmount = localStorage.getItem(`dues_amount_${groupId}`);
+        const amount = savedAmount ? parseInt(savedAmount, 10) : 0;
+        
+        if (amount > 0) {
+          await createTransactionApi({
+            groupId,
+            type: "income",
+            amount,
+            description: `회비 납부 - ${data.name}`,
+            date: new Date().toISOString(),
+            category: "회비"
+          });
+          // Refresh transactions will happen via window.location.reload() below or we can refetch
+        }
+      }
+
       if (data.isGuest) {
         // Handle Guest (LocalStorage)
         const newGuest = {
@@ -317,6 +343,13 @@ const DashboardPage: React.FC = () => {
           >
             + 추가하기
           </span>
+          <span
+            className="view-all"
+            style={{ color: "#666", marginRight: 0, cursor: "pointer", fontSize: "14px", marginLeft: "12px" }}
+            onClick={() => setIsDuesSettingsModalOpen(true)}
+          >
+            ⚙️ 회비 설정
+          </span>
         </div>
 
         <div className="member-status-card">
@@ -512,6 +545,13 @@ const DashboardPage: React.FC = () => {
           onSave={handleSaveDues}
           initialData={editingDues || undefined}
           existingMemberNames={dues.map(d => d.userName)}
+        />
+      )}
+
+      {isDuesSettingsModalOpen && groupId && (
+        <DuesSettingsModal
+          onClose={() => setIsDuesSettingsModalOpen(false)}
+          groupId={groupId}
         />
       )}
     </div>
