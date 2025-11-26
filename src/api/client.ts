@@ -157,3 +157,9 @@ export async function parseReceipt(fd: FormData) {
   });
   return data.result;
 }
+export async function getPresignedUrl(key: string) {
+  const { data } = await api.get<{ url: string }>("/uploads/presign/get", {
+    params: { key },
+  });
+  return data.url;
+}

@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { useGroupsSelection } from "../hooks/useGroupsSelection";
 import { useOverviewData } from "../hooks/useOverviewData";
+import { getPresignedUrl } from "../api/client";
 import { useCategoryAgg } from "../hooks/useCategoryAgg";
 import { formatCurrencyKRW } from "../utils/format";
 import { LoadingOverlay } from "../components/ui";
@@ -47,15 +48,24 @@ const DashboardPage: React.FC = () => {
   const duesRef = React.useRef<HTMLDivElement>(null);
   const chartsRef = React.useRef<HTMLDivElement>(null);
 
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
     ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleReceiptClick = (url?: string) => {
-    if (url) {
-      setSelectedReceiptUrl(url);
-    } else {
+  const handleReceiptClick = async (key?: string) => {
+    if (!key) {
       alert("등록된 영수증이 없습니다.");
+      return;
+    }
+    try {
+      setLoading(true);
+      const url = await getPresignedUrl(key);
+      setSelectedReceiptUrl(url);
+    } catch (e) {
+      console.error(e);
+      alert("영수증을 불러오는데 실패했습니다.");
+    } finally {
+      setLoading(false);
     }
   };
 
