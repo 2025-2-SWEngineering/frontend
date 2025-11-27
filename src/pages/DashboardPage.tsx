@@ -246,7 +246,7 @@ const DashboardPage: React.FC = () => {
     if (!categoryData) return [];
     return categoryData.map((c, idx) => ({
       name: c.category,
-      value: Number(c.expense),
+      value: Number(c.expense) + Number(c.income),
       color: COLORS[idx % COLORS.length], // Fallback color
     }));
   }, [categoryData]);
@@ -466,9 +466,9 @@ const DashboardPage: React.FC = () => {
               </PieChart>
             </ResponsiveContainer>
             <div className="donut-center-text">
-              <div className="donut-label">지출</div>
+              <div className="donut-label">전체</div>
               <div className="donut-value">
-                {formatCurrencyKRW(stats?.totalExpense ?? 0)}
+                {formatCurrencyKRW((stats?.totalExpense ?? 0) + (stats?.totalIncome ?? 0))}
               </div>
             </div>
           </div>
