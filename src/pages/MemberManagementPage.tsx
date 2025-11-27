@@ -23,7 +23,7 @@ const MemberManagementPage: React.FC = () => {
   const { dues, loading: overviewLoading } = useOverviewData(groupId);
 
   const unpaidCount = useMemo(() => {
-    return dues.filter((d) => d.status === "unpaid").length;
+    return dues.filter((d) => !d.isPaid).length;
   }, [dues]);
 
   useEffect(() => {
@@ -69,6 +69,10 @@ const MemberManagementPage: React.FC = () => {
   };
 
   const handleCreateInvite = async () => {
+    if (!isAdmin) {
+      notifyError("팀장만 초대코드를 생성할 수 있습니다.");
+      return;
+    }
     try {
       setLoading(true);
       const result = await createInvitationCode(groupId);

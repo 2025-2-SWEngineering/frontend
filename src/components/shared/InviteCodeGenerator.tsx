@@ -4,13 +4,18 @@ import { Button, colors } from "../../styles/primitives";
 
 type Props = {
   groupId: number;
+  isAdmin: boolean;
 };
 
-const InviteCodeGenerator: React.FC<Props> = ({ groupId }) => {
+const InviteCodeGenerator: React.FC<Props> = ({ groupId, isAdmin }) => {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState<string | null>(null);
 
   const create = async () => {
+    if (!isAdmin) {
+      alert("초대코드는 팀장만 생성할 수 있습니다");
+      return;
+    }
     try {
       setLoading(true);
       const invitation = await createInvitationCode(groupId);

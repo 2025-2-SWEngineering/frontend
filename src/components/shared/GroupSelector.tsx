@@ -23,9 +23,9 @@ const GroupSelector: React.FC<Props> = ({ groups, groupId, onChange, isAdmin, co
           </option>
         ))}
       </Select>
-      {isAdmin && groupId && (
+      {groupId && (
         <span style={{ marginLeft: 10 }}>
-          <InviteCodeGenerator groupId={groupId} />
+          <InviteCodeGenerator groupId={groupId} isAdmin={isAdmin} />
         </span>
       )}
     </div>
