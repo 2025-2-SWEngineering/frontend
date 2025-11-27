@@ -275,15 +275,7 @@ const DashboardPage: React.FC = () => {
         <div className="section-title-row" ref={transactionsRef}>
           <span className="section-title">최근거래 내역</span>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            {groups.find((g) => g.id === groupId)?.user_role === "admin" && (
-              <span
-                className="view-all"
-                style={{ color: "#007bff", marginRight: 0 }}
-                onClick={() => navigate(`/groups/${groupId}/transactions/new`)}
-              >
-                + 추가하기
-              </span>
-            )}
+
             <span
               className="view-all"
               onClick={() => setIsTransactionModalOpen(true)}

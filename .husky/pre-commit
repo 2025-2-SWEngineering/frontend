@@ -20,5 +20,3 @@ fi
 npm run typecheck || exit 1
 
 exit 0
-
-
