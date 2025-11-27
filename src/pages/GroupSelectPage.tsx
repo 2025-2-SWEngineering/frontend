@@ -52,7 +52,10 @@ const GroupSelectPage: React.FC = () => {
   return (
     <div className="group-select-container">
       <div className="top-section">
-        <img src={logo} alt="W" className="top-logo" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+          <img src={logo} alt="W" className="top-logo" style={{ marginBottom: 0 }} />
+          <LogoutButton />
+        </div>
         
         <div className="greeting-text">
           안녕하세요 {userName}님!<br />
