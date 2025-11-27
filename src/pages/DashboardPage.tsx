@@ -355,7 +355,7 @@ const DashboardPage: React.FC = () => {
         {/* Member Status (Dues) */}
         <div className="section-title-row" ref={duesRef}>
           <span className="section-title">회비납부 현황</span>
-          <span
+          {/* <span
             className="view-all"
             style={{ color: "#007bff", marginRight: 0, cursor: "pointer" }}
             onClick={() => {
@@ -364,7 +364,7 @@ const DashboardPage: React.FC = () => {
             }}
           >
             + 추가하기
-          </span>
+          </span> */}
           <span
             className="view-all"
             style={{ color: "#666", marginRight: 0, cursor: "pointer", fontSize: "14px", marginLeft: "12px" }}
