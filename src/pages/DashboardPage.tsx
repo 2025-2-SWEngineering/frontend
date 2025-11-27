@@ -133,6 +133,36 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const handleResetAllDues = async () => {
+    try {
+      if (!groupId) return;
+      setLoading(true);
+
+      // 1. Reset Guests (LocalStorage)
+      const resetGuests = guestDues.map(g => ({ ...g, isPaid: false, paidAt: undefined }));
+      setGuestDues(resetGuests);
+      localStorage.setItem(`guest_dues_${groupId}`, JSON.stringify(resetGuests));
+
+      // 2. Reset Members (API)
+      // Filter only paid members to minimize requests
+      const paidMembers = dues.filter(d => d.isPaid && d.userId);
+      
+      // Execute sequentially or parallel? Parallel is faster but might hit rate limits. 
+      // Given "Frontend Only" constraint, we just loop.
+      await Promise.all(paidMembers.map(member => 
+        setDues(groupId, member.userId!, false)
+      ));
+
+      alert("모든 회비 납부 상태가 초기화되었습니다.");
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      alert("초기화 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Refs for scrolling
   const transactionsRef = React.useRef<HTMLDivElement>(null);
   const duesRef = React.useRef<HTMLDivElement>(null);
@@ -544,6 +574,7 @@ const DashboardPage: React.FC = () => {
         <DuesSettingsModal
           onClose={() => setIsDuesSettingsModalOpen(false)}
           groupId={groupId}
+          onResetAll={handleResetAllDues}
         />
       )}
     </div>

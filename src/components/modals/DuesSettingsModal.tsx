@@ -5,9 +5,10 @@ import { formatCurrencyKRW } from "../../utils/format";
 interface DuesSettingsModalProps {
   onClose: () => void;
   groupId: number;
+  onResetAll: () => void;
 }
 
-const DuesSettingsModal: React.FC<DuesSettingsModalProps> = ({ onClose, groupId }) => {
+const DuesSettingsModal: React.FC<DuesSettingsModalProps> = ({ onClose, groupId, onResetAll }) => {
   const [amount, setAmount] = useState("");
 
   useEffect(() => {
@@ -57,6 +58,19 @@ const DuesSettingsModal: React.FC<DuesSettingsModalProps> = ({ onClose, groupId 
           <br />
           (이 설정은 현재 브라우저에만 저장됩니다.)
         </div>
+
+        <Button 
+          $variant="outline" 
+          style={{ width: "100%", borderColor: "#e03e3e", color: "#e03e3e", marginBottom: 20 }}
+          onClick={() => {
+            if (window.confirm("정말로 모든 멤버의 회비 납부 상태를 '미납'으로 초기화하시겠습니까?\n(이 작업은 되돌릴 수 없습니다.)")) {
+              onResetAll();
+              onClose();
+            }
+          }}
+        >
+          회비 납부 전부 초기화
+        </Button>
 
         <Spacer $size={20} />
 
