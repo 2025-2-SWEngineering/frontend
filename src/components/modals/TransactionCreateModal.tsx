@@ -235,7 +235,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
                   type="button" 
                   onClick={handleAiAnalysis} 
                   disabled={!file || analyzing}
-                  style={{ marginLeft: "8px", backgroundColor: analyzing ? "#ccc" : "#28a745", color: "white", border: "none" }}
+                  style={{ marginLeft: "8px", backgroundColor: (!file || analyzing) ? "#ccc" : "#28a745", color: "white", border: "none" }}
                 >
                   {analyzing ? "분석 중..." : "AI 분석"}
                 </Button>
