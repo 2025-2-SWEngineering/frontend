@@ -16,6 +16,12 @@ import type {
   OcrParseResponse,
 } from "../types/api";
 
+// Auth
+export async function fetchMe() {
+  const { data } = await api.get<{ user: { id: number; email: string } }>("/auth/me");
+  return data.user;
+}
+
 // Groups
 export async function fetchGroups() {
   const { data } = await api.get<GroupsListResponse>("/groups");

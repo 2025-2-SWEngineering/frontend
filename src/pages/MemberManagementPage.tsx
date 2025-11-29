@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchGroupMembers, kickMemberApi, fetchGroups, createInvitationCode, updateMemberRoleApi } from "../api/client";
+import { fetchGroupMembers, kickMemberApi, fetchGroups, createInvitationCode, updateMemberRoleApi, fetchMe } from "../api/client";
 import { useOverviewData } from "../hooks/useOverviewData";
 import { LoadingOverlay } from "../components/ui";
 import { notifyError, confirmAsync } from "../utils/notify";
@@ -18,6 +18,7 @@ const MemberManagementPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   // Use overview data hook to get unpaid count (dues)
   const { dues, loading: overviewLoading } = useOverviewData(groupId);
@@ -35,6 +36,14 @@ const MemberManagementPage: React.FC = () => {
     try {
       setLoading(true);
       
+      // Fetch current user info
+      try {
+        const me = await fetchMe();
+        setCurrentUserId(me.id);
+      } catch (e) {
+        console.error("Failed to fetch current user info", e);
+      }
+
       // Fetch group info to get name and check admin role
       const groups = await fetchGroups();
       const currentGroup = groups.find((g) => g.id === groupId);
@@ -95,16 +104,13 @@ const MemberManagementPage: React.FC = () => {
 
     try {
       setLoading(true);
-      console.log(`[DEBUG] Promoting user ${member.user_id} to ${newRole} in group ${groupId}`);
       const updatedMember = await updateMemberRoleApi(groupId, member.user_id, newRole);
-      console.log("[DEBUG] Updated member:", updatedMember);
       
       // Update local state immediately
       setMembers((prev) => 
         prev.map((m) => m.user_id === updatedMember.user_id ? { ...m, role: updatedMember.role } : m)
       );
     } catch (e) {
-      console.error("[DEBUG] Role change failed:", e);
       notifyError("역할 변경에 실패했습니다.");
     } finally {
       setLoading(false);
@@ -167,7 +173,7 @@ const MemberManagementPage: React.FC = () => {
               <div key={member.user_id} className="member-list-item">
                 <div className="member-info-col">{member.user_name}</div>
                 <div className="member-role-col">
-                  {isAdmin && member.role !== "admin" ? (
+                  {isAdmin && member.user_id !== currentUserId ? (
                     <select
                       className="role-select"
                       value={member.role}
