@@ -244,11 +244,13 @@ const DashboardPage: React.FC = () => {
 
   const categoryChartData = useMemo(() => {
     if (!categoryData) return [];
-    return categoryData.map((c, idx) => ({
-      name: c.category,
-      value: Number(c.expense) + Number(c.income),
-      color: COLORS[idx % COLORS.length], // Fallback color
-    }));
+    return categoryData
+      .filter((c) => c.category !== "회비" && Number(c.expense) > 0) // Filter out "회비" and non-expenses
+      .map((c, idx) => ({
+        name: c.category,
+        value: Number(c.expense),
+        color: COLORS[idx % COLORS.length], // Fallback color
+      }));
   }, [categoryData]);
 
 
@@ -466,9 +468,9 @@ const DashboardPage: React.FC = () => {
               </PieChart>
             </ResponsiveContainer>
             <div className="donut-center-text">
-              <div className="donut-label">전체</div>
+              <div className="donut-label">현재 잔액</div>
               <div className="donut-value">
-                {formatCurrencyKRW((stats?.totalExpense ?? 0) + (stats?.totalIncome ?? 0))}
+                {formatCurrencyKRW(stats?.currentBalance ?? 0)}
               </div>
             </div>
           </div>
