@@ -486,12 +486,12 @@ const DashboardPage: React.FC = () => {
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-            <div className="donut-center-text">
-              <div className="donut-label">현재 잔액</div>
-              <div className="donut-value">
-                {formatCurrencyKRW(stats?.currentBalance ?? 0)}
+              <div className="donut-center-text">
+                <div className="donut-label">지출 총 합</div>
+                <div className="donut-value">
+                  {formatCurrencyKRW(totalExpense)}
+                </div>
               </div>
-            </div>
           </div>
 
           <div className="chart-legend">
