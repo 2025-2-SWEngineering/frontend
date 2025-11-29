@@ -8,6 +8,7 @@ import {
   Button,
   Flex,
   Spacer,
+  Select,
 } from "../../styles/primitives";
 import axios from "axios";
 
@@ -17,6 +18,18 @@ interface TransactionCreateModalProps {
   onSuccess: () => void;
 }
 
+const CATEGORIES = [
+  "식비",
+  "교통비",
+  "쇼핑",
+  "문화생활",
+  "생필품",
+  "주거/통신",
+  "의료/건강",
+  "회비",
+  "기타",
+];
+
 const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
   groupId,
   onClose,
@@ -25,7 +38,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
   const [type, setType] = useState<"income" | "expense">("expense");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(CATEGORIES[0]);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -153,12 +166,16 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
 
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>카테고리</label>
-            <Input
-              type="text"
+            <Select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              placeholder="식비, 교통비 등"
-            />
+            >
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </Select>
           </div>
 
           <div style={{ marginBottom: 16 }}>
