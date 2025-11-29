@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { createTransactionApi } from "../../api/client";
-import "./Modal.css"; // Reuse existing modal styles if possible, or create new ones
+import {
+  ModalBackdrop,
+  ModalCard,
+  SectionTitle,
+  Input,
+  Button,
+  Flex,
+  Spacer,
+  Select,
+} from "../../styles/primitives";
 
 interface TransactionCreateModalProps {
   groupId: number;
@@ -49,93 +58,90 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <span className="modal-title">거래 내역 추가</span>
-          <button className="modal-close" onClick={onClose}>
-            &times;
-          </button>
-        </div>
-        <div className="modal-body">
-          <form onSubmit={handleSubmit} className="modal-form">
-            <div className="form-group">
-              <label>유형</label>
-              <div className="radio-group">
-                <label>
-                  <input
-                    type="radio"
-                    checked={type === "expense"}
-                    onChange={() => setType("expense")}
-                  />
-                  지출
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={type === "income"}
-                    onChange={() => setType("income")}
-                  />
-                  수입
-                </label>
-              </div>
-            </div>
+    <ModalBackdrop onClick={onClose}>
+      <ModalCard onClick={(e) => e.stopPropagation()}>
+        <SectionTitle>거래 내역 추가</SectionTitle>
+        
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>유형</label>
+            <Flex $gap={10}>
+              <Button
+                type="button"
+                $variant={type === "expense" ? "danger" : "outline"}
+                onClick={() => setType("expense")}
+                style={{ flex: 1 }}
+              >
+                지출
+              </Button>
+              <Button
+                type="button"
+                $variant={type === "income" ? "primary" : "outline"}
+                onClick={() => setType("income")}
+                style={{ flex: 1 }}
+              >
+                수입
+              </Button>
+            </Flex>
+          </div>
 
-            <div className="form-group">
-              <label>날짜</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>날짜</label>
+            <Input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
 
-            <div className="form-group">
-              <label>금액</label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-                required
-              />
-            </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>금액</label>
+            <Input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0"
+              required
+            />
+          </div>
 
-            <div className="form-group">
-              <label>내용</label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="내용을 입력하세요"
-                required
-              />
-            </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>내용</label>
+            <Input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="내용을 입력하세요"
+              required
+            />
+          </div>
 
-            <div className="form-group">
-              <label>카테고리</label>
-              <input
-                type="text"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                placeholder="식비, 교통비 등"
-              />
-            </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>카테고리</label>
+            <Input
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="식비, 교통비 등"
+            />
+          </div>
 
-            <div className="modal-actions">
-              <button type="button" className="cancel-btn" onClick={onClose}>
-                취소
-              </button>
-              <button type="submit" className="save-btn" disabled={loading}>
-                {loading ? "저장 중..." : "저장"}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+          <Spacer $size={20} />
+
+          <Flex $gap={10}>
+            <Button type="button" $variant="outline" onClick={onClose} style={{ flex: 1 }}>
+              취소
+            </Button>
+            <Button type="submit" disabled={loading} style={{ flex: 1 }}>
+              {loading ? "저장 중..." : "저장"}
+            </Button>
+          </Flex>
+        </form>
+      </ModalCard>
+    </ModalBackdrop>
   );
 };
 
 export default TransactionCreateModal;
+
