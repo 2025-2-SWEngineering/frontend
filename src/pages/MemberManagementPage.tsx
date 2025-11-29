@@ -95,10 +95,17 @@ const MemberManagementPage: React.FC = () => {
 
     try {
       setLoading(true);
-      await updateMemberRoleApi(groupId, member.user_id, newRole);
-      await loadData(); // Reload list
+      const updatedMember = await updateMemberRoleApi(groupId, member.user_id, newRole);
+      
+      // Update local state immediately
+      setMembers((prev) => 
+        prev.map((m) => m.user_id === updatedMember.user_id ? { ...m, role: updatedMember.role } : m)
+      );
+      
+      // await loadData(); // Reload list - Optional, but local update is faster and safer against race conditions
     } catch (e) {
       notifyError("역할 변경에 실패했습니다.");
+    } finally {
       setLoading(false);
     }
   };

@@ -55,7 +55,11 @@ export async function kickMemberApi(groupId: number, userId: number) {
 }
 
 export async function updateMemberRoleApi(groupId: number, userId: number, role: "admin" | "member") {
-  await api.put(`/groups/${groupId}/members/${userId}/role`, { role });
+  const { data } = await api.put<{ member: { user_id: number; user_name: string; role: "admin" | "member" } }>(
+    `/groups/${groupId}/members/${userId}/role`,
+    { role }
+  );
+  return data.member;
 }
 
 // Transactions
