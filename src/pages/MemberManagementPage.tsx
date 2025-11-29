@@ -86,24 +86,25 @@ const MemberManagementPage: React.FC = () => {
 
   const handleRoleChange = async (member: Member, newRole: "admin" | "member") => {
     if (!isAdmin) return;
-    const confirmMsg = newRole === "admin" 
-      ? `${member.user_name} 님을 팀장으로 승격하시겠습니까?` 
-      : `${member.user_name} 님의 역할을 팀원으로 변경하시겠습니까?`;
+    // const confirmMsg = newRole === "admin" 
+    //   ? `${member.user_name} 님을 팀장으로 승격하시겠습니까?` 
+    //   : `${member.user_name} 님의 역할을 팀원으로 변경하시겠습니까?`;
       
-    const ok = await confirmAsync(confirmMsg);
-    if (!ok) return;
+    // const ok = await confirmAsync(confirmMsg);
+    // if (!ok) return;
 
     try {
       setLoading(true);
+      console.log(`[DEBUG] Promoting user ${member.user_id} to ${newRole} in group ${groupId}`);
       const updatedMember = await updateMemberRoleApi(groupId, member.user_id, newRole);
+      console.log("[DEBUG] Updated member:", updatedMember);
       
       // Update local state immediately
       setMembers((prev) => 
         prev.map((m) => m.user_id === updatedMember.user_id ? { ...m, role: updatedMember.role } : m)
       );
-      
-      // await loadData(); // Reload list - Optional, but local update is faster and safer against race conditions
     } catch (e) {
+      console.error("[DEBUG] Role change failed:", e);
       notifyError("역할 변경에 실패했습니다.");
     } finally {
       setLoading(false);
