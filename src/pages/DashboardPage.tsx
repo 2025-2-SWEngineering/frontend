@@ -16,6 +16,7 @@ import { useOverviewData } from "../hooks/useOverviewData";
 import { getPresignedUrl, setDues, createTransactionApi } from "../api/client";
 import DuesModal from "../components/modals/DuesModal";
 import DuesSettingsModal from "../components/modals/DuesSettingsModal";
+import TransactionCreateModal from "../components/modals/TransactionCreateModal";
 import { useCategoryAgg } from "../hooks/useCategoryAgg";
 import { formatCurrencyKRW } from "../utils/format";
 import { LoadingOverlay } from "../components/ui";
@@ -48,6 +49,7 @@ const DashboardPage: React.FC = () => {
   // Dues Management State
   const [isDuesModalOpen, setIsDuesModalOpen] = useState(false);
   const [isDuesSettingsModalOpen, setIsDuesSettingsModalOpen] = useState(false);
+  const [isCreateTransactionModalOpen, setIsCreateTransactionModalOpen] = useState(false);
   const [editingDues, setEditingDues] = useState<{
     name: string;
     isPaid: boolean;
@@ -226,6 +228,10 @@ const DashboardPage: React.FC = () => {
     return groups.find((g) => g.id === groupId)?.name || "그룹 선택";
   }, [groups, groupId]);
 
+  const currentUserRole = useMemo(() => {
+    return groups.find((g) => g.id === groupId)?.user_role;
+  }, [groups, groupId]);
+
   // Format balance
   const currentBalance = formatCurrencyKRW(stats?.currentBalance ?? 0);
 
@@ -314,6 +320,15 @@ const DashboardPage: React.FC = () => {
             >
               전체보기 {">"}
             </span>
+            {currentUserRole === "admin" && (
+              <span
+                className="view-all"
+                style={{ color: "#007bff", marginRight: 0, cursor: "pointer", marginLeft: "12px" }}
+                onClick={() => setIsCreateTransactionModalOpen(true)}
+              >
+                + 추가
+              </span>
+            )}
           </div>
         </div>
 
@@ -577,6 +592,14 @@ const DashboardPage: React.FC = () => {
           onClose={() => setIsDuesSettingsModalOpen(false)}
           groupId={groupId}
           onResetAll={handleResetAllDues}
+        />
+      )}
+
+      {isCreateTransactionModalOpen && groupId && (
+        <TransactionCreateModal
+          groupId={groupId}
+          onClose={() => setIsCreateTransactionModalOpen(false)}
+          onSuccess={() => window.location.reload()}
         />
       )}
     </div>
