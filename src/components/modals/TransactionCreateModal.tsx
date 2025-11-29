@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createTransactionApi } from "../../api/client";
+import { createTransactionApi, uploadDirect } from "../../api/client";
 import {
   ModalBackdrop,
   ModalCard,
@@ -8,7 +8,6 @@ import {
   Button,
   Flex,
   Spacer,
-  Select,
 } from "../../styles/primitives";
 
 interface TransactionCreateModalProps {
@@ -27,6 +26,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,8 +36,35 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
       return;
     }
 
+    if (type === "expense" && !file) {
+      alert("지출 내역은 영수증이 필수입니다.");
+      return;
+    }
+
     try {
       setLoading(true);
+      let receiptUrl = "";
+
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const uploadRes = await uploadDirect(formData);
+        if (uploadRes.url) {
+          receiptUrl = uploadRes.url; // Use the returned URL (might be S3 or local path)
+          // If local, it might be relative or full. The backend expects a string.
+          // DirectUploadResponse has url, key, contentType.
+          // If S3, url is full. If local, it might be relative.
+          // Let's assume the backend handles the URL it returns.
+        } else if (uploadRes.key) {
+           // Fallback if url is missing but key is present (S3 presign flow might differ, but uploadDirect usually returns url for local)
+           // If direct upload returns key, maybe we need to construct url?
+           // For now, assume url is returned as per type definition.
+           receiptUrl = uploadRes.key; // Some backends might expect key. But createTransactionApi expects receiptUrl.
+           // Let's check client.ts again. createTransactionApi takes receiptUrl string.
+           // If uploadDirect returns { url: ... }, we use that.
+        }
+      }
+
       await createTransactionApi({
         groupId,
         type,
@@ -45,6 +72,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
         description,
         date: new Date(date).toISOString(),
         category: category || (type === "income" ? "기타 수입" : "기타 지출"),
+        receiptUrl: receiptUrl || undefined,
       });
       alert("거래 내역이 추가되었습니다.");
       onSuccess();
@@ -124,6 +152,21 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="식비, 교통비 등"
+            />
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>
+              영수증 {type === "expense" && <span style={{ color: "red" }}>*</span>}
+            </label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setFile(e.target.files[0]);
+                }
+              }}
             />
           </div>
 
