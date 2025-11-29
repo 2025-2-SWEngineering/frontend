@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createTransactionApi, uploadDirect, getUploadMode, presignPut } from "../../api/client";
+import { createTransactionApi, uploadDirect, getUploadMode, presignPut, parseReceipt } from "../../api/client";
 import {
   ModalBackdrop,
   ModalCard,
@@ -42,11 +42,52 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [uploadMode, setUploadMode] = useState<"s3" | "local">("local");
 
   useEffect(() => {
     getUploadMode().then(setUploadMode).catch(console.error);
   }, []);
+
+  const handleAiAnalysis = async () => {
+    if (!file) {
+      alert("분석할 영수증 이미지를 먼저 선택해주세요.");
+      return;
+    }
+    try {
+      setAnalyzing(true);
+      const fd = new FormData();
+      fd.append("file", file);
+      const result = await parseReceipt(fd);
+      
+      if (result) {
+        if (result.amount) setAmount(String(result.amount));
+        if (result.date) {
+            // Ensure date is in YYYY-MM-DD format
+            const isoDate = result.date.split("T")[0];
+            setDate(isoDate);
+        }
+        if (result.description) setDescription(result.description);
+        if (result.categorySuggestion) {
+            // Try to match with existing categories
+            const matched = CATEGORIES.find(c => c === result.categorySuggestion) || "기타";
+            setCategory(matched);
+        }
+        alert("AI 분석이 완료되었습니다. 내용을 확인해주세요.");
+      } else {
+        alert("분석 결과가 없습니다.");
+      }
+    } catch (e: any) {
+      console.error(e);
+      if (e.response && e.response.status === 503) {
+        alert("서버에 OpenAI API Key가 설정되지 않았습니다. 관리자에게 문의하세요.");
+      } else {
+        alert("AI 분석 중 오류가 발생했습니다.");
+      }
+    } finally {
+      setAnalyzing(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
