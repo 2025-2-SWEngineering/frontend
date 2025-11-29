@@ -260,6 +260,10 @@ const DashboardPage: React.FC = () => {
   }, [categoryData]);
 
 
+  const totalExpense = useMemo(() => {
+    return categoryChartData.reduce((acc, curr) => acc + curr.value, 0);
+  }, [categoryChartData]);
+
   return (
     <div className="dashboard-container">
       <LoadingOverlay visible={loading} label="데이터 불러오는 중..." />
