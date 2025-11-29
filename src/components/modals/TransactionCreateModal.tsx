@@ -51,7 +51,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
 
   const handleAiAnalysis = async () => {
     if (!file) {
-      alert("영수증을 첨부해주세요");
+      alert("분석할 영수증 이미지를 먼저 선택해주세요.");
       return;
     }
     try {
@@ -234,7 +234,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
                 <Button 
                   type="button" 
                   onClick={handleAiAnalysis} 
-                  disabled={analyzing}
+                  disabled={!file || analyzing}
                   style={{ marginLeft: "8px", backgroundColor: analyzing ? "#ccc" : "#28a745", color: "white", border: "none" }}
                 >
                   {analyzing ? "분석 중..." : "AI 분석"}
