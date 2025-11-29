@@ -223,15 +223,24 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
             <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>
               영수증 {type === "expense" && <span style={{ color: "red" }}>*</span>}
             </label>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setFile(e.target.files[0]);
-                }
-              }}
-            />
+            <Flex $gap={10} style={{ alignItems: "center" }}>
+              <Input
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                style={{ flex: 1 }}
+              />
+              {type === "expense" && (
+                <Button 
+                  type="button" 
+                  onClick={handleAiAnalysis} 
+                  disabled={!file || analyzing}
+                  style={{ marginLeft: "8px", backgroundColor: analyzing ? "#ccc" : "#28a745", color: "white", border: "none" }}
+                >
+                  {analyzing ? "분석 중..." : "AI 분석"}
+                </Button>
+              )}
+            </Flex>
           </div>
 
           <Spacer $size={20} />
