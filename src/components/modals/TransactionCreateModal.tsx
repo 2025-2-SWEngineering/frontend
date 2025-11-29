@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { createTransactionApi, uploadDirect } from "../../api/client";
+import React, { useState, useEffect } from "react";
+import { createTransactionApi, uploadDirect, getUploadMode, presignPut } from "../../api/client";
 import {
   ModalBackdrop,
   ModalCard,
@@ -9,6 +9,7 @@ import {
   Flex,
   Spacer,
 } from "../../styles/primitives";
+import axios from "axios";
 
 interface TransactionCreateModalProps {
   groupId: number;
@@ -28,6 +29,11 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploadMode, setUploadMode] = useState<"s3" | "local">("local");
+
+  useEffect(() => {
+    getUploadMode().then(setUploadMode).catch(console.error);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,22 +52,22 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
       let receiptUrl = "";
 
       if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const uploadRes = await uploadDirect(formData);
-        if (uploadRes.url) {
-          receiptUrl = uploadRes.url; // Use the returned URL (might be S3 or local path)
-          // If local, it might be relative or full. The backend expects a string.
-          // DirectUploadResponse has url, key, contentType.
-          // If S3, url is full. If local, it might be relative.
-          // Let's assume the backend handles the URL it returns.
-        } else if (uploadRes.key) {
-           // Fallback if url is missing but key is present (S3 presign flow might differ, but uploadDirect usually returns url for local)
-           // If direct upload returns key, maybe we need to construct url?
-           // For now, assume url is returned as per type definition.
-           receiptUrl = uploadRes.key; // Some backends might expect key. But createTransactionApi expects receiptUrl.
-           // Let's check client.ts again. createTransactionApi takes receiptUrl string.
-           // If uploadDirect returns { url: ... }, we use that.
+        if (uploadMode === "local") {
+          const formData = new FormData();
+          formData.append("file", file);
+          const uploadRes = await uploadDirect(formData);
+          if (uploadRes.url) {
+            receiptUrl = uploadRes.url;
+          } else if (uploadRes.key) {
+             receiptUrl = uploadRes.key;
+          }
+        } else {
+          // S3 Mode
+          const { url, key } = await presignPut(file.name, file.type);
+          await axios.put(url, file, {
+            headers: { "Content-Type": file.type },
+          });
+          receiptUrl = key; // For S3, we usually store the key
         }
       }
 
