@@ -56,9 +56,13 @@ export async function initFcm(): Promise<void> {
                 })
                 .map((r) => r.unregister()),
             );
-            registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", {
-              type: "module",
-            });
+            // cache-bust to avoid stale classic SW being reused
+            registration = await navigator.serviceWorker.register(
+              "/firebase-messaging-sw.js?v=20251205",
+              {
+                type: "module",
+              },
+            );
           } catch (e) {
             console.warn("[FCM] service worker register failed", e);
           }
