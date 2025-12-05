@@ -1,7 +1,8 @@
 .dashboard-container {
   min-height: 100vh;
   background-color: #f5f6f8;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   padding-bottom: 80px; /* Space for fixed bottom if needed, or just general padding */
 }
 

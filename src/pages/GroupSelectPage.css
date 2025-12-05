@@ -3,7 +3,8 @@
   background-image: url("../assets/background.png");
   background-size: cover;
   background-position: center;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -23,7 +24,7 @@
   border-radius: 8px;
   /* If actual logo is used */
   object-fit: contain;
-  background: transparent; 
+  background: transparent;
 }
 
 .group-greeting {
@@ -66,7 +67,7 @@
   padding: 30px 24px;
   flex: 1;
   min-height: 60vh; /* Ensure it takes up space */
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .group-select-header {
@@ -113,8 +114,6 @@
   aspect-ratio: 1 / 1.1; /* Slightly taller than square */
   position: relative;
 }
-
-
 
 .group-card-title {
   font-size: 16px;

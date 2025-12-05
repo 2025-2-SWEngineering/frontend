@@ -1,16 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  PieChart,
-  Pie,
-} from "recharts";
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { useGroupsSelection } from "../hooks/useGroupsSelection";
 import { useOverviewData } from "../hooks/useOverviewData";
 import { getPresignedUrl, setDues, createTransactionApi } from "../api/client";
@@ -22,14 +12,11 @@ import { formatCurrencyKRW } from "../utils/format";
 import { LoadingOverlay } from "../components/ui";
 import "./DashboardPage.css";
 
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    groups,
-    groupId,
-    setGroupId,
-    loading: groupsLoading,
-  } = useGroupsSelection();
+  const { groups, groupId, loading: groupsLoading } = useGroupsSelection();
 
   const {
     loading: overviewLoading,
@@ -43,7 +30,9 @@ const DashboardPage: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<"transactions" | "dues" | "charts">("transactions");
+  const [activeSection, setActiveSection] = useState<"transactions" | "dues" | "charts">(
+    "transactions",
+  );
   const [selectedReceiptUrl, setSelectedReceiptUrl] = useState<string | null>(null);
 
   // Dues Management State
@@ -57,7 +46,9 @@ const DashboardPage: React.FC = () => {
     isGuest: boolean;
     userId?: number;
   } | null>(null);
-  const [guestDues, setGuestDues] = useState<Array<{ userName: string; isPaid: boolean; paidAt?: string; userId?: number }>>([]);
+  const [guestDues, setGuestDues] = useState<
+    Array<{ userName: string; isPaid: boolean; paidAt?: string; userId?: number }>
+  >([]);
 
   useEffect(() => {
     if (groupId) {
@@ -70,19 +61,25 @@ const DashboardPage: React.FC = () => {
     }
   }, [groupId]);
 
-  const handleSaveDues = async (data: { name: string; isPaid: boolean; date: string; isGuest: boolean; userId?: number }) => {
+  const handleSaveDues = async (data: {
+    name: string;
+    isPaid: boolean;
+    date: string;
+    isGuest: boolean;
+    userId?: number;
+  }) => {
     try {
       // Check for automatic transaction creation
       // Logic: If transitioning to "Paid" (isPaid=true), create income transaction
       // We need to know previous state. For simplicity, we assume if user clicks "Save" with "Paid", and it's a positive action, we record it.
-      // Better: Check if it was already paid? 
+      // Better: Check if it was already paid?
       // Current logic in DuesModal sets initialData. If initialData.isPaid was false, and now data.isPaid is true -> Create Transaction.
-      
+
       const wasPaid = editingDues?.isPaid || false;
       if (data.isPaid && !wasPaid && groupId) {
         const savedAmount = localStorage.getItem(`dues_amount_${groupId}`);
         const amount = savedAmount ? parseInt(savedAmount, 10) : 0;
-        
+
         if (amount > 0) {
           await createTransactionApi({
             groupId,
@@ -90,7 +87,7 @@ const DashboardPage: React.FC = () => {
             amount,
             description: `회비 납부 - ${data.name}`,
             date: new Date().toISOString(),
-            category: "회비"
+            category: "회비",
           });
           // Refresh transactions will happen via window.location.reload() below or we can refetch
         }
@@ -107,12 +104,12 @@ const DashboardPage: React.FC = () => {
         let updatedGuests;
         if (editingDues && editingDues.isGuest) {
           // Update existing guest
-          updatedGuests = guestDues.map(g => g.userName === editingDues.name ? newGuest : g);
+          updatedGuests = guestDues.map((g) => (g.userName === editingDues.name ? newGuest : g));
         } else {
           // Add new guest
           updatedGuests = [...guestDues, newGuest];
         }
-        
+
         setGuestDues(updatedGuests);
         localStorage.setItem(`guest_dues_${groupId}`, JSON.stringify(updatedGuests));
       } else {
@@ -123,7 +120,7 @@ const DashboardPage: React.FC = () => {
           // Note: Backend sets date to NOW() automatically. We can't set custom date for members without backend change.
           // We will refresh the data to show updated status.
           window.location.reload(); // Simple refresh to fetch updated data
-          return; 
+          return;
         }
       }
       setIsDuesModalOpen(false);
@@ -141,19 +138,17 @@ const DashboardPage: React.FC = () => {
       setLoading(true);
 
       // 1. Reset Guests (LocalStorage)
-      const resetGuests = guestDues.map(g => ({ ...g, isPaid: false, paidAt: undefined }));
+      const resetGuests = guestDues.map((g) => ({ ...g, isPaid: false, paidAt: undefined }));
       setGuestDues(resetGuests);
       localStorage.setItem(`guest_dues_${groupId}`, JSON.stringify(resetGuests));
 
       // 2. Reset Members (API)
       // Filter only paid members to minimize requests
-      const paidMembers = dues.filter(d => d.isPaid && d.userId);
-      
-      // Execute sequentially or parallel? Parallel is faster but might hit rate limits. 
+      const paidMembers = dues.filter((d) => d.isPaid && d.userId);
+
+      // Execute sequentially or parallel? Parallel is faster but might hit rate limits.
       // Given "Frontend Only" constraint, we just loop.
-      await Promise.all(paidMembers.map(member => 
-        setDues(groupId, member.userId!, false)
-      ));
+      await Promise.all(paidMembers.map((member) => setDues(groupId, member.userId!, false)));
 
       alert("모든 회비 납부 상태가 초기화되었습니다.");
       window.location.reload();
@@ -195,7 +190,7 @@ const DashboardPage: React.FC = () => {
     const observerOptions = {
       root: null,
       rootMargin: "-20% 0px -60% 0px", // Adjust trigger zone
-      threshold: 0
+      threshold: 0,
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -223,11 +218,6 @@ const DashboardPage: React.FC = () => {
     setLoading(overviewLoading || groupsLoading);
   }, [overviewLoading, groupsLoading]);
 
-  // Get current group name
-  const currentGroupName = useMemo(() => {
-    return groups.find((g) => g.id === groupId)?.name || "그룹 선택";
-  }, [groups, groupId]);
-
   const currentUserRole = useMemo(() => {
     return groups.find((g) => g.id === groupId)?.user_role;
   }, [groups, groupId]);
@@ -246,8 +236,6 @@ const DashboardPage: React.FC = () => {
     }));
   }, [monthly]);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
-
   const categoryChartData = useMemo(() => {
     if (!categoryData) return [];
     return categoryData
@@ -258,7 +246,6 @@ const DashboardPage: React.FC = () => {
         color: COLORS[idx % COLORS.length], // Fallback color
       }));
   }, [categoryData]);
-
 
   const totalExpense = useMemo(() => {
     return categoryChartData.reduce((acc, curr) => acc + curr.value, 0);
@@ -290,19 +277,19 @@ const DashboardPage: React.FC = () => {
         </div>
 
         <div className="action-buttons">
-          <button 
+          <button
             className={`action-btn ${activeSection === "transactions" ? "primary" : "secondary"}`}
             onClick={() => scrollToSection(transactionsRef)}
           >
             거래내역
           </button>
-          <button 
+          <button
             className={`action-btn ${activeSection === "dues" ? "primary" : "secondary"}`}
             onClick={() => scrollToSection(duesRef)}
           >
             회비납부
           </button>
-          <button 
+          <button
             className={`action-btn ${activeSection === "charts" ? "primary" : "secondary"}`}
             onClick={() => scrollToSection(chartsRef)}
           >
@@ -317,11 +304,7 @@ const DashboardPage: React.FC = () => {
         <div className="section-title-row" ref={transactionsRef}>
           <span className="section-title">최근거래 내역</span>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-
-            <span
-              className="view-all"
-              onClick={() => setIsTransactionModalOpen(true)}
-            >
+            <span className="view-all" onClick={() => setIsTransactionModalOpen(true)}>
               전체보기 {">"}
             </span>
             {currentUserRole === "admin" && (
@@ -347,14 +330,10 @@ const DashboardPage: React.FC = () => {
                 <span className="trans-date">{tx.date}</span>
               </div>
               <div className="trans-amount-col">
-                <div
-                  className={`trans-amount ${
-                    tx.type === "expense" ? "expense" : "income"
-                  }`}
-                >
+                <div className={`trans-amount ${tx.type === "expense" ? "expense" : "income"}`}>
                   {tx.type === "expense" ? "-" : "+"} {formatCurrencyKRW(tx.amount)}
                 </div>
-                <div 
+                <div
                   className="receipt-link"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -388,7 +367,13 @@ const DashboardPage: React.FC = () => {
           </span> */}
           <span
             className="view-all"
-            style={{ color: "#666", marginRight: 0, cursor: "pointer", fontSize: "14px", marginLeft: "12px" }}
+            style={{
+              color: "#666",
+              marginRight: 0,
+              cursor: "pointer",
+              fontSize: "14px",
+              marginLeft: "12px",
+            }}
             onClick={() => setIsDuesSettingsModalOpen(true)}
           >
             ⚙️ 회비 설정
@@ -405,18 +390,14 @@ const DashboardPage: React.FC = () => {
           {[...dues, ...guestDues].map((member, idx) => (
             <div key={idx} className="member-row">
               <span className="member-name">{member.userName}</span>
-              <span
-                className={`member-status ${
-                  member.isPaid ? "status-paid" : "status-unpaid"
-                }`}
-              >
+              <span className={`member-status ${member.isPaid ? "status-paid" : "status-unpaid"}`}>
                 {member.isPaid ? "납부" : "미납"}
               </span>
               <span className="member-date">
                 {member.paidAt ? member.paidAt.slice(0, 10) : "-"}
               </span>
-              <span 
-                className="edit-icon" 
+              <span
+                className="edit-icon"
                 onClick={() => {
                   setEditingDues({
                     name: member.userName,
@@ -477,30 +458,28 @@ const DashboardPage: React.FC = () => {
                   dataKey="value"
                 >
                   {categoryChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-              <div className="donut-center-text">
-                <div className="donut-label">지출 총 합</div>
-                <div className="donut-value">
-                  {formatCurrencyKRW(totalExpense)}
-                </div>
-              </div>
+            <div className="donut-center-text">
+              <div className="donut-label">지출 총 합</div>
+              <div className="donut-value">{formatCurrencyKRW(totalExpense)}</div>
+            </div>
           </div>
 
           <div className="chart-legend">
-             {categoryChartData.slice(0, 3).map((entry, index) => (
-               <div key={index} className="legend-item">
-                 <div className="legend-color" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                 <span>{entry.name}</span>
-               </div>
-             ))}
+            {categoryChartData.slice(0, 3).map((entry, index) => (
+              <div key={index} className="legend-item">
+                <div
+                  className="legend-color"
+                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                />
+                <span>{entry.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -511,10 +490,7 @@ const DashboardPage: React.FC = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <span className="modal-title">전체 거래 내역</span>
-              <button
-                className="modal-close"
-                onClick={() => setIsTransactionModalOpen(false)}
-              >
+              <button className="modal-close" onClick={() => setIsTransactionModalOpen(false)}>
                 &times;
               </button>
             </div>
@@ -531,13 +507,11 @@ const DashboardPage: React.FC = () => {
                     </div>
                     <div className="trans-amount-col">
                       <div
-                        className={`trans-amount ${
-                          tx.type === "expense" ? "expense" : "income"
-                        }`}
+                        className={`trans-amount ${tx.type === "expense" ? "expense" : "income"}`}
                       >
                         {tx.type === "expense" ? "-" : "+"} {formatCurrencyKRW(tx.amount)}
                       </div>
-                      <div 
+                      <div
                         className="receipt-link"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -550,9 +524,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                 ))}
                 {recentTransactions.length === 0 && (
-                  <div className="modal-empty">
-                    거래 내역이 없습니다.
-                  </div>
+                  <div className="modal-empty">거래 내역이 없습니다.</div>
                 )}
               </div>
             </div>
@@ -563,13 +535,14 @@ const DashboardPage: React.FC = () => {
       {/* Receipt Modal */}
       {selectedReceiptUrl && (
         <div className="modal-overlay" onClick={() => setSelectedReceiptUrl(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px" }}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "500px" }}
+          >
             <div className="modal-header">
               <span className="modal-title">영수증 이미지</span>
-              <button
-                className="modal-close"
-                onClick={() => setSelectedReceiptUrl(null)}
-              >
+              <button className="modal-close" onClick={() => setSelectedReceiptUrl(null)}>
                 &times;
               </button>
             </div>
@@ -587,7 +560,7 @@ const DashboardPage: React.FC = () => {
           onClose={() => setIsDuesModalOpen(false)}
           onSave={handleSaveDues}
           initialData={editingDues || undefined}
-          existingMemberNames={dues.map(d => d.userName)}
+          existingMemberNames={dues.map((d) => d.userName)}
         />
       )}
 

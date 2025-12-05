@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { createTransactionApi, presignPut, uploadDirect } from "../api/client";
+import { createTransactionApi, presignPut } from "../api/client";
 import { LoadingOverlay } from "../components/ui";
 import { notifyError, notifySuccess } from "../utils/notify";
 import "./TransactionCreatePage.css";
@@ -35,7 +35,7 @@ const TransactionCreatePage: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
-      
+
       // Create local preview
       const reader = new FileReader();
       reader.onload = (ev) => {
@@ -48,7 +48,7 @@ const TransactionCreatePage: React.FC = () => {
   const uploadReceipt = async (file: File): Promise<string> => {
     // 1. Get presigned URL
     const { url, key } = await presignPut(file.name, file.type);
-    
+
     // 2. Upload to S3 directly
     await axios.put(url, file, {
       headers: { "Content-Type": file.type },
@@ -65,8 +65,8 @@ const TransactionCreatePage: React.FC = () => {
     }
 
     if (!file && !receiptUrl) {
-       notifyError("영수증을 첨부해주세요.");
-       return;
+      notifyError("영수증을 첨부해주세요.");
+      return;
     }
 
     try {
@@ -101,7 +101,7 @@ const TransactionCreatePage: React.FC = () => {
   return (
     <div className="transaction-create-container">
       <LoadingOverlay visible={loading} label="저장 중..." />
-      
+
       <div className="create-header">
         <button className="back-button" onClick={() => navigate("/dashboard")}>
           {"<"}
@@ -112,13 +112,13 @@ const TransactionCreatePage: React.FC = () => {
       <div className="create-content">
         {/* Type Toggle */}
         <div className="type-toggle">
-          <div 
+          <div
             className={`type-option expense ${type === "expense" ? "active" : ""}`}
             onClick={() => setType("expense")}
           >
             지출
           </div>
-          <div 
+          <div
             className={`type-option income ${type === "income" ? "active" : ""}`}
             onClick={() => setType("income")}
           >
@@ -181,14 +181,11 @@ const TransactionCreatePage: React.FC = () => {
         {/* Receipt Upload */}
         <div className="form-group">
           <label className="form-label">영수증 (필수)</label>
-          <div 
-            className="receipt-upload-area"
-            onClick={() => fileInputRef.current?.click()}
-          >
+          <div className="receipt-upload-area" onClick={() => fileInputRef.current?.click()}>
             {receiptUrl ? (
               <div className="receipt-preview">
                 <img src={receiptUrl} alt="Receipt Preview" />
-                <button 
+                <button
                   className="remove-receipt"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -215,7 +212,7 @@ const TransactionCreatePage: React.FC = () => {
           </div>
         </div>
 
-        <button 
+        <button
           className="submit-button"
           onClick={handleSubmit}
           disabled={!amount || !description || !category || !date || (!file && !receiptUrl)}

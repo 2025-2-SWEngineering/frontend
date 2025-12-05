@@ -21,17 +21,18 @@ const LoginPage: React.FC = () => {
         localStorage.setItem("refreshToken", data.refreshToken);
       }
       localStorage.setItem("user", JSON.stringify(data.user));
-      
+
       // Show loading screen before navigating
       setShowLoadingScreen(true);
-      
+
       // Simulate a short delay for the loading screen to be visible
       setTimeout(() => {
         window.location.href = "/groups";
       }, 1500);
-      
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "로그인에 실패했습니다.";
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "로그인에 실패했습니다.";
       alert(msg);
       setLoading(false);
     }
@@ -45,7 +46,7 @@ const LoginPage: React.FC = () => {
     <div className="login-container">
       <img src={logo} alt="우리회계 로고" className="login-logo" />
       <p className="login-subtitle">소규모 조직을 위한 회계 관리, 우리회계.</p>
-      
+
       <form className="login-form" onSubmit={handleSubmit}>
         <input
           className="login-input"

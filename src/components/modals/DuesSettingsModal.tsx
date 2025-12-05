@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { ModalBackdrop, ModalCard, SectionTitle, Input, Button, Flex, Spacer } from "../../styles/primitives";
+import {
+  ModalBackdrop,
+  ModalCard,
+  SectionTitle,
+  Input,
+  Button,
+  Flex,
+  Spacer,
+} from "../../styles/primitives";
 import { formatCurrencyKRW } from "../../utils/format";
 
 interface DuesSettingsModalProps {
@@ -39,31 +47,33 @@ const DuesSettingsModal: React.FC<DuesSettingsModalProps> = ({ onClose, groupId,
     <ModalBackdrop onClick={onClose}>
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <SectionTitle>회비 설정</SectionTitle>
-        
+
         <div style={{ marginBottom: 16 }}>
-          <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>회비 금액 (원)</label>
-          <Input 
-            value={amount} 
-            onChange={handleChange} 
-            placeholder="금액 입력"
-            type="text"
-          />
+          <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>
+            회비 금액 (원)
+          </label>
+          <Input value={amount} onChange={handleChange} placeholder="금액 입력" type="text" />
           <div style={{ marginTop: 8, fontSize: "14px", color: "#666" }}>
             {amount ? formatCurrencyKRW(parseInt(amount, 10)) : "0원"}
           </div>
         </div>
 
         <div style={{ fontSize: "13px", color: "#888", marginBottom: 20, lineHeight: 1.5 }}>
-          * 회비 금액을 설정하면, 멤버가 '납부' 상태로 변경될 때 자동으로 해당 금액만큼 수입 내역이 추가됩니다.
+          * 회비 금액을 설정하면, 멤버가 &apos;납부&apos; 상태로 변경될 때 자동으로 해당 금액만큼
+          수입 내역이 추가됩니다.
           <br />
           (이 설정은 현재 브라우저에만 저장됩니다.)
         </div>
 
-        <Button 
-          $variant="outline" 
+        <Button
+          $variant="outline"
           style={{ width: "100%", borderColor: "#e03e3e", color: "#e03e3e", marginBottom: 20 }}
           onClick={() => {
-            if (window.confirm("정말로 모든 멤버의 회비 납부 상태를 '미납'으로 초기화하시겠습니까?\n(이 작업은 되돌릴 수 없습니다.)")) {
+            if (
+              window.confirm(
+                "정말로 모든 멤버의 회비 납부 상태를 '미납'으로 초기화하시겠습니까?\n(이 작업은 되돌릴 수 없습니다.)",
+              )
+            ) {
               onResetAll();
               onClose();
             }

@@ -3,7 +3,6 @@ import { incrementLoading, decrementLoading } from "../state/globalLoading";
 
 // 개발환경에서는 Vite 프록시('/api' → 3001)를 사용
 // 배포환경에서는 VITE_API_URL이 설정되면 해당 값을 사용
-// @ts-ignore
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "/api";
 
 const api = axios.create({
@@ -18,7 +17,9 @@ api.interceptors.request.use(
   (config) => {
     try {
       incrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -47,7 +48,9 @@ api.interceptors.response.use(
   (response) => {
     try {
       decrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     return response;
   },
   async (error) => {
@@ -55,7 +58,9 @@ api.interceptors.response.use(
     const status = error?.response?.status;
     try {
       decrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     if (status !== 401) {
       return Promise.reject(error);
     }

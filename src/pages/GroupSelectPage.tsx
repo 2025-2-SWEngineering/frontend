@@ -8,15 +8,13 @@ import logo from "../assets/logo.png";
 import "./GroupSelectPage.css";
 
 const GroupSelectPage: React.FC = () => {
-  const [groups, setGroups] = useState<Array<{ id: number; name: string; member_count?: number }>>([]);
+  const [groups, setGroups] = useState<Array<{ id: number; name: string; member_count?: number }>>(
+    [],
+  );
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
 
-  const {
-    data: groupsData,
-    loading: loadingGroups,
-    run: runGroups,
-  } = useAsync(
+  const { data: groupsData, run: runGroups } = useAsync(
     async () => {
       const list = await fetchGroups();
       return list || [];
@@ -52,13 +50,21 @@ const GroupSelectPage: React.FC = () => {
   return (
     <div className="group-select-container">
       <div className="top-section">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: "20px",
+          }}
+        >
           <img src={logo} alt="W" className="top-logo" style={{ marginBottom: 0 }} />
           <LogoutButton />
         </div>
-        
+
         <div className="greeting-text">
-          안녕하세요 {userName}님!<br />
+          안녕하세요 {userName}님!
+          <br />
           읽지 않은 알림이 3건 있어요.
         </div>
       </div>
@@ -75,10 +81,10 @@ const GroupSelectPage: React.FC = () => {
           {groups.map((group) => (
             <div key={group.id} className="group-card">
               {/* Star icon removed */}
-              
+
               <div className="group-card-title">{group.name}</div>
               <div className="group-card-subtitle">그룹</div>
-              
+
               <div className="group-avatars">
                 {/* Dynamic avatars based on member_count */}
                 {Array.from({ length: Math.min(group.member_count || 1, 3) }).map((_, i) => (
@@ -91,7 +97,7 @@ const GroupSelectPage: React.FC = () => {
                   />
                 ))}
                 {(group.member_count || 1) > 3 && (
-                  <div className="group-avatar-more">+{ (group.member_count || 1) - 3 }</div>
+                  <div className="group-avatar-more">+{(group.member_count || 1) - 3}</div>
                 )}
               </div>
 
@@ -116,14 +122,10 @@ const GroupSelectPage: React.FC = () => {
       )}
 
       {showJoinModal && (
-        <JoinGroupModal
-          onClose={() => setShowJoinModal(false)}
-          onJoined={handleGroupJoined}
-        />
+        <JoinGroupModal onClose={() => setShowJoinModal(false)} onJoined={handleGroupJoined} />
       )}
     </div>
   );
 };
 
 export default GroupSelectPage;
-

@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { createTransactionApi, uploadDirect, getUploadMode, presignPut, parseReceipt } from "../../api/client";
+import {
+  createTransactionApi,
+  uploadDirect,
+  getUploadMode,
+  presignPut,
+  parseReceipt,
+} from "../../api/client";
 import {
   ModalBackdrop,
   ModalCard,
@@ -59,19 +65,19 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
       const fd = new FormData();
       fd.append("file", file);
       const result = await parseReceipt(fd);
-      
+
       if (result) {
         if (result.amount) setAmount(String(result.amount));
         if (result.date) {
-            // Ensure date is in YYYY-MM-DD format
-            const isoDate = result.date.split("T")[0];
-            setDate(isoDate);
+          // Ensure date is in YYYY-MM-DD format
+          const isoDate = result.date.split("T")[0];
+          setDate(isoDate);
         }
         if (result.description) setDescription(result.description);
         if (result.categorySuggestion) {
-            // Try to match with existing categories
-            const matched = CATEGORIES.find(c => c === result.categorySuggestion) || "기타";
-            setCategory(matched);
+          // Try to match with existing categories
+          const matched = CATEGORIES.find((c) => c === result.categorySuggestion) || "기타";
+          setCategory(matched);
         }
         alert("AI 분석이 완료되었습니다. 내용을 확인해주세요.");
       } else {
@@ -113,7 +119,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
           if (uploadRes.url) {
             receiptUrl = uploadRes.url;
           } else if (uploadRes.key) {
-             receiptUrl = uploadRes.key;
+            receiptUrl = uploadRes.key;
           }
         } else {
           // S3 Mode
@@ -149,7 +155,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
     <ModalBackdrop onClick={onClose}>
       <ModalCard onClick={(e) => e.stopPropagation()}>
         <SectionTitle>거래 내역 추가</SectionTitle>
-        
+
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>유형</label>
@@ -175,12 +181,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
 
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>날짜</label>
-            <Input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-            />
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -207,10 +208,7 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
 
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>카테고리</label>
-            <Select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
+            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
@@ -231,11 +229,16 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
                 style={{ flex: 1 }}
               />
               {type === "expense" && (
-                <Button 
-                  type="button" 
-                  onClick={handleAiAnalysis} 
+                <Button
+                  type="button"
+                  onClick={handleAiAnalysis}
                   disabled={!file || analyzing}
-                  style={{ marginLeft: "8px", backgroundColor: (!file || analyzing) ? "#ccc" : "#28a745", color: "white", border: "none" }}
+                  style={{
+                    marginLeft: "8px",
+                    backgroundColor: !file || analyzing ? "#ccc" : "#28a745",
+                    color: "white",
+                    border: "none",
+                  }}
                 >
                   {analyzing ? "분석 중..." : "AI 분석"}
                 </Button>
@@ -260,4 +263,3 @@ const TransactionCreateModal: React.FC<TransactionCreateModalProps> = ({
 };
 
 export default TransactionCreateModal;
-

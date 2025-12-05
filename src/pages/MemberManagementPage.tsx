@@ -1,6 +1,13 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchGroupMembers, kickMemberApi, fetchGroups, createInvitationCode, updateMemberRoleApi, fetchMe } from "../api/client";
+import {
+  fetchGroupMembers,
+  kickMemberApi,
+  fetchGroups,
+  createInvitationCode,
+  updateMemberRoleApi,
+  fetchMe,
+} from "../api/client";
 import { useOverviewData } from "../hooks/useOverviewData";
 import { LoadingOverlay } from "../components/ui";
 import { notifyError, confirmAsync } from "../utils/notify";
@@ -27,15 +34,10 @@ const MemberManagementPage: React.FC = () => {
     return dues.filter((d) => !d.isPaid).length;
   }, [dues]);
 
-  useEffect(() => {
-    if (!groupId) return;
-    loadData();
-  }, [groupId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       // Fetch current user info
       try {
         const me = await fetchMe();
@@ -60,7 +62,12 @@ const MemberManagementPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [groupId]);
+
+  useEffect(() => {
+    if (!groupId) return;
+    loadData();
+  }, [groupId, loadData]);
 
   const handleKick = async (member: Member) => {
     if (!isAdmin) return;
@@ -95,20 +102,22 @@ const MemberManagementPage: React.FC = () => {
 
   const handleRoleChange = async (member: Member, newRole: "admin" | "member") => {
     if (!isAdmin) return;
-    // const confirmMsg = newRole === "admin" 
-    //   ? `${member.user_name} 님을 팀장으로 승격하시겠습니까?` 
+    // const confirmMsg = newRole === "admin"
+    //   ? `${member.user_name} 님을 팀장으로 승격하시겠습니까?`
     //   : `${member.user_name} 님의 역할을 팀원으로 변경하시겠습니까?`;
-      
+
     // const ok = await confirmAsync(confirmMsg);
     // if (!ok) return;
 
     try {
       setLoading(true);
       const updatedMember = await updateMemberRoleApi(groupId, member.user_id, newRole);
-      
+
       // Update local state immediately
-      setMembers((prev) => 
-        prev.map((m) => m.user_id === updatedMember.user_id ? { ...m, role: updatedMember.role } : m)
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.user_id === updatedMember.user_id ? { ...m, role: updatedMember.role } : m,
+        ),
       );
     } catch (e) {
       notifyError("역할 변경에 실패했습니다.");
@@ -165,7 +174,10 @@ const MemberManagementPage: React.FC = () => {
             <span style={{ flex: 1, textAlign: "right" }}>관리</span>
           </div>
           {members.length === 0 ? (
-            <div className="empty-member-list" style={{ padding: "20px", textAlign: "center", color: "#999" }}>
+            <div
+              className="empty-member-list"
+              style={{ padding: "20px", textAlign: "center", color: "#999" }}
+            >
               멤버가 없습니다.
             </div>
           ) : (
@@ -177,7 +189,9 @@ const MemberManagementPage: React.FC = () => {
                     <select
                       className="role-select"
                       value={member.role}
-                      onChange={(e) => handleRoleChange(member, e.target.value as "admin" | "member")}
+                      onChange={(e) =>
+                        handleRoleChange(member, e.target.value as "admin" | "member")
+                      }
                       style={{ padding: "4px", borderRadius: "4px", border: "1px solid #ddd" }}
                     >
                       <option value="member">팀원</option>
@@ -203,9 +217,7 @@ const MemberManagementPage: React.FC = () => {
       {/* Notification History Placeholder */}
       <div className="member-content-section">
         <div className="section-label">알림 내역</div>
-        <div className="empty-card">
-          알림 내역이 없습니다.
-        </div>
+        <div className="empty-card">알림 내역이 없습니다.</div>
       </div>
 
       {/* Invite Code Generation */}
