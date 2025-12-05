@@ -102,3 +102,6 @@ export async function initFcm(): Promise<void> {
 }
 
 export default initFcm;
+
+// Development helper 로그 확인을 위해 전역에 노출
+(window as any).initFcm = initFcm;
