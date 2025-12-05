@@ -16,7 +16,7 @@ const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY || "";
 
 let initialized = false;
 
-export async function initFcm(): Promise<void> {
+export async function initFcm(registrationFromCaller?: ServiceWorkerRegistration): Promise<void> {
   if (initialized) return;
 
   if (!("serviceWorker" in navigator)) {
@@ -51,25 +51,31 @@ export async function initFcm(): Promise<void> {
       return;
     }
 
-    // 3. 서비스워커 등록 (ESM 모듈 SW, v10 전용)
-    const swUrl = "/firebase-messaging-sw.js?v=20251206";
-    let registration: ServiceWorkerRegistration;
+    // 3. ServiceWorker 등록/수신기 확보
+    const swUrl = "/firebase-messaging-sw.js";
+    let registration: ServiceWorkerRegistration | undefined = registrationFromCaller;
 
-    try {
-      registration = await navigator.serviceWorker.register(swUrl, {
-        type: "module", // firebase-messaging-sw.js 가 ESM 이므로 module 로 등록
-      });
+    if (!registration) {
+      try {
+        registration = await navigator.serviceWorker.register(swUrl, {
+          type: "module", // firebase-messaging-sw.js 가 ESM 이므로 module 로 등록
+        });
 
-      console.log("[FCM] SW register() returned:", {
-        scope: registration.scope,
-      });
-    } catch (e) {
-      console.error("[FCM] service worker register failed", e);
-      return;
+        console.log("[FCM] SW register() returned:", {
+          scope: registration.scope,
+        });
+      } catch (e) {
+        console.error("[FCM] service worker register failed", e);
+        return;
+      }
+    } else {
+      console.log("[FCM] using ServiceWorkerRegistration passed from caller:", registration.scope);
     }
 
     // 4. 실제로 활성화된 SW 가 준비될 때까지 대기
-    const readyRegistration = await navigator.serviceWorker.ready;
+    const readyRegistration = registration?.active
+      ? registration
+      : await navigator.serviceWorker.ready;
     console.log("[FCM] navigator.serviceWorker.ready:", {
       scope: readyRegistration.scope,
       scriptURL: readyRegistration.active?.scriptURL,
@@ -106,11 +112,12 @@ export async function initFcm(): Promise<void> {
     onMessage(messaging, (payload) => {
       console.log("[FCM] foreground message", payload);
 
-      const title = payload.notification?.title ?? "알림";
-      const body = payload.notification?.body ?? "";
+      // We expect title/body to be delivered in payload.data to avoid duplicate auto-display
+      const title = payload.data?.title ?? payload.notification?.title ?? "알림";
+      const body = payload.data?.body ?? payload.notification?.body ?? "";
       const data = payload.data ?? {};
 
-      // 탭이 열려 있을 때 OS 알림을 1번 띄움
+      // Show an in-page notification only when in foreground
       if (Notification.permission === "granted") {
         new Notification(title, {
           body,
