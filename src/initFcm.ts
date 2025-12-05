@@ -19,80 +19,73 @@ let initialized = false;
 export async function initFcm(): Promise<void> {
   if (initialized) return;
 
+  if (!("serviceWorker" in navigator)) {
+    console.warn("[FCM] Service worker not supported in this browser");
+    return;
+  }
+
   try {
     console.log("[FCM] initFcm start");
+
+    // 1. Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
 
-    // 1. 알림 권한 요청
+    // 2. 알림 권한 요청
     try {
       if (Notification.permission !== "granted") {
         console.log("[FCM] requesting notification permission");
-        await Notification.requestPermission();
+        const result = await Notification.requestPermission();
+        if (result !== "granted") {
+          console.warn("[FCM] Notification permission not granted:", result);
+          return;
+        }
       }
     } catch (e) {
       console.warn("[FCM] Notification.requestPermission failed", e);
+      return;
     }
 
     if (Notification.permission !== "granted") {
-      console.warn("[FCM] Notification permission not granted");
+      console.warn("[FCM] Notification permission not granted (final check)");
       return;
     }
 
-    // 2. 서비스워커 등록
-    let registration: ServiceWorkerRegistration | undefined;
+    // 3. 서비스워커 등록 (ESM 모듈 SW, v10 전용)
+    const swUrl = "/firebase-messaging-sw.js?v=20251206";
+    let registration: ServiceWorkerRegistration;
 
-    if ("serviceWorker" in navigator) {
-      try {
-        // 기존 firebase-messaging-sw.js 관련 SW들 정리
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(
-          regs
-            .filter((r) => {
-              const urls = [
-                r.active?.scriptURL,
-                r.waiting?.scriptURL,
-                r.installing?.scriptURL,
-              ].filter(Boolean) as string[];
-              return urls.some((u) => u.includes("/firebase-messaging-sw.js"));
-            })
-            .map((r) => r.unregister()),
-        );
+    try {
+      registration = await navigator.serviceWorker.register(swUrl, {
+        type: "module", // firebase-messaging-sw.js 가 ESM 이므로 module 로 등록
+      });
 
-        // 새 서비스워커 등록 (type: "module" 제거!)
-        registration = await navigator.serviceWorker.register(
-          "/firebase-messaging-sw.js?v=20251205",
-        );
-
-        console.log("[FCM] SW registered:", {
-          scriptURL: registration.active?.scriptURL,
-          scope: registration.scope,
-          active: !!registration.active,
-        });
-      } catch (e) {
-        console.warn("[FCM] service worker register failed", e);
-      }
-    } else {
-      console.warn("[FCM] Service worker not supported in this browser");
-    }
-
-    // registration이 없으면 getToken 호출 중단
-    if (!registration) {
-      console.warn("[FCM] No SW registration, skip getToken");
+      console.log("[FCM] SW register() returned:", {
+        scope: registration.scope,
+      });
+    } catch (e) {
+      console.error("[FCM] service worker register failed", e);
       return;
     }
 
-    // 3. FCM 토큰 발급
+    // 4. 실제로 활성화된 SW 가 준비될 때까지 대기
+    const readyRegistration = await navigator.serviceWorker.ready;
+    console.log("[FCM] navigator.serviceWorker.ready:", {
+      scope: readyRegistration.scope,
+      scriptURL: readyRegistration.active?.scriptURL,
+    });
+
+    // 5. FCM 토큰 발급
     try {
       const currentToken = await getToken(messaging, {
         vapidKey: VAPID_KEY,
-        serviceWorkerRegistration: registration,
+        serviceWorkerRegistration: readyRegistration,
       });
 
       if (currentToken) {
         console.log("[FCM] Token issued:", currentToken);
 
-        // 4. 백엔드에 토큰 등록
+        // 6. 백엔드에 토큰 등록
         try {
           await api.post("/fcm/register", {
             token: currentToken,
@@ -109,10 +102,21 @@ export async function initFcm(): Promise<void> {
       console.error("[FCM] getToken failed", err);
     }
 
-    // 5. 포그라운드 메시지 수신 핸들러
+    // 7. 포그라운드 메시지 수신 핸들러
     onMessage(messaging, (payload) => {
       console.log("[FCM] foreground message", payload);
-      // 여기서 in-app 알림 UI를 띄우거나 처리 로직을 넣을 수 있음
+
+      const title = payload.notification?.title ?? "알림";
+      const body = payload.notification?.body ?? "";
+      const data = payload.data ?? {};
+
+      // 탭이 열려 있을 때도 브라우저/폰에 알림처럼 보이게
+      if (Notification.permission === "granted") {
+        new Notification(title, {
+          body,
+          data,
+        });
+      }
     });
 
     initialized = true;
@@ -121,8 +125,4 @@ export async function initFcm(): Promise<void> {
     console.error("[FCM] initialization failed", e);
   }
 }
-
-// 개발용: 브라우저 콘솔에서 직접 호출해 볼 수 있게
-(window as any).initFcm = initFcm;
-
 export default initFcm;

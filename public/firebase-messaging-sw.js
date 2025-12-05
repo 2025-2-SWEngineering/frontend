@@ -1,5 +1,6 @@
-// Service worker for Firebase Cloud Messaging (Web) - ESM module version
-// This file is served from /firebase-messaging-sw.js and must be registered with { type: 'module' }
+// public/firebase-messaging-sw.js
+// Firebase Cloud Messaging Web Push - Service Worker (ESM module)
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
   getMessaging,
@@ -14,22 +15,22 @@ const firebaseConfig = {
   appId: "1:919454578960:web:d3729a139cf6246a7a8d95",
 };
 
+// Firebase 앱 & Messaging (SW 전용)
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-// Ensure the service worker activates immediately and takes control of pages.
-// This helps avoid "no active Service Worker" errors when registering and subscribing.
+// 설치 후 바로 활성화되도록 (no active Service Worker 방지용)
 self.addEventListener("install", (event) => {
-  // Immediately move to the activating state
+  // 바로 활성화 상태로 전환
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  // Claim clients so the new SW controls pages without a full reload
   event.waitUntil(
     (async () => {
+      // 이 서비스워커가 기존 페이지들을 바로 컨트롤하도록
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       await self.clients.claim();
@@ -37,11 +38,54 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// 🔥 탭이 닫혀 있거나 백그라운드일 때 오는 메시지 처리
 onBackgroundMessage(messaging, (payload) => {
+  // 디버깅용 로그
+  console.log("[SW] onBackgroundMessage", payload);
+
   const title = payload?.notification?.title || "알림";
   const options = {
     body: payload?.notification?.body || "",
+    // 클릭 시 사용할 데이터 (type, groupId, transactionId, url 등)
     data: payload?.data || {},
   };
+
   self.registration.showNotification(title, options);
+});
+
+// 🔥 알림 클릭 시 동작
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const data = event.notification.data || {};
+  // 백엔드에서 data.url 을 같이 보내면 그걸 쓰고,
+  // 아니면 기본으로 루트("/")로 이동
+  const urlFromData = data.url;
+  const targetUrl = urlFromData || "/";
+
+  event.waitUntil(
+    (async () => {
+      // 이미 열려 있는 탭이 있으면 포커스, 없으면 새 창/탭 오픈
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const allClients = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      for (const client of allClients) {
+        if ("focus" in client) {
+          // URL 매칭이 필요하면 여기서 client.url.includes(...) 로 비교해서 필터링 가능
+          return client.focus();
+        }
+      }
+
+      // 열려 있는 탭이 없으면 새로운 탭/창 오픈
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })(),
+  );
 });

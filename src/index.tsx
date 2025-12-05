@@ -10,13 +10,12 @@ root.render(
     <App />
   </React.StrictMode>,
 );
-// Init FCM on load (service worker is registered inside initFcm)
+
+// FCM 초기화 (내부에서 서비스워커 등록 + 토큰 발급까지 처리)
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      await initFcm();
-    } catch (e) {
-      console.warn("initFcm failed", e);
-    }
+  window.addEventListener("load", () => {
+    initFcm().catch((e) => {
+      console.warn("[FCM] initFcm failed", e);
+    });
   });
 }
