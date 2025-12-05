@@ -42,6 +42,20 @@ export async function initFcm(): Promise<void> {
         let registration: ServiceWorkerRegistration | undefined;
         if ("serviceWorker" in navigator) {
           try {
+            // Unregister previously registered classic SW for FCM (so ESM can load)
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(
+              regs
+                .filter((r) => {
+                  const urls = [
+                    r.active?.scriptURL,
+                    r.waiting?.scriptURL,
+                    r.installing?.scriptURL,
+                  ].filter(Boolean) as string[];
+                  return urls.some((u) => u.includes("/firebase-messaging-sw.js"));
+                })
+                .map((r) => r.unregister()),
+            );
             registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", {
               type: "module",
             });
