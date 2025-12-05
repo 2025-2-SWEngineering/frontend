@@ -5,5 +5,4 @@ coverage/
 public/
 .vscode/
 *.config.js
-*.config.cjs
 **/*.min.*

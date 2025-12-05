@@ -39,7 +39,20 @@ export async function initFcm(): Promise<void> {
 
     if (Notification.permission === "granted") {
       try {
-        const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+        let registration: ServiceWorkerRegistration | undefined;
+        if ("serviceWorker" in navigator) {
+          try {
+            registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", {
+              type: "module",
+            });
+          } catch (e) {
+            console.warn("[FCM] service worker register failed", e);
+          }
+        }
+        const currentToken = await getToken(messaging, {
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: registration,
+        });
         if (currentToken) {
           // send token to backend to register and subscribe to topics
           try {
