@@ -72,6 +72,7 @@ export async function initFcm(): Promise<void> {
           serviceWorkerRegistration: registration,
         });
         if (currentToken) {
+          console.log("FCM Token:", currentToken);
           // send token to backend to register and subscribe to topics
           try {
             await api.post("/fcm/register", { token: currentToken, platform: "web" });
