@@ -106,7 +106,17 @@ export async function initFcm(): Promise<void> {
     onMessage(messaging, (payload) => {
       console.log("[FCM] foreground message", payload);
 
-      // 탭안에서의 알람은 여기다가 구현
+      const title = payload.notification?.title ?? "알림";
+      const body = payload.notification?.body ?? "";
+      const data = payload.data ?? {};
+
+      // 탭이 열려 있을 때 OS 알림을 1번 띄움
+      if (Notification.permission === "granted") {
+        new Notification(title, {
+          body,
+          data,
+        });
+      }
     });
 
     initialized = true;

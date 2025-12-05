@@ -38,21 +38,6 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// 🔥 탭이 닫혀 있거나 백그라운드일 때 오는 메시지 처리
-onBackgroundMessage(messaging, (payload) => {
-  // 디버깅용 로그
-  console.log("[SW] onBackgroundMessage", payload);
-
-  const title = payload?.notification?.title || "알림";
-  const options = {
-    body: payload?.notification?.body || "",
-    // 클릭 시 사용할 데이터 (type, groupId, transactionId, url 등)
-    data: payload?.data || {},
-  };
-
-  self.registration.showNotification(title, options);
-});
-
 // 🔥 알림 클릭 시 동작
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
