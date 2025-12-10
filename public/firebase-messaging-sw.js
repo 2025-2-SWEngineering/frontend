@@ -68,14 +68,21 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-// 6) 백그라운드 메시지 핸들러 (data-only 기준으로 알림 표시)
 messaging.onBackgroundMessage((payload) => {
   console.log("[FCM SW] Received background message ", payload);
 
   const rawData = payload.data || {};
 
-  const baseTitle = rawData.title || "알림";
-  const baseBody = rawData.body || "";
+  // 1) notification 필드가 있으면 → FCM이 알아서 OS 알림을 띄움
+  //    이 때 우리가 showNotification까지 하면 2번 뜨므로, 그냥 리턴
+  if (payload.notification && !rawData.forceCustomNotification) {
+    console.log("[FCM SW] notification present, let FCM handle display");
+    return;
+  }
+
+  // 2) data-only 메시지거나, forceCustomNotification이 true일 때만 우리가 알림 띄움
+  const baseTitle = rawData.title || (payload.notification && payload.notification.title) || "알림";
+  const baseBody = rawData.body || (payload.notification && payload.notification.body) || "";
 
   let title = baseTitle;
   const options = {
@@ -83,15 +90,14 @@ messaging.onBackgroundMessage((payload) => {
     data: rawData,
   };
 
-  // 그룹 이름이 있으면 제목에 [그룹명] 붙이기
+  // 그룹 이름이 있으면 [그룹명] 붙이기
   if (rawData.groupName) {
     title = `[${rawData.groupName}] ${baseTitle}`;
   }
 
-  // 그룹 아이디가 있으면 클릭 시 이동할 URL 정보도 data에 추가
+  // 그룹 ID가 있으면 클릭 시 이동할 URL
   if (rawData.groupId) {
     options.data = options.data || {};
-    // 프론트 라우팅 규칙에 맞춰 수정 가능
     options.data.url = `/groups/${rawData.groupId}`;
   }
 
