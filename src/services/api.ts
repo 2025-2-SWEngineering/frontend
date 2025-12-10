@@ -61,6 +61,10 @@ api.interceptors.response.use(
     } catch {
       void 0;
     }
+    // Prevent retry loops: if this request was already retried once, stop.
+    if (originalRequest._retry) {
+      return Promise.reject(error);
+    }
     if (status !== 401) {
       return Promise.reject(error);
     }

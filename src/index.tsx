@@ -14,7 +14,7 @@ root.render(
 // FCM 초기화 (내부에서 서비스워커 등록 + 토큰 발급까지 처리)
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    initFcm().catch((e) => {
+    initFcm().catch((e: any) => {
       console.warn("[FCM] initFcm failed", e);
     });
   });

@@ -74,3 +74,13 @@ self.addEventListener("notificationclick", (event) => {
     })(),
   );
 });
+
+// Background message handler: show notifications using the data payload.
+onBackgroundMessage(messaging, (payload) => {
+  const title = payload?.data?.title || "알림";
+  const options = {
+    body: payload?.data?.body || "",
+    data: payload?.data || {},
+  };
+  self.registration.showNotification(title, options);
+});
