@@ -107,6 +107,29 @@ export async function initFcm(registrationFromCaller?: ServiceWorkerRegistration
       scriptURL: readyRegistration.active?.scriptURL,
     });
 
+    // If we've already registered a token previously, skip re-issuing/registering to avoid conflicts.
+    try {
+      const registeredToken = localStorage.getItem("fcm_registered_token");
+      if (registeredToken) {
+        console.log("[FCM] existing registered token found, skipping getToken/register");
+        // Set up foreground message handler so app still receives messages while focused
+        onMessage(messaging, (payload) => {
+          console.log("[FCM] foreground message", payload);
+          const title = payload.notification?.title ?? "알림";
+          const body = payload.notification?.body ?? "";
+          const data = payload.data ?? {};
+          if (Notification.permission === "granted") {
+            new Notification(title, { body, data });
+          }
+        });
+        initialized = true;
+        console.log("[FCM] initFcm completed (skipped register)");
+        return;
+      }
+    } catch {
+      // ignore storage access errors
+    }
+
     // 5. FCM 토큰 발급 (타임아웃 및 실패 시 재시도 억제)
     try {
       const getTokenWithTimeout = (ms: number) =>
@@ -203,6 +226,12 @@ export async function initFcm(registrationFromCaller?: ServiceWorkerRegistration
                 { token: currentToken, platform: "web" },
                 { headers: { Authorization: authToken ? `Bearer ${authToken}` : undefined } },
               );
+              // remember that we've registered this token so we won't re-register on future page loads
+              try {
+                localStorage.setItem("fcm_registered_token", currentToken);
+              } catch {
+                // ignore storage errors
+              }
             } catch (e) {
               // If the request failed, surface error as before
               throw e;
