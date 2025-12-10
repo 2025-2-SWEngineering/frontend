@@ -99,6 +99,16 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // If the failed request is the refresh endpoint itself, do not attempt to refresh again.
+    try {
+      const urlStr = String(originalRequest.url || "");
+      if (urlStr.includes("/auth/refresh")) {
+        return Promise.reject(error);
+      }
+    } catch {
+      // ignore
+    }
+
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) {
       localStorage.removeItem("token");

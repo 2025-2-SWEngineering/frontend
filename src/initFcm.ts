@@ -3,6 +3,7 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import api from "./services/api";
+import axios from "axios";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -139,6 +140,50 @@ export async function initFcm(registrationFromCaller?: ServiceWorkerRegistration
           if (!authToken) {
             console.log("[FCM] skipping backend register: no auth token present");
           } else {
+            // If access token is near expiry, attempt a refresh first using plain axios
+            try {
+              const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "/api";
+              const isTokenExpiring = (t: string | null, marginMs = 60_000) => {
+                if (!t) return false;
+                try {
+                  const parts = t.split(".");
+                  if (parts.length < 2) return false;
+                  const payload = JSON.parse(atob(parts[1]));
+                  if (!payload.exp) return false;
+                  const expMs = Number(payload.exp) * 1000;
+                  return expMs - Date.now() < marginMs;
+                } catch {
+                  return false;
+                }
+              };
+
+              if (isTokenExpiring(authToken, 30_000)) {
+                const refreshToken = localStorage.getItem("refreshToken");
+                if (refreshToken) {
+                  try {
+                    // use plain axios (no interceptors) to avoid recursion
+                    const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+                      refreshToken,
+                    });
+                    if (data?.token) {
+                      localStorage.setItem("token", data.token);
+                      if (data.refreshToken)
+                        localStorage.setItem("refreshToken", data.refreshToken);
+                      api.defaults.headers.common.Authorization = `Bearer ${data.token}`;
+                      // eslint-disable-next-line no-console
+                      console.debug("[FCM] refreshed token before register");
+                    }
+                  } catch (e) {
+                    console.warn("[FCM] refresh before register failed, skipping register", e);
+                    // If refresh fails, skip backend register to avoid 401 loops
+                    return;
+                  }
+                }
+              }
+            } catch (e) {
+              // ignore token parsing errors
+            }
+
             // TEMP DEBUG: log masked auth token being sent
             try {
               const masked = authToken
