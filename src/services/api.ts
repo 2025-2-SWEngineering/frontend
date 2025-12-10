@@ -10,6 +10,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 15000, // 15s default timeout to avoid hanging requests
 });
 
 // 요청 인터셉터 - JWT 토큰 추가
@@ -27,6 +28,11 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    try {
+      decrementLoading();
+    } catch {
+      void 0;
+    }
     return Promise.reject(error);
   },
 );
