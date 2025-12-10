@@ -70,6 +70,11 @@ self.addEventListener("notificationclick", (event) => {
 // 6) 백그라운드 메시지 핸들러
 messaging.onBackgroundMessage((payload) => {
   console.log("[FCM SW] Received background message ", payload);
+  if (payload.notification) {
+    // 필요하면 여기서 데이터만 가공하거나 로깅만 하고 끝냄
+    console.log("[FCM SW] notification payload present, let FCM handle display");
+    return;
+  }
 
   const title =
     (payload.data && payload.data.title) ||
