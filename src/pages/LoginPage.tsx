@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import api from "../services/api";
-import { initFcm } from "../initFcm";
+import initFcm from "../initFcm";
 import logo from "../assets/logo.png";
 import LoadingPage from "./LoadingPage";
 import "./LoginPage.css";

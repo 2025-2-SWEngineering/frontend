@@ -22,9 +22,9 @@ firebase.initializeApp({
 // 3) messaging 인스턴스
 const messaging = firebase.messaging();
 
-// 4) 설치/활성화 훅 (원래 있던 로직 유지 가능)
+// 4) 설치/활성화 훅
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-self.addEventListener("install", (event) => {
+self.addEventListener("install", (_event) => {
   // 바로 활성화 상태로 전환
   self.skipWaiting();
 });
@@ -56,6 +56,7 @@ self.addEventListener("notificationclick", (event) => {
 
       for (const client of allClients) {
         if ("focus" in client) {
+          // 필요하면 client.url 검사해서 특정 그룹 페이지에 있는 탭만 포커스 가능
           return client.focus();
         }
       }
@@ -67,34 +68,30 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-// 6) 백그라운드 메시지 핸들러
+// 6) 백그라운드 메시지 핸들러 (data-only 기준으로 알림 표시)
 messaging.onBackgroundMessage((payload) => {
   console.log("[FCM SW] Received background message ", payload);
-  if (payload.notification) {
-    // 필요하면 여기서 데이터만 가공하거나 로깅만 하고 끝냄
-    console.log("[FCM SW] notification payload present, let FCM handle display");
-    return;
-  }
 
-  // Prefer fields in data so server can send data-only payloads
   const rawData = payload.data || {};
-  const baseTitle = rawData.title || (payload.notification && payload.notification.title) || "알림";
-  const baseBody = rawData.body || (payload.notification && payload.notification.body) || "";
 
-  // If group info provided, prepend it to the title and include a URL to open that group
+  const baseTitle = rawData.title || "알림";
+  const baseBody = rawData.body || "";
+
   let title = baseTitle;
   const options = {
     body: baseBody,
     data: rawData,
   };
 
+  // 그룹 이름이 있으면 제목에 [그룹명] 붙이기
   if (rawData.groupName) {
     title = `[${rawData.groupName}] ${baseTitle}`;
   }
+
+  // 그룹 아이디가 있으면 클릭 시 이동할 URL 정보도 data에 추가
   if (rawData.groupId) {
-    // include a URL so notificationclick can open the group page
     options.data = options.data || {};
-    // adjust the path to match your frontend routing for groups
+    // 프론트 라우팅 규칙에 맞춰 수정 가능
     options.data.url = `/groups/${rawData.groupId}`;
   }
 

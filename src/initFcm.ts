@@ -1,5 +1,6 @@
 // Frontend/src/initFcm.ts
 /// <reference types="vite/client" />
+
 import axios from "axios";
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getMessaging, getToken, onMessage, Messaging } from "firebase/messaging";
@@ -31,7 +32,7 @@ function getFirebaseMessaging(): Messaging {
 /**
  * 로그인된 상태에서만 호출되는 FCM 초기화 함수
  */
-export async function initFcm() {
+async function initFcm() {
   if (initialized) {
     console.log("[FCM] already initialized, skip");
     return;
@@ -64,6 +65,8 @@ export async function initFcm() {
     const readyReg = await navigator.serviceWorker.ready;
     console.log("[FCM] navigator.serviceWorker.ready:", {
       scope: readyReg.scope,
+      // 일부 브라우저에서는 scriptURL이 없을 수 있음
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       scriptURL: (readyReg as any).scriptURL,
     });
 
@@ -91,7 +94,7 @@ export async function initFcm() {
         await axios.post(
           "/api/fcm/register",
           {
-            // 🔥 여기가 핵심: fcmToken -> token + platform
+            // 백엔드는 token / platform 을 기대
             token: fcmToken,
             platform: "web",
           },
@@ -102,7 +105,7 @@ export async function initFcm() {
           },
         );
         console.log("[FCM] FCM token registered to backend");
-      } catch (e: any) {
+      } catch (e) {
         console.warn("[FCM] Failed to register FCM token with backend", e);
       }
     }
@@ -112,36 +115,44 @@ export async function initFcm() {
       console.log("[FCM] foreground message", payload);
 
       const data = (payload.data as Record<string, string> | undefined) || {};
-      const baseTitle = data.title || payload.notification?.title || "알림";
-      const baseBody = data.body || payload.notification?.body || "";
 
-      // If group metadata present, show it in the title and include url
+      const baseTitle = data.title || "알림";
+      const baseBody = data.body || "";
+
       let title = baseTitle;
-      const notifData: Record<string, any> = { ...(data || {}) };
+      const notifData: Record<string, unknown> = { ...data };
+
+      // 그룹명 있으면 제목에 붙이기
       if (data.groupName) {
         title = `[${data.groupName}] ${baseTitle}`;
       }
+
+      // 그룹 ID가 있으면 URL 세팅 (SW notificationclick과 동일 규칙)
       if (data.groupId) {
         notifData.url = notifData.url || `/groups/${data.groupId}`;
       }
 
-      // If notifications are permitted, show a native Notification; otherwise fall back to alert
       if (Notification.permission === "granted") {
         try {
-          // display a Notification so it behaves like background notifications
-          new Notification(title, { body: baseBody, data: notifData });
-        } catch (e) {
-          console.warn("[FCM] failed to show Notification, falling back to alert", e);
+          new Notification(title, {
+            body: baseBody,
+            data: notifData,
+          });
+        } catch (err) {
+          console.warn("[FCM] failed to show Notification, falling back to alert", err);
           alert(`${title}\n\n${baseBody}`);
         }
       } else {
+        // 권한 없으면 그냥 alert로라도 표시
         alert(`${title}\n\n${baseBody}`);
       }
     });
 
     initialized = true;
     console.log("[FCM] initFcm completed");
-  } catch (e: any) {
+  } catch (e) {
     console.error("[FCM] initialization failed", e);
   }
 }
+
+export default initFcm;
