@@ -194,7 +194,19 @@ export async function initFcm(registrationFromCaller?: ServiceWorkerRegistration
             } catch {
               void 0;
             }
-            await api.post("/fcm/register", { token: currentToken, platform: "web" });
+
+            // Explicitly attach Authorization header using the snapshot of local token
+            // eslint-disable-next-line no-useless-catch
+            try {
+              await api.post(
+                "/fcm/register",
+                { token: currentToken, platform: "web" },
+                { headers: { Authorization: authToken ? `Bearer ${authToken}` : undefined } },
+              );
+            } catch (e) {
+              // If the request failed, surface error as before
+              throw e;
+            }
             console.log("[FCM] token registered with backend");
           }
         } catch (err) {
