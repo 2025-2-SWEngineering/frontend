@@ -47,6 +47,11 @@ export async function initFcm() {
     return;
   }
 
+  if (!VAPID_KEY) {
+    console.error("[FCM] VAPID_KEY is empty. Check VITE_FIREBASE_VAPID_KEY env.");
+    return;
+  }
+
   console.log("[FCM] initFcm start");
 
   try {
@@ -85,7 +90,11 @@ export async function initFcm() {
       try {
         await axios.post(
           "/api/fcm/register",
-          { fcmToken },
+          {
+            // 🔥 여기가 핵심: fcmToken -> token + platform
+            token: fcmToken,
+            platform: "web",
+          },
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
