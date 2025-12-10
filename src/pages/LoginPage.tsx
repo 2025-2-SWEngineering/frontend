@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../services/api";
+import initFcm from "../initFcm";
 import logo from "../assets/logo.png";
 import LoadingPage from "./LoadingPage";
 import "./LoginPage.css";
@@ -24,6 +25,15 @@ const LoginPage: React.FC = () => {
 
       // Show loading screen before navigating
       setShowLoadingScreen(true);
+
+      // Initialize FCM now that tokens are stored. Don't block navigation on failure.
+      (async () => {
+        try {
+          await initFcm();
+        } catch (e) {
+          console.warn("[FCM] init after login failed", e);
+        }
+      })();
 
       // Simulate a short delay for the loading screen to be visible
       setTimeout(() => {

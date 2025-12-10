@@ -21,6 +21,18 @@ api.interceptors.request.use(
     } catch {
       void 0;
     }
+    // TEMP LOG: print request info to help debug mobile looping requests
+    try {
+      // eslint-disable-next-line no-console
+      console.debug("[api] request ->", {
+        method: config.method,
+        url: config.url,
+        baseURL: config.baseURL,
+        timestamp: new Date().toISOString(),
+      });
+    } catch {
+      void 0;
+    }
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -64,6 +76,18 @@ api.interceptors.response.use(
     const status = error?.response?.status;
     try {
       decrementLoading();
+    } catch {
+      void 0;
+    }
+    // TEMP LOG: log failed request info
+    try {
+      // eslint-disable-next-line no-console
+      console.debug("[api] response error ->", {
+        method: originalRequest.method,
+        url: originalRequest.url,
+        status,
+        timestamp: new Date().toISOString(),
+      });
     } catch {
       void 0;
     }
