@@ -113,16 +113,15 @@ export async function initFcm() {
 
       const title = payload.notification?.title ?? "알림";
       const body = payload.notification?.body ?? "";
-      const data = payload.data ?? {};
 
       // 탭이 열려 있을 때도 브라우저/폰에 알림처럼 보이게
       if (Notification.permission === "granted") {
         new Notification(title, {
           body,
-          data,
+          data: payload.data ?? {},
         });
       } else {
-        console.log("[FCM] Notification permission is not granted");
+        alert(`${title}\n\n${body}`);
       }
     });
 
