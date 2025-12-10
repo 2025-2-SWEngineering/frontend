@@ -120,9 +120,8 @@ api.interceptors.response.use(
     originalRequest._retry = true;
     isRefreshing = true;
     try {
-      const { data } = await api.post<{ token: string; refreshToken: string }>("/auth/refresh", {
-        refreshToken,
-      });
+      // Use plain axios (no interceptors) to request a new access token to avoid recursive interceptor loops
+      const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
       const newToken = data.token;
       const newRefresh = data.refreshToken;
       localStorage.setItem("token", newToken);
@@ -135,9 +134,17 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (e) {
       isRefreshing = false;
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      window.location.href = "/";
+      // clear tokens and redirect to login once
+      try {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+      } catch {
+        void 0;
+      }
+      // Only redirect if we're not already on login page
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
       return Promise.reject(e);
     }
   },
