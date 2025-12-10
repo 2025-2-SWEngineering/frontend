@@ -51,7 +51,9 @@ export async function initFcm() {
 
   try {
     // ----- 1. Service Worker 등록 -----
-    const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js?v=20251206");
+    const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js?v=20251206", {
+      type: "module",
+    });
     console.log("[FCM] SW register() returned:", {
       scope: swReg.scope,
     });
