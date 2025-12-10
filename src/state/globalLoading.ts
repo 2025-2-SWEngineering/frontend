@@ -10,6 +10,22 @@ export function getRecentIncrementStacks() {
   return recentIncrementStacks.slice();
 }
 
+// Expose debug helpers on window for easy inspection in browser/devtools
+try {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (typeof window !== "undefined") {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.__getLoadingCount = getLoadingCount;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.__getRecentLoadingStacks = getRecentIncrementStacks;
+  }
+} catch {
+  // ignore in non-browser contexts
+}
+
 function emit() {
   for (const fn of listeners) fn(pendingCount);
 }
