@@ -111,12 +111,32 @@ export async function initFcm() {
     onMessage(messaging, (payload) => {
       console.log("[FCM] foreground message", payload);
 
-      const title = payload.notification?.title ?? "알림";
-      const body = payload.notification?.body ?? "";
+      const data = (payload.data as Record<string, string> | undefined) || {};
+      const baseTitle = data.title || payload.notification?.title || "알림";
+      const baseBody = data.body || payload.notification?.body || "";
 
-      // 탭이 열려 있을 때도 브라우저/폰에 알림처럼 보이게
+      // If group metadata present, show it in the title and include url
+      let title = baseTitle;
+      const notifData: Record<string, any> = { ...(data || {}) };
+      if (data.groupName) {
+        title = `[${data.groupName}] ${baseTitle}`;
+      }
+      if (data.groupId) {
+        notifData.url = notifData.url || `/groups/${data.groupId}`;
+      }
 
-      alert(`${title}\n\n${body}`);
+      // If notifications are permitted, show a native Notification; otherwise fall back to alert
+      if (Notification.permission === "granted") {
+        try {
+          // display a Notification so it behaves like background notifications
+          new Notification(title, { body: baseBody, data: notifData });
+        } catch (e) {
+          console.warn("[FCM] failed to show Notification, falling back to alert", e);
+          alert(`${title}\n\n${baseBody}`);
+        }
+      } else {
+        alert(`${title}\n\n${baseBody}`);
+      }
     });
 
     initialized = true;

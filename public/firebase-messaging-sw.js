@@ -76,18 +76,27 @@ messaging.onBackgroundMessage((payload) => {
     return;
   }
 
-  const title =
-    (payload.data && payload.data.title) ||
-    (payload.notification && payload.notification.title) ||
-    "알림";
-  const body =
-    (payload.data && payload.data.body) ||
-    (payload.notification && payload.notification.body) ||
-    "";
+  // Prefer fields in data so server can send data-only payloads
+  const rawData = payload.data || {};
+  const baseTitle = rawData.title || (payload.notification && payload.notification.title) || "알림";
+  const baseBody = rawData.body || (payload.notification && payload.notification.body) || "";
+
+  // If group info provided, prepend it to the title and include a URL to open that group
+  let title = baseTitle;
   const options = {
-    body,
-    data: payload.data || {},
+    body: baseBody,
+    data: rawData,
   };
+
+  if (rawData.groupName) {
+    title = `[${rawData.groupName}] ${baseTitle}`;
+  }
+  if (rawData.groupId) {
+    // include a URL so notificationclick can open the group page
+    options.data = options.data || {};
+    // adjust the path to match your frontend routing for groups
+    options.data.url = `/groups/${rawData.groupId}`;
+  }
 
   self.registration.showNotification(title, options);
 });
