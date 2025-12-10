@@ -114,17 +114,22 @@ async function initFcm() {
     onMessage(messaging, (payload) => {
       console.log("[FCM] foreground message", payload);
 
+      // data / notification 둘 다 고려
       const data = (payload.data as Record<string, string> | undefined) || {};
+      const notif = payload.notification;
 
-      const baseTitle = data.title || "알림";
-      const baseBody = data.body || "";
+      const baseTitle = data.title || notif?.title || "알림";
 
+      const baseBody = data.body || notif?.body || "";
+
+      // 그룹 이름 (data에 있다고 가정)
+      const groupName = data.groupName;
       let title = baseTitle;
+
       const notifData: Record<string, unknown> = { ...data };
 
-      // 그룹명 있으면 제목에 붙이기
-      if (data.groupName) {
-        title = `[${data.groupName}] ${baseTitle}`;
+      if (groupName) {
+        title = `[${groupName}] ${baseTitle}`;
       }
 
       // 그룹 ID가 있으면 URL 세팅 (SW notificationclick과 동일 규칙)
