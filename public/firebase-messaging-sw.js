@@ -68,13 +68,15 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
+// 6) 백그라운드 메시지 핸들러
 messaging.onBackgroundMessage((payload) => {
   console.log("[FCM SW] Received background message ", payload);
 
   const rawData = payload.data || {};
 
   // 1) notification 필드가 있으면 → FCM이 알아서 OS 알림을 띄움
-  //    이 때 우리가 showNotification까지 하면 2번 뜨므로, 그냥 리턴
+  //    이 때 우리가 showNotification까지 하면 2번 뜨므로, 기본적으로 리턴
+  //    (data-only 메시지에서는 payload.notification이 없음)
   if (payload.notification && !rawData.forceCustomNotification) {
     console.log("[FCM SW] notification present, let FCM handle display");
     return;
