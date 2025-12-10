@@ -139,6 +139,16 @@ export async function initFcm(registrationFromCaller?: ServiceWorkerRegistration
           if (!authToken) {
             console.log("[FCM] skipping backend register: no auth token present");
           } else {
+            // TEMP DEBUG: log masked auth token being sent
+            try {
+              const masked = authToken
+                ? `${authToken.slice(0, 6)}...${authToken.slice(-4)}`
+                : "(no-token)";
+              // eslint-disable-next-line no-console
+              console.debug("[FCM] registering token with backend; auth=", masked);
+            } catch {
+              void 0;
+            }
             await api.post("/fcm/register", { token: currentToken, platform: "web" });
             console.log("[FCM] token registered with backend");
           }
