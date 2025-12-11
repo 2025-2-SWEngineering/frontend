@@ -1,0 +1,163 @@
+.report-modal {
+  max-width: 480px;
+}
+
+.report-group-name {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #333;
+}
+
+.report-section {
+  margin-bottom: 24px;
+}
+
+.report-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.period-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  flex: 1;
+  min-width: 70px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-btn:hover {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.preset-btn.active {
+  background: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.custom-date-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.date-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.date-separator {
+  color: #999;
+  font-weight: 500;
+}
+
+.format-options {
+  display: flex;
+  gap: 16px;
+}
+
+.format-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  justify-content: center;
+}
+
+.format-option:hover {
+  border-color: #007bff;
+}
+
+.format-option input {
+  display: none;
+}
+
+.format-option:has(input:checked) {
+  background: #e8f0fe;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.format-icon {
+  font-size: 18px;
+}
+
+.report-info {
+  background: #f0f7ff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.report-info p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.report-info ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.report-info li {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.download-btn {
+  width: 100%;
+  padding: 14px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.download-btn:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.download-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
