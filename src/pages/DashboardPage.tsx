@@ -276,12 +276,14 @@ const DashboardPage: React.FC = () => {
             >
               멤버 관리
             </span>
-            <span
-              className="member-manage-link"
-              onClick={() => groupId && setIsReportModalOpen(true)}
-            >
-              📊 보고서
-            </span>
+            {currentUserRole === "admin" && (
+              <span
+                className="member-manage-link"
+                onClick={() => groupId && setIsReportModalOpen(true)}
+              >
+                📊 보고서
+              </span>
+            )}
           </div>
         </div>
 
@@ -631,6 +633,18 @@ const DashboardPage: React.FC = () => {
               a.click();
               document.body.removeChild(a);
               window.URL.revokeObjectURL(url);
+            } catch (e: any) {
+              // Handle 404 No Data found
+              if (e.response && e.response.status === 404) {
+                 // For blob response, processing JSON error message is tricky
+                 // But we know 404 means NO_DATA from our backend implementation
+                 alert("선택한 기간에 재정 데이터가 없어 보고서를 생성할 수 없습니다.");
+              } else if (e.response && e.response.status === 403) {
+                 alert("보고서 생성 권한이 없습니다.");
+              } else {
+                 console.error(e);
+                 alert("보고서 생성 중 오류가 발생했습니다.");
+              }
             } finally {
               setLoading(false);
             }
