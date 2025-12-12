@@ -3,7 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { useGroupsSelection } from "../hooks/useGroupsSelection";
 import { useOverviewData } from "../hooks/useOverviewData";
-import { getPresignedUrl, setDues, createTransactionApi, resetDuesApi, downloadReportPdf, downloadReportExcel } from "../api/client";
+import {
+  getPresignedUrl,
+  setDues,
+  createTransactionApi,
+  resetDuesApi,
+  downloadReportPdf,
+  downloadReportExcel,
+} from "../api/client";
 import DuesModal from "../components/modals/DuesModal";
 import DuesSettingsModal from "../components/modals/DuesSettingsModal";
 import TransactionCreateModal from "../components/modals/TransactionCreateModal";
@@ -219,6 +226,11 @@ const DashboardPage: React.FC = () => {
     return groups.find((g) => g.id === groupId)?.user_role;
   }, [groups, groupId]);
 
+  const currentGroupName = useMemo(() => {
+    const group = groups.find((g) => g.id === groupId);
+    // 그룹 객체에서 이름 필드가 name인지, group_name인지에 맞춰서 수정
+    return group ? (group.name ?? "") : "";
+  }, [groups, groupId]);
   // Format balance
   const currentBalance = formatCurrencyKRW(stats?.currentBalance ?? 0);
 
@@ -596,10 +608,11 @@ const DashboardPage: React.FC = () => {
           onDownload={async (format, from, to) => {
             setLoading(true);
             try {
-              const blob = format === "pdf"
-                ? await downloadReportPdf(groupId, from, to)
-                : await downloadReportExcel(groupId, from, to);
-              
+              const blob =
+                format === "pdf"
+                  ? await downloadReportPdf(groupId, from, to)
+                  : await downloadReportExcel(groupId, from, to);
+
               const url = window.URL.createObjectURL(blob);
               const a = document.createElement("a");
               a.href = url;
@@ -611,14 +624,14 @@ const DashboardPage: React.FC = () => {
             } catch (e: any) {
               // Handle 404 No Data found
               if (e.response && e.response.status === 404) {
-                 // For blob response, processing JSON error message is tricky
-                 // But we know 404 means NO_DATA from our backend implementation
-                 alert("선택한 기간에 재정 데이터가 없어 보고서를 생성할 수 없습니다.");
+                // For blob response, processing JSON error message is tricky
+                // But we know 404 means NO_DATA from our backend implementation
+                alert("선택한 기간에 재정 데이터가 없어 보고서를 생성할 수 없습니다.");
               } else if (e.response && e.response.status === 403) {
-                 alert("보고서 생성 권한이 없습니다.");
+                alert("보고서 생성 권한이 없습니다.");
               } else {
-                 console.error(e);
-                 alert("보고서 생성 중 오류가 발생했습니다.");
+                console.error(e);
+                alert("보고서 생성 중 오류가 발생했습니다.");
               }
             } finally {
               setLoading(false);

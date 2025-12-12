@@ -33,6 +33,7 @@ function getFirebaseMessaging(): Messaging {
  * 로그인된 상태에서만 호출되는 FCM 초기화 함수
  */
 async function initFcm() {
+  console.log("[FCM] VAPID:", import.meta.env.VITE_VAPID_PUBLIC_KEY);
   if (initialized) {
     console.log("[FCM] already initialized, skip");
     return;
