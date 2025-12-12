@@ -26,7 +26,9 @@ const RegisterPage: React.FC = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "/groups";
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "회원가입에 실패했습니다.";
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "회원가입에 실패했습니다.";
       alert(msg);
     } finally {
       setLoading(false);
@@ -37,7 +39,7 @@ const RegisterPage: React.FC = () => {
     <div className="register-container">
       <img src={logo} alt="우리회계 로고" className="register-logo" />
       <p className="register-subtitle">우리회계에 오신 것을 환영합니다</p>
-      
+
       <form className="register-form" onSubmit={handleSubmit}>
         <input
           className="register-input"

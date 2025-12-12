@@ -14,8 +14,8 @@ export default defineConfig({
     allowedHosts: ["woori-accounting.site", "3.25.235.88", "www.woori-accounting.site"],
   },
   preview: {
-      port: 3000,
-      host: true,
-    allowedHosts: ["woori-accounting.site","www.woori-accounting.site", "3.25.235.88"],
+    port: 3000,
+    host: true,
+    allowedHosts: ["woori-accounting.site", "www.woori-accounting.site", "3.25.235.88"],
   },
 });

@@ -31,6 +31,27 @@ module.exports = {
       node: { extensions: [".js", ".jsx", ".ts", ".tsx"] },
     },
   },
+  overrides: [
+    {
+      files: ["vite.config.ts"],
+      parserOptions: {
+        project: null,
+      },
+    },
+    {
+      files: ["ecosystem.config.cjs"],
+      parserOptions: {
+        project: null,
+      },
+    },
+    {
+      files: ["public/**/*.js"],
+      parserOptions: {
+        project: null,
+      },
+      rules: {},
+    },
+  ],
   rules: {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",

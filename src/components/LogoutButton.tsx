@@ -7,6 +7,12 @@ const LogoutButton: React.FC = () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     localStorage.removeItem("selectedGroupId");
+    // Clear stored FCM registration marker so next login can re-register if needed
+    try {
+      localStorage.removeItem("fcm_registered_token");
+    } catch {
+      void 0;
+    }
     window.location.href = "/";
   };
 

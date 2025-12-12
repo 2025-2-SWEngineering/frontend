@@ -3,7 +3,6 @@ import { incrementLoading, decrementLoading } from "../state/globalLoading";
 
 // 개발환경에서는 Vite 프록시('/api' → 3001)를 사용
 // 배포환경에서는 VITE_API_URL이 설정되면 해당 값을 사용
-// @ts-ignore
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "/api";
 
 const api = axios.create({
@@ -11,6 +10,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 15000, // 15s default timeout to avoid hanging requests
 });
 
 // 요청 인터셉터 - JWT 토큰 추가
@@ -18,7 +18,21 @@ api.interceptors.request.use(
   (config) => {
     try {
       incrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
+    // TEMP LOG: print request info to help debug mobile looping requests
+    try {
+      // eslint-disable-next-line no-console
+      console.debug("[api] request ->", {
+        method: config.method,
+        url: config.url,
+        baseURL: config.baseURL,
+        timestamp: new Date().toISOString(),
+      });
+    } catch {
+      void 0;
+    }
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -26,6 +40,11 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    try {
+      decrementLoading();
+    } catch {
+      void 0;
+    }
     return Promise.reject(error);
   },
 );
@@ -47,7 +66,9 @@ api.interceptors.response.use(
   (response) => {
     try {
       decrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     return response;
   },
   async (error) => {
@@ -55,9 +76,37 @@ api.interceptors.response.use(
     const status = error?.response?.status;
     try {
       decrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
+    // TEMP LOG: log failed request info
+    try {
+      // eslint-disable-next-line no-console
+      console.debug("[api] response error ->", {
+        method: originalRequest.method,
+        url: originalRequest.url,
+        status,
+        timestamp: new Date().toISOString(),
+      });
+    } catch {
+      void 0;
+    }
+    // Prevent retry loops: if this request was already retried once, stop.
+    if (originalRequest._retry) {
+      return Promise.reject(error);
+    }
     if (status !== 401) {
       return Promise.reject(error);
+    }
+
+    // If the failed request is the refresh endpoint itself, do not attempt to refresh again.
+    try {
+      const urlStr = String(originalRequest.url || "");
+      if (urlStr.includes("/auth/refresh")) {
+        return Promise.reject(error);
+      }
+    } catch {
+      // ignore
     }
 
     const refreshToken = localStorage.getItem("refreshToken");
@@ -81,9 +130,8 @@ api.interceptors.response.use(
     originalRequest._retry = true;
     isRefreshing = true;
     try {
-      const { data } = await api.post<{ token: string; refreshToken: string }>("/auth/refresh", {
-        refreshToken,
-      });
+      // Use plain axios (no interceptors) to request a new access token to avoid recursive interceptor loops
+      const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
       const newToken = data.token;
       const newRefresh = data.refreshToken;
       localStorage.setItem("token", newToken);
@@ -96,9 +144,17 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (e) {
       isRefreshing = false;
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      window.location.href = "/";
+      // clear tokens and redirect to login once
+      try {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+      } catch {
+        void 0;
+      }
+      // Only redirect if we're not already on login page
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
       return Promise.reject(e);
     }
   },

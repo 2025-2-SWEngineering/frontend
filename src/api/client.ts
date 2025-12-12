@@ -60,11 +60,14 @@ export async function kickMemberApi(groupId: number, userId: number) {
   await api.delete(`/groups/${groupId}/members/${userId}`);
 }
 
-export async function updateMemberRoleApi(groupId: number, userId: number, role: "admin" | "member") {
-  const { data } = await api.put<{ member: { user_id: number; user_name: string; role: "admin" | "member" } }>(
-    `/groups/${groupId}/members/${userId}/role`,
-    { role }
-  );
+export async function updateMemberRoleApi(
+  groupId: number,
+  userId: number,
+  role: "admin" | "member",
+) {
+  const { data } = await api.put<{
+    member: { user_id: number; user_name: string; role: "admin" | "member" };
+  }>(`/groups/${groupId}/members/${userId}/role`, { role });
   return data.member;
 }
 

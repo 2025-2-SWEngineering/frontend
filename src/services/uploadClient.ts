@@ -12,13 +12,17 @@ uploadClient.interceptors.request.use(
   (config) => {
     try {
       incrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     return config;
   },
   (error) => {
     try {
       decrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     return Promise.reject(error);
   },
 );
@@ -27,13 +31,17 @@ uploadClient.interceptors.response.use(
   (response) => {
     try {
       decrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     return response;
   },
   (error) => {
     try {
       decrementLoading();
-    } catch {}
+    } catch {
+      void 0;
+    }
     return Promise.reject(error);
   },
 );
