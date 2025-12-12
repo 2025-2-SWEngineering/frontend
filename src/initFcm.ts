@@ -72,18 +72,28 @@ async function initFcm() {
       scriptURL: (readyReg as any).scriptURL,
     });
     // ----- 1.5. 기존 PushSubscription 꼬임 방지: 강제 해제 -----
+    if (Notification.permission !== "granted") {
+      const perm = await Notification.requestPermission();
+      console.log("[FCM] permission:", perm);
+      if (perm !== "granted") {
+        console.warn("[FCM] Notification permission not granted; stop initFcm");
+        return;
+      }
+    }
+
+    // ✅ (B) 기존 PushSubscription 꼬임 방지: 강제 해제
     try {
       const existingSub = await readyReg.pushManager.getSubscription();
+      console.log("[FCM] existing subscription:", existingSub);
       if (existingSub) {
         console.log("[FCM] existing PushSubscription found -> unsubscribe()");
         await existingSub.unsubscribe();
-      } else {
-        console.log("[FCM] no existing PushSubscription");
+        // unsubscribe 직후 바로 subscribe하면 실패하는 환경이 있어서 약간 대기
+        await new Promise((r) => setTimeout(r, 300));
       }
     } catch (e) {
       console.warn("[FCM] failed to cleanup old PushSubscription", e);
     }
-
     // ----- 2. FCM 토큰 발급 -----
     const messaging = getFirebaseMessaging();
 
