@@ -71,6 +71,18 @@ async function initFcm() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       scriptURL: (readyReg as any).scriptURL,
     });
+    // ----- 1.5. 기존 PushSubscription 꼬임 방지: 강제 해제 -----
+    try {
+      const existingSub = await readyReg.pushManager.getSubscription();
+      if (existingSub) {
+        console.log("[FCM] existing PushSubscription found -> unsubscribe()");
+        await existingSub.unsubscribe();
+      } else {
+        console.log("[FCM] no existing PushSubscription");
+      }
+    } catch (e) {
+      console.warn("[FCM] failed to cleanup old PushSubscription", e);
+    }
 
     // ----- 2. FCM 토큰 발급 -----
     const messaging = getFirebaseMessaging();
