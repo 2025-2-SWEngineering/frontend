@@ -36,6 +36,12 @@
   cursor: pointer;
 }
 
+.header-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
 .balance-label {
   font-size: 14px;
   color: #555;

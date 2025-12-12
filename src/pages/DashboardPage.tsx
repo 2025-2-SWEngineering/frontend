@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { useGroupsSelection } from "../hooks/useGroupsSelection";
 import { useOverviewData } from "../hooks/useOverviewData";
-import { getPresignedUrl, setDues, createTransactionApi } from "../api/client";
+import { getPresignedUrl, setDues, createTransactionApi, resetDuesApi, downloadReportPdf, downloadReportExcel } from "../api/client";
 import DuesModal from "../components/modals/DuesModal";
 import DuesSettingsModal from "../components/modals/DuesSettingsModal";
 import TransactionCreateModal from "../components/modals/TransactionCreateModal";
+import ReportModal from "../components/modals/ReportModal";
 import { useCategoryAgg } from "../hooks/useCategoryAgg";
 import { formatCurrencyKRW } from "../utils/format";
 import { LoadingOverlay } from "../components/ui";
@@ -39,6 +40,7 @@ const DashboardPage: React.FC = () => {
   const [isDuesModalOpen, setIsDuesModalOpen] = useState(false);
   const [isDuesSettingsModalOpen, setIsDuesSettingsModalOpen] = useState(false);
   const [isCreateTransactionModalOpen, setIsCreateTransactionModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [editingDues, setEditingDues] = useState<{
     name: string;
     isPaid: boolean;
@@ -142,13 +144,8 @@ const DashboardPage: React.FC = () => {
       setGuestDues(resetGuests);
       localStorage.setItem(`guest_dues_${groupId}`, JSON.stringify(resetGuests));
 
-      // 2. Reset Members (API)
-      // Filter only paid members to minimize requests
-      const paidMembers = dues.filter((d) => d.isPaid && d.userId);
-
-      // Execute sequentially or parallel? Parallel is faster but might hit rate limits.
-      // Given "Frontend Only" constraint, we just loop.
-      await Promise.all(paidMembers.map((member) => setDues(groupId, member.userId!, false)));
+      // 2. Reset Members (API) - Use new batch API
+      await resetDuesApi(groupId);
 
       alert("모든 회비 납부 상태가 초기화되었습니다.");
       window.location.reload();
@@ -261,12 +258,22 @@ const DashboardPage: React.FC = () => {
           <button className="back-button" onClick={() => navigate("/groups")}>
             {"<"}
           </button>
-          <span
-            className="member-manage-link"
-            onClick={() => groupId && navigate(`/groups/${groupId}/members`)}
-          >
-            멤버 관리
-          </span>
+          <div className="header-links">
+            <span
+              className="member-manage-link"
+              onClick={() => groupId && navigate(`/groups/${groupId}/members`)}
+            >
+              멤버 관리
+            </span>
+            {currentUserRole === "admin" && (
+              <span
+                className="member-manage-link"
+                onClick={() => groupId && setIsReportModalOpen(true)}
+              >
+                📊 보고서
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="balance-section">
@@ -569,6 +576,7 @@ const DashboardPage: React.FC = () => {
           onClose={() => setIsDuesSettingsModalOpen(false)}
           groupId={groupId}
           onResetAll={handleResetAllDues}
+          isAdmin={currentUserRole === "admin"}
         />
       )}
 
@@ -577,6 +585,45 @@ const DashboardPage: React.FC = () => {
           groupId={groupId}
           onClose={() => setIsCreateTransactionModalOpen(false)}
           onSuccess={() => window.location.reload()}
+        />
+      )}
+
+      {isReportModalOpen && groupId && (
+        <ReportModal
+          groupId={groupId}
+          groupName={currentGroupName}
+          onClose={() => setIsReportModalOpen(false)}
+          onDownload={async (format, from, to) => {
+            setLoading(true);
+            try {
+              const blob = format === "pdf"
+                ? await downloadReportPdf(groupId, from, to)
+                : await downloadReportExcel(groupId, from, to);
+              
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `${currentGroupName}_보고서_${from}_${to}.${format}`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);
+            } catch (e: any) {
+              // Handle 404 No Data found
+              if (e.response && e.response.status === 404) {
+                 // For blob response, processing JSON error message is tricky
+                 // But we know 404 means NO_DATA from our backend implementation
+                 alert("선택한 기간에 재정 데이터가 없어 보고서를 생성할 수 없습니다.");
+              } else if (e.response && e.response.status === 403) {
+                 alert("보고서 생성 권한이 없습니다.");
+              } else {
+                 console.error(e);
+                 alert("보고서 생성 중 오류가 발생했습니다.");
+              }
+            } finally {
+              setLoading(false);
+            }
+          }}
         />
       )}
     </div>

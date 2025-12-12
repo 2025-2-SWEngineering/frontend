@@ -134,6 +134,10 @@ export async function setDues(groupId: number, userId: number, isPaid: boolean) 
   return data.item;
 }
 
+export async function resetDuesApi(groupId: number) {
+  await api.post("/dues/reset", { groupId });
+}
+
 // Preferences
 export async function fetchPreferences() {
   const { data } = await api.get<UserPreferencesResponse>("/user/preferences");
@@ -176,3 +180,21 @@ export async function getPresignedUrl(key: string) {
   });
   return data.url;
 }
+
+// Reports
+export async function downloadReportPdf(groupId: number, from: string, to: string) {
+  const { data } = await api.get("/reports/summary.pdf", {
+    params: { groupId, from, to },
+    responseType: "blob",
+  });
+  return data as Blob;
+}
+
+export async function downloadReportExcel(groupId: number, from: string, to: string) {
+  const { data } = await api.get("/reports/summary.xlsx", {
+    params: { groupId, from, to },
+    responseType: "blob",
+  });
+  return data as Blob;
+}
+
